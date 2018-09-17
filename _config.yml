@@ -13,10 +13,10 @@
 # you will see them accessed via {{ site.title }}, {{ site.email }}, and so on.
 # You can create any custom variable you would like, and they will be accessible
 # in the templates via {{ site.myvariable }}.
-title: "Tensorflow入門"
+title: "karino2の暇つぶしプログラム教室 C言語編"
 description: > # this means to ignore newlines until "baseurl:"
-  karino2のtensorflow入門の補助素材
-baseurl: "/tensorflow-introduction" # the subpath of your site, e.g. /blog
+  karino2の暇つぶしプログラム教室のC言語のサイト
+baseurl: "/c-lesson" # the subpath of your site, e.g. /blog
 url: "https://karino2.github.io" # the base hostname & protocol for your site, e.g. http://example.com
 github_username:  karino2
 
