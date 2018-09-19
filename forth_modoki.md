@@ -160,7 +160,7 @@ git checkout -b 02_int_parser_getc
 returnで先読みしてしまった文字を返し、字句の種類と値は引数で返しましょう。
 返す用の引数はout_という名前にします。例えばint *out_val, int *out_typeなどです。
 
-このparse_oneの型が決まったら一旦slackで見せて下さい。
+このparse_oneの型が決まったら一旦enumと合わせてslackで見せて下さい。
 
 次にこのparse_oneを実装して、それを使うコードを書きます。
 
