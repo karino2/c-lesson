@@ -77,7 +77,7 @@ int main() {
     int my_len_arr[100];
 
 
-    count = split(my_input_array, &my_len_arr, input);
+    count = split(my_input_array, my_len_arr, input);
 
 
     int numbers[100];
