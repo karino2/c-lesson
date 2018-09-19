@@ -1,21 +1,28 @@
-#include <stdio.h>
+#include "clesson.h"
 #include <assert.h>
 
-static const char* const input = "123 456  1203";
-
+/*
+cc cl_getc.c int_parser_getc.c
+*/
 
 int main() {
     int answer1 = 0;
     int answer2 = 0;
-    int answer3 = 0;
 
     // write something here.
 
+    // sample for cl_getc() usage.
+    int c;
+
+    while((c = cl_getc()) != EOF) {
+        printf("%c\n",c );
+    }
 
     // verity result.
     assert(answer1 == 123);
     assert(answer2 == 456);
-    assert(answer3 == 1203);
 
     return 1;
+
+
 }
