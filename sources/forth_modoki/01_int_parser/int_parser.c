@@ -11,24 +11,20 @@ void _strcpy(char *s, char *t){
         i++;
 }
 
-# 区切り文字の判定
-int isDelimiter(char p, char delim){
-    return p == delim;
-}
 
 # 文字列の分割
-int split(char *dst[], char *src, char delim){
+int split(char *dst[], int*dst_len, char *src, char delim){
     int count = 0;
 
     while(1) {
-        while (isDelimiter(*src, delim)){
+        while (*src == delim){
             src++;
         }
 
         if (*src == '\0') break;
 
         dst[count++] = src;
-        while (*src && !isDelimiter(*src, delim)) {
+        while (*src && *src != delim) {
             src++;
         }
 
@@ -74,13 +70,14 @@ int main() {
 
     char *my_input_array[100];
     int count;
+    int my_len_arr[100];
 
     int numbers[100];
 
     char my_input[100];
     _strcpy(my_input, input);
 
-    count = split(my_input_array, my_input, ' ');
+    count = split(my_input_array, my_len_arr, my_input, ' ');
 
     for (int i = 0; i < count; ++i) {
         numbers[i] = _atoi(my_input_array[i]);
