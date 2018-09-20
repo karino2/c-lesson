@@ -215,11 +215,14 @@ int main() {
     int answer1 = 0;
     int answer2 = 0;
 
+    // ここから違う
+
     test_parse_one_123();
 
-    // revert to original input
+    // 入力を元に戻す
     cl_getc_set_src("123 456");
 
+    // 以下は元どおり
     // ...
 
     // verity result.
