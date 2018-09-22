@@ -1,7 +1,7 @@
 #include "clesson.h"
 #include <string.h>
 
-static char* input = "123 45 + 23 - someword";
+static char* input = "3 4 add";
 static int pos = 0;
 
 void cl_getc_set_src(char* str){

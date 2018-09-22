@@ -7,11 +7,10 @@
 enum LexicalType {
     NUMBER,
     SPACE,
-    COLON,
-    SEMICOLON,
-    PLUS,
-    MINUS, 
-    WORD,
+    SYMBOL,
+    SYMBOL_DEF,
+    OPEN_CURLY,
+    CLOSE_CURLY, 
     END_OF_FILE,
     UNKNOWN
 };
@@ -27,9 +26,14 @@ struct Token {
     } u;
 };
 
-#define WORD_SIZE 256
+#define SYMBOL_SIZE 256
 
 int parse_one(int prev_ch, struct Token *out_token) {
+    /****
+     * 
+     * TODO: Implement here!
+     * 
+    ****/
     out_token->ltype = UNKNOWN;
     return EOF;
 }
@@ -52,15 +56,19 @@ void parser_print_all() {
                 case SPACE:
                     printf("space!\n");
                     break;
-                case COLON:
-                case SEMICOLON:
-                case PLUS:
-                case MINUS:
-                    printf("special: %c\n", token.u.onechar);
+                case OPEN_CURLY:
+                    printf("Open curly brace '%c'\n", token.u.onechar);
                     break;
-                case WORD:
-                    printf("WORD: %s\n", token.u.word);
+                case CLOSE_CURLY:
+                    printf("Close curly brace '%c'\n", token.u.onechar);
                     break;
+                case SYMBOL:
+                    printf("SYMBOL: %s\n", token.u.word);
+                    break;
+                case SYMBOL_DEF:
+                    printf("SYMBOL_DEF: %s\n", token.u.word);
+                    break;
+
                 default:
                     printf("Unknown type %d\n", token.ltype);
                     break;
@@ -100,19 +108,19 @@ static void test_parse_one_empty_should_return_END_OF_FILE() {
     ch = parse_one(EOF, &token);
 
     assert(ch == EOF);
-    assert(token.ltype == UNKNOWN);
+    assert(token.ltype == expect);
 }
 
 
 static void unit_tests() {
-    test_parse_one_empty_should_return_UNKNOWN();
+    test_parse_one_empty_should_return_END_OF_FILE();
     test_parse_one_number();
 }
 
 int main() {
     unit_tests();
 
-    cl_getc_set_src("123 45 + 23 - someword");
+    cl_getc_set_src("123 45 add /some { 2 3 add } def");
     parser_print_all();
     return 1;
 }
