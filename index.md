@@ -48,6 +48,10 @@ twitterでプログラム教えてもいいって言ったら教えてほしい�
 
 現在では、C言語の良さは小さいバイナリで生きると思う。
 
+というような事を動画にしてみた。
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/0yFS4UHgmHU" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+
 以上を踏まえて、教える事も考えたい
 
 
