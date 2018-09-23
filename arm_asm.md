@@ -60,11 +60,9 @@ C言語を学ぶなら一回くらいやっておいてもいいでしょう。
 
 
 
+# 01 QEMUの環境を作ろう
 
-
-----
-
-以下メモ
+以下Windows 10のWSLを前提にします。昨今ではたいていの環境で似たり寄ったりのパッケージシステムがあるでしょう。
 
 ```
 sudo add-apt-repository ppa:team-gcc-arm-embedded/ppa
@@ -73,6 +71,13 @@ sudo apt install gcc-arm-embedded
 
 sudo apt install qemu-system-arm
 ```
+
+
+
+----
+
+以下メモ
+
 
 バイナリエディタ
 
