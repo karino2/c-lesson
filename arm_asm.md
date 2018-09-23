@@ -64,6 +64,10 @@ C言語を学ぶなら一回くらいやっておいてもいいでしょう。
 
 以下Windows 10のWSLを前提にします。昨今ではたいていの環境で似たり寄ったりのパッケージシステムがあるでしょう。
 
+### QEMUとARM用gccをインストール
+
+今回はARM用のQEMU環境であるqemu-system-armと、ARM用のクロスコンパイルのためのパッケージであるgcc-arm-embeddedをインストールします。
+
 ```
 sudo add-apt-repository ppa:team-gcc-arm-embedded/ppa
 sudo apt update
@@ -72,18 +76,36 @@ sudo apt install gcc-arm-embedded
 sudo apt install qemu-system-arm
 ```
 
+### バイナリエディタをインストール
+
+今回はバイナリの中身を調査する為、何らかのバイナリエディタを入れる事がオススメです。
+大したサイズじゃないのでodコマンドなどで頑張ってもいいんですが、
+今回はバイナリエディタをインストールする事にします。
+
+なんでもいいんですが、私は最近はBz Editorに落ち着きました。
+
+https://github.com/devil-tamachan/binaryeditorbz
+
+
+### hello_arm.sを動かしてみよう
+
+sources/arm_asm/01_qemu_setup/hello_arm.s
+
+に、UARTにhelloと表示するアセンブリが書いてあります。これを動かしてみましょう。
+
+```
+$ arm-none-eabi-as hello_arm.s -o hello_arm.o
+$ arm-none-eabi-ld hello_arm.o -Ttext 0x00010000 -o hello_arm.elf
+$ arm-none-eabi-objcopy hello_arm.elf -O binary hello_arm.bin
+$ qemu-system-arm -M versatilepb -m 128M -nographic -kernel hello_arm.bin -serial mon:stdio
+```
+
+終了はC-a xです。
 
 
 ----
 
 以下メモ
-
-
-バイナリエディタ
-
-今回はBz Editorを使った。
-
-https://github.com/devil-tamachan/binaryeditorbz
 
 
 ```
