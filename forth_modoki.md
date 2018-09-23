@@ -267,27 +267,61 @@ int main() {
 
 - 「{」
 - 「}」
-- 「シンボル」
-- 「シンボル定義」
+- 「executable name」
+- 「literal name」
 
 の4種類の要素を追加する事にします。
 
-シンボルとはPost Scriptにおける変数名の事です。
-abcなどがシンボルです。
+まず最初の二つ、「{」はOPEN_CURLY、「}」はCLOSE_CURLYというenumとしましょう（curly braceで中かっこの意味）。
 
-シンボル定義はスラッシュで始まるものです。「/abc」などがシンボル定義になります。
+ここで見かけない言葉が二つありますね。executable nameとliteral nameです。
 
-厳密な言い方をするとシンボルは、「ローマ字で始まってスペース以外が続く文字で構成された文字列」です。
-簡単のため、シンボルは255文字以下としましょう。
-256文字以上のシンボルは来ないものと仮定して、エラー処理などはしなくてOKです。
-最後のヌル文字も入れた256をSYMBOL_SIZEとしてdefineしておくので、必要に応じて使ってください。
+### Post Scriptの二つのname
 
-シンボルは、SYMBOLというタイプで文字列をmallocして返す事にしましょう。
+nameとはPost Scriptにおける変数名の事です。
+abcなどですね。
 
-シンボル定義はSYMBOL_DEFというタイプで文字列をmallocして返す事にします。
+Post Scriptには二つのnameがあります。
+executable nameとliteral nameです。
+
+この二つが何なのかはあとで説明します。
+現時点ではパースする対象としてそういう二つがあると思ってください。
+パースに必要な事だけここでは説明します。
+
+最初に例を挙げると
+
+**executable name**
+
+- abc
+- hello
+- x
+- abc123
+
+などがexecutable nameです。変数に使われます。
+
+**literal name**
+
+- /abc
+- /hello
+- /x
+- /abc123
+
+などがliteral nameです。スラッシュで始まって、あとはexecutable nameと同じです。
+
+厳密な言い方をするとexecutable nameは、「ローマ字で始まってスペース以外が続く文字で構成された文字列」です。
+
+「literal name」はスラッシュで始まり、そのあとローマ字から始まる文字列です。
+ここはPost Scriptはもっと変なものもnameに使えますが、サブセットという事であまり細かい仕様は決めない事にします。
+
+
+簡単のため、nameは254文字以下としましょう。
+255文字以上のnameは来ないものと仮定して、エラー処理などはしなくてOKです。
+最初のスラッシュと最後のヌル文字も入れた256をNAME_SIZEとしてdefineしておくので、必要に応じて使ってください。
+
+executable nameは、EXECUTABLE_NAMEというタイプで文字列をmallocして返す事にしましょう。
+
+literal nameはLITERAL_DEFというタイプで文字列をmallocして返す事にします。
 この時、先頭のスラッシュは取り除いてください。
-
-「{」はOPEN_CURLY、「}」はCLOSE_CURLYとしましょう（curly braceで中かっこの意味）。
 
 ## トークンの型を定義しよう
 
@@ -331,7 +365,7 @@ struct Token {
     union {
         int number;
         char onechar;
-        char *word;
+        char *name;
     } u;
 };
 ```
@@ -353,7 +387,7 @@ struct Token {
 この中で、tokenとそのtoken.uがどう使われているかを見る事で、unionの使い方を理解してみてください。
 
 **freeしないの？**  
-parser_print_all()は、token.u.wordをfreeしてません。これはメモリリークになります。
+parser_print_all()は、token.u.nameをfreeしてません。これはメモリリークになります。
 長く動き続けるプログラムであればfreeはすべきです。
 そうで無い場合にどうするか？というのは意見が割れる所で、C言語においてfreeをすべきかどうかは定期的に論争が発生します。  
 　  

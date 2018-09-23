@@ -7,8 +7,8 @@
 enum LexicalType {
     NUMBER,
     SPACE,
-    SYMBOL,
-    SYMBOL_DEF,
+    EXECUTABLE_NAME,
+    LITERAL_NAME,
     OPEN_CURLY,
     CLOSE_CURLY, 
     END_OF_FILE,
@@ -22,11 +22,11 @@ struct Token {
     union {
         int number;
         char onechar;
-        char *word;
+        char *name;
     } u;
 };
 
-#define SYMBOL_SIZE 256
+#define NAME_SIZE 256
 
 int parse_one(int prev_ch, struct Token *out_token) {
     /****
@@ -62,11 +62,11 @@ void parser_print_all() {
                 case CLOSE_CURLY:
                     printf("Close curly brace '%c'\n", token.u.onechar);
                     break;
-                case SYMBOL:
-                    printf("SYMBOL: %s\n", token.u.word);
+                case EXECUTABLE_NAME:
+                    printf("EXECUTABLE_NAME: %s\n", token.u.name);
                     break;
-                case SYMBOL_DEF:
-                    printf("SYMBOL_DEF: %s\n", token.u.word);
+                case LITERAL_NAME:
+                    printf("LITERAL_NAME: %s\n", token.u.name);
                     break;
 
                 default:
