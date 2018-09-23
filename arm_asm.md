@@ -27,3 +27,9 @@ https://github.com/devil-tamachan/binaryeditorbz
 ```
 arm-none-eabi-objdump -S hello_arm.o
 ```
+
+versatilepbはARM926EJ-S。
+https://developer.arm.com/docs/ddi0198/latest/preface
+
+ただデータシートの4章くらいが今回程度の知識なら妥当な気がする。
+https://developer.arm.com/docs/ddi0027/latest/arm7di-data-sheet
