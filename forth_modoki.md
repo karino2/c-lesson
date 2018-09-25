@@ -427,6 +427,44 @@ Unit Testを通す事から始めます。
 
 ここまで終わったら一度私に見せてください。
 
+### executable nameのテストを足して実装しよう
+
+executable nameは、ローマ字で始まって空白以外が続く文字としましょう。
+テストとしては、以下で始めてください。
+
+```
+char* input = "add";
+char* expect_name = "add";
+int expect_type = EXECUTABLE_NAME
+```
+
+テストが追加出来たらparse_oneを実装する前に一回このテストがfailする事を確認します。
+
+そのあとにparse_oneを実装してください。
+
+### literal nameのテストを足して実装しよう
+
+executable nameとほとんど同じですが、literal nameはスラッシュ、つまり'/'から始まる、という所が違います。
+
+テストとしては、
+
+```
+char* input = "/add";
+char* expect_name = "add";
+int expect_type = LITERAL_NAME
+```
+
+としましょう。expect_nameにスラッシュが無い事に注意してください。
+
+このテストもfailするのを確認してからparse_oneを実装してください。
+
+### 中括弧も実装しよう
+
+以下同様にOPEN_CURLYとCLOSE_CURLYも実装してください。
+全部が終わったら、最後にparser_print_allを実行してみて動く事を確認してください。
+
+動かなかったら必ずその理由を明らかにするUnit Testを追加してから直しましょう。
+
 
 # 04 スタックを作ろう
 
