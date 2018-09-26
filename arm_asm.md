@@ -102,6 +102,25 @@ $ qemu-system-arm -M versatilepb -m 128M -nographic -kernel hello_arm.bin -seria
 
 終了はC-a xです。
 
+# 02 ARM アセンブリ入門
+
+ldr, str, add, cmp, bne, mov, .ascizなどを説明。
+print_loop.sとhello_arm.sの解説。
+
+# 03 アセンブリからC関数を呼ぶ
+
+最低限のセットアップだけで関数を呼ぶ。リンカの使い方とかも。
+
+# 04 リロケーションとリンカスクリプト
+
+hello_arm.o, hello_arm.elf, hello_arm.binのバイナリを比較して、リロケーションの話を簡単に。
+逆アセンブルもこの辺か。
+
+# 05 簡易アセンブラを作ろう
+
+リロケーション無しで簡単なアセンブリを作る。0x00010000決め打ち。
+
+
 
 ----
 
@@ -117,3 +136,11 @@ https://developer.arm.com/docs/ddi0198/latest/preface
 
 ただデータシートの4章くらいが今回程度の知識なら妥当な気がする。
 https://developer.arm.com/docs/ddi0027/latest/arm7di-data-sheet
+
+
+C function call
+https://developer.arm.com/products/architecture/cpu-architecture/a-profile/docs/ihi0042/e/procedure-call-standard-for-the-arm-architecture
+
+
+versatilepb memorymap
+https://github.com/hackndev/qemu/blob/master/hw/versatilepb.c
