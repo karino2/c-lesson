@@ -622,8 +622,10 @@ PostScriptはすごくシンプルな言語仕様なので、他のプログラ�
 
 - [PostScript 基礎文法最速マスター](http://d.hatena.ne.jp/dayflower/20100203/1265185183)  
 言語自体の解説として割と良いが、実行可能配列の解説が後ろの方なのがこのシリーズ的には惜しい。
+- [PostScript Language Tutorial & Cookbook(pdf)](https://www-cdf.fnal.gov)  
+いわゆるBlue Book。例がプリンタ周りの事が多いので名前ほど入門向けでは無いけれど、最後のBuilt-inのプリミティブの一覧が便利。
 - [PostScript Language Program Design (pdf)](https://www-cdf.fnal.gov/offline/PostScript/GREENBK.PDF)  
-いわゆるGreen Book。英語が読めるならこの2.3から2章の終わりまでを読むのも良い。
+いわゆるGreen Book。英語が読めるならこの2.3から2章の終わりまでを読むのも良い。ただしプリミティブの説明は無いのでBlue Bookの最後と併用する。
 
 ## 今回実装する事
 
@@ -1638,3 +1640,126 @@ eval_exec_arrayさえ出来てしまえば、あとはプリミティブの所�
 としたら、1 2 1 2 1 2 1 2したのと同じになるようなrepeatも実装します。
 
 また、pop, dup, exch（上から一番目と二番目を交換）を実装します。
+
+ここまで来ると残った物は難しい要素は一つもありませんが、
+プログラム言語として完成させる為に一通り実装しておきましょう。
+
+## 続：PostScript入門
+
+### スタック表記
+
+[PostScript Language Tutorial & Cookbook(pdf)](https://www-cdf.fnal.gov)
+
+### 我々が実装する物一覧
+
+
+$$num_1 num_2 {\b add} sum$$ 足し算
+
+### PostScriptにおける条件分岐
+
+PostScriptにはbool型があります。trueとfalseです。ですが、このシリーズでは手抜きとして、trueを1、falseを0で代用したいと思います。実装に難しい事は無い割に、コードが膨れがちだからです。
+
+他の言語では制御構造は特殊な文法を持つのが普通ですが、
+PostScriptにおいては実行可能配列の仕組みのおかげでほとんど条件分岐に特有な構文はありません。
+
+ifというプリミティブは、スタック上に「条件、実行可能配列」の順番に入っている前提で、
+条件がtrueなら実行可能配列を実行し、そうでなければ何も実行しません（どちらもスタックからはpopされる）。
+
+例えば以下のPostScript文は、
+
+```
+hoge {1 add} if
+```
+
+他の言語で例えると以下のような意味になります。
+
+```
+if(hoge){
+  1 add
+}
+```
+
+ブロックが実行可能配列という抽象だけで実現されているのは美しいですね。
+
+ifelseというのもあり、これはスタックが「条件、ifブロック、elseブロック」という順番に入っているという前提で、
+条件がtrueだったらifブロックを、条件がfalseだったらelseブロックを実行します。
+
+### PostScriptにおける比較演算子
+
+PostScriptには、大なり、小なり、大なりイコール、小なりイコール、イコール、ノットイコールなどがあります。
+それぞれ、gt,lt, ge, le, eq, neです。
+
+これらはスタックに2つ数字が入っている前提で、2つの数字をpopして比較して結果をスタックにプッシュします。
+
+例えば
+
+```
+1 3 lt
+```
+
+なら結果のスタックにはtrueが入ります。
+
+また、notでスタックのトップのbool値を反転させます（trueならfalse, falseならtrueです）。
+
+###
+
+### PostScriptにおけるrepeat（とその拡張）
+
+PostScriptではrepeat, for, loopの3つのループとarrayに対するforeach相当の物があります。
+今回はこのうち、repeatだけ実装し、さらにPostScriptには含まれていませんがwhileを実装しようと思います。
+
+repeatはスタックが「カウンタ、実行可能配列」という状態で呼ばれ、
+実行可能配列をカウンタ回数実行します。
+
+例えば
+
+```
+3 {1 2} repeat
+```
+
+なら、スタックは「1, 2, 1, 2, 1. 2」になります。
+
+whileはPostScriptにはありませんが、実行可能配列が2つスタックにある前提で呼ばれます。
+それぞれ、condブロック、bodyブロックと呼びましょう。
+
+condブロックを評価し、スタックのトップが1ならbodyブロックを実行してまたcondブロックを実行して、、、と続けます。
+condブロックを評価した結果スタックのトップが0ならそこで実行を終えます。
+実装を疑似コードで書くと、
+
+```
+cond = pop();
+body = pop();
+
+eval_exec_array(cond);
+int val = pop();
+while(val) {
+   eval_exec_array(body);
+   eval_exec_array(cond);
+   val = pop();
+}
+```
+
+という感じの挙動とします。
+これで例えば階乗（factorialと呼ぶ）は以下のように実装出来ます。（なおパーセントはそれ以降をコメントとする行コメントです）。
+
+```
+/factorial {
+  dup
+  %スタックをいつも 「途中経過、j」でwhileが評価されるとし、
+  %jを途中経過に掛けてjを1減らす、
+  {dup 1 gt} 
+  {
+    1 sub
+    exch
+    1 index
+    mul
+    exch
+  } while
+  pop
+} def
+```
+
+
+
+
+
