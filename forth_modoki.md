@@ -1702,12 +1702,15 @@ Blue Bookの最後の所にこの形式でオペレータの一覧が書いて�
 |*any1*| **pop**| *-* | スタック先頭の要素を捨てる|
 |*any1 any2*| **exch**| *any2 any1* | スタックのトップ2つの要素を入れ替える|
 |*any1*| **dup** | *any1 any1*| スタックの先頭の要素を2つに複製 |
-|*any_n any_(n-1) ... any0 n* | index | *any_n any_(n-1) ... any0 any_n* |n番目の要素を複製してトップに置く|
+|*any_n any_(n-1) ... any0 n* | **index** | *any_n any_(n-1) ... any0 any_n* |n番目の要素を複製してトップに置く|
 
 制御オペレータ
 
 |*proc1*| **exec**| *-* | スタック先頭の実行可能配列を実行する|
-
+|*bool1 proc1*| **if**| *-* | bool1がtrueならproc1を実行。|
+|*bool1 proc1 proc2*| **ifelse** | *-* | bool1がtrueならproc1を、そうでなければproc2を実行 |
+|*proc1 n*| **reapeat**| *-*|n回proc1を実行|
+|*proc1 proc2*|**while**| *-* | proc1を実行し、スタックトップがtrueだったらproc2を実行、をスタックトップがfalseになるまで繰り返す。PostScriptには無い独自拡張。|
 
 
 ### PostScriptにおける条件分岐
@@ -1754,9 +1757,25 @@ PostScriptには、大なり、小なり、大なりイコール、小なりイ�
 
 なら結果のスタックにはtrueが入ります。
 
-また、notでスタックのトップのbool値を反転させます（trueならfalse, falseならtrueです）。
 
-###
+### PostScriptにおけるスタック操作
+
+indexだけ少し分かりにくいかも。n番目をコピーですね。スタックトップに来るのがポイント。
+例えば
+
+```
+a b c d e 2 index
+```
+
+とすると、
+
+```
+a b c d c
+```
+
+となります。0番目から数えて、eが0番目、dが1番目、cが2番目です。
+
+
 
 ### PostScriptにおけるrepeat（とその拡張）
 
@@ -1813,7 +1832,6 @@ while(val) {
   pop
 } def
 ```
-
 
 
 
