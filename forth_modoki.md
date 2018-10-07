@@ -1194,11 +1194,11 @@ elem.u.cfunc();
 
 ```
 if(tokenがEXECUTABLE_NAMEなら) {
-    if(u.token.nameが"add"なら) {
+    if(token.u.nameが"add"なら) {
        int a = stack_pop();
        int b = stack_pop();
        stack_push(a+b);
-    } else if(u.token.nameが"def"なら){
+    } else if(token.u.nameが"def"なら){
        ...
     } else {
        // ユーザー定義のname。辞書からnumberを取り出してスタックにプッシュ
@@ -1218,9 +1218,9 @@ void add_op(){
 
 // evalの中
 if(tokenがEXECUTABLE_NAMEなら) {
-    if(u.token.nameが"add"なら) {
+    if(token.u.nameが"add"なら) {
       add_op();
-    } else if(u.token.nameが"def"なら){
+    } else if(token.u.nameが"def"なら){
        ...
     } else {
        // ユーザー定義のname。辞書からnumberを取り出してスタックにプッシュ
@@ -1242,11 +1242,11 @@ if(tokenがEXECUTABLE_NAMEなら) {
 ```
 // evalの中
 if(tokenがEXECUTABLE_NAMEなら) {
-    if(u.token.nameが"def"なら){
+    if(token.u.nameが"def"なら){
        ...
     } else {
        // ユーザー定義のnameかプリミティブ。
-       struct Element elem = dict_get(u.token.name)
+       struct Element elem = dict_get(token.u.name)
 
        if(elem.etype == ELEMENT_C_FUNCTION){
          elem.u.cfunc();
