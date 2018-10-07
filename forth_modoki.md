@@ -1711,7 +1711,6 @@ void eval_exec_array() {
          case 実行可能配列以外なら:
             普通の処理をする;
          case 実行可能配列なら:
-             cont->pc++; // 実行可能配列から戻ってきた時の次の要素をさしておく。
              struct Continuation next_cont = {byte_codes: element->byte_codes, pc: 0};
              co_push(&next_cont);
              1つ目のwhileから抜ける
