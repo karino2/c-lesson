@@ -1484,21 +1484,6 @@ C言語は確保した領域さえあれば実行時に宣言した時より先�
 何故だかわかるでしょうか？
 
 
-選択肢3
-
-```
-struct Element {
-   enum ElementType etype;
-   union {
-     ...
-     struct {
-       Element *byte_codes;
-       int len;
-     } exec_array;
-   } u;
-};
-```
-
 選択肢2
 
 ```
@@ -1517,6 +1502,22 @@ struct Element {
 };
 
 ```
+
+選択肢3
+
+```
+struct Element {
+   enum ElementType etype;
+   union {
+     ...
+     struct {
+       Element *byte_codes;
+       int len;
+     } exec_array;
+   } u;
+};
+```
+
 
 選択肢2はunionの中にはポインタしか入っていません。
 選択肢3はintとポインタの2つが入っています。
