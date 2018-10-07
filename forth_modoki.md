@@ -1912,7 +1912,7 @@ a b c d c
 
 
 
-### PostScriptにおけるrepeat（とその拡張）
+### PostScriptにおけるループ（とその拡張）
 
 PostScriptではrepeat, for, loopの3つのループとarrayに対するforeach相当の物があります。
 今回はこのうち、repeatだけ実装し、さらにPostScriptには含まれていませんがwhileを実装しようと思います。
