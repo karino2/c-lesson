@@ -1702,7 +1702,7 @@ PostScriptのスタックと区別する為に、これをcontinuationのスタ�
 ```
 void eval_exec_array() {
    while(co_stackに要素が入ってたら) {
-      struct Continuation* cont = co_pop();
+      struct Continuation* cont = co_peek();
       while(contのpcがbyte_codesの終わりに行くまで){
          struct Element*next = &cont->byte_codes[cont->pc++];
          switch(element->etype) {
@@ -1715,12 +1715,19 @@ void eval_exec_array() {
              1つ目のwhileから抜ける
          } 
       }
+      co_pop();
    }
 
 }
 ```
 
+peekというのはスタックから削除せずに先頭要素を覗き見る関数のつもりで書いてます。
+
 eval_exec_arrayを呼ぶ時は、呼ぶ前にco_pushで対象の実行可能配列をpushする前提でコードは書いてあります。
+
+つまりeval_exec_arrayはいつもスタックトップの継続から続きを実行していき、
+その実行可能配列の実行が終わったらスタックの次の継続の実行を再開していきます。
+これはC言語を始めとした多くのプログラミング言語の関数呼び出しと同じ仕組みを手動で実装してる事になります。
 
 ### 継続をあらわに実装するメリット
 
