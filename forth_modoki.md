@@ -1517,23 +1517,20 @@ ElementArrayの型には、配列部分の長さは含まれていません。
 例えば以下のようなコードです。
 
 ```
-struct Element elem1;
-struct Element elem2;
+void some_func(struct Element *elem1) {
+   struct Element elem2;
 
-// 何かelem１を初期化
-...
-
-elem2 = elem1;
+   elem2 = *elem1;
+   // 以下elem2で何か作業
 ```
 
 こうすると、elem2には、elem1のフィールドが全部コピーされますね。
 ですが、前述のElementArrayのような可変長配列のトリックを使った構造体では、
-elementsのフィールドがコピーされません。
-
+この手の実体コピーでは、elementsのフィールドがコピーされません。
 sizeofの範囲だけがコピーされます。
 
-なお、今回のPostScriptの実装という点ではElementArray自身のコピーをする場所は無く、あくまでそれを保持したElementのコピーしか出番は無いはずなので問題ありません（ElementArrayはポインタ変数で保持するでしょう）。
-なので知識として知っておけば十分でしょう。
+なお、今回のPostScriptの実装という点ではElementArray自身のコピーをする場所は無く、あくまでそれを保持したElementのコピーしか出番は無いはずです。なので問題ありません（ElementArrayはポインタ変数で保持するでしょう）。
+知識として知っておけば十分でしょう。
 
 また、ElementArray自身の配列を作っても、うまく++などで次の要素に行きません。
 つまり、以下のコードは意図通りには動きません。
@@ -1554,6 +1551,9 @@ arrs[1].len = 3;
 
 arrs[1]はarrsにsizeof(struct ElementArray)だけ足したアドレスを指すので、0番目のelementsの領域を誤って指してしまう事になります。
 だからこういう事は出来ません。
+
+そもそもにこういうmallocを書く事自体無いと思うので実際に問題になるシチュエーションはほとんど無いと思いますが、
+ポインタ変数の理解を深める為には良い題材と思うので少し考えてみて下さい。
 
 ### 選択肢3との違い
 
