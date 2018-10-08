@@ -1664,39 +1664,41 @@ evalから呼ぶ、compile_exec_array()という関数を作りましょう。
 compile_exec_arrayがやる事は、"{"か"}"が現れるまではparse_oneを呼んで、結果を配列に詰めていきます。
 簡単の為、ローカル変数の配列に詰めていって、最後にmallocしてmemcpyしてu.byte_codesに入れますか。
 
-またはreallocを使って自動的に伸びていくような可変長配列を作っても良い。
+またはreallocを使って自動的に伸びていくような配列を作っても良い。
 その場合は、
 
 ```
-struct VarArray {
+struct AutoArray {
    int size;
    int cur_len;
-   struct *elem_array;
+   struct Element *elem_array;
 };
 
 
-void var_array_init(struct VarArray *out);
-void add_element(struct VarArray *vararray, struct Element *newelem);
+void auto_array_init(struct AutoArray *out);
+void add_element(struct AutoArray *array, struct Element *newelem);
 ```
 
 みたいなインターフェースにして、
 
 ```
-int add_element(struct VarArray *vararray, struct Element *newelem) {
+int add_element(struct AutoArray *array, struct Element *newelem) {
    if(cur_lenがsizeまで届いてしまったら) {
-        vararray->elem_array = realloc(vararray->elem_array, サイズ2倍);
+        array->elem_array = realloc(array->elem_array, サイズ2倍);
         失敗だったらreturn 0
-        vararray->sizeを2倍に
+        array->sizeを2倍に
    }
-   vararray[cur_len++] = *newelem;
+   array[array->cur_len++] = *newelem;
    return 1;
 }
 ```
 
 みたいな実装にします。そんな難しくは無いんですが、今回の内容からすると本質的では無いのでやらなくていいかなぁ。ただやならくても大変さは大差無い気もするので、どっちでもいいです。
+なお、実際にやるなら上記のelem_arrayは前述のElementArrayにして、cur_lenはこのElementArrayのlenを使うように書くのが良いでしょう。
 
-一旦ローカル変数に詰めていって最後に必要な分だけallocする場合は、
-name定義の時の最大サイズをMAX_NAME_OP_NUMBERSとでも定義しておきましょう。
+そんな事はせずに一旦ローカル変数に詰めていって最後に必要な分だけallocする場合は、
+ローカル変数での配列のサイズの最大値が要りますね。
+name定義の時のオペレーターの最大サイズをMAX_NAME_OP_NUMBERSとでも定義しておきましょう。
 今回の用途なら256くらいでいいかな。
 
 
