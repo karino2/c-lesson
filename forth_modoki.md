@@ -336,7 +336,7 @@ executable nameとliteral nameです。
 
 executable nameは、EXECUTABLE_NAMEというタイプで文字列をmallocして返す事にしましょう。
 
-literal nameはLITERAL_DEFというタイプで文字列をmallocして返す事にします。
+literal nameはLITERAL_NAMEというタイプで文字列をmallocして返す事にします。
 この時、先頭のスラッシュは取り除いてください。
 
 ## トークンの型を定義しよう
