@@ -1662,16 +1662,15 @@ evalから呼ぶ、compile_exec_array()という関数を作りましょう。
 結果としてout引数で実行可能配列のElementを返すようにしましょう。
 
 compile_exec_arrayがやる事は、"{"か"}"が現れるまではparse_oneを呼んで、結果を配列に詰めていきます。
-簡単の為、ローカル変数の配列に詰めていって、最後にmallocしてmemcpyしてu.byte_codesに入れますか。
+簡単の為、ローカル変数の配列に詰めていって、最後にElementArrayをmallocしてmemcpyしてu.byte_codesに入れますか。
 
-またはreallocを使って自動的に伸びていくような配列を作っても良い。
+またはreallocを使ってElementArrayが自動的に伸びていくような物を作っても良い。
 その場合は、
 
 ```
 struct AutoArray {
    int size;
-   int cur_len;
-   struct Element *elem_array;
+   struct ElementArray *var_array;
 };
 
 
@@ -1683,21 +1682,21 @@ void add_element(struct AutoArray *array, struct Element *newelem);
 
 ```
 int add_element(struct AutoArray *array, struct Element *newelem) {
-   if(cur_lenがsizeまで届いてしまったら) {
-        array->elem_array = realloc(array->elem_array, サイズ2倍);
-        失敗だったらreturn 0
-        array->sizeを2倍に
+   if(var_arrayのlenがsizeまで届いてしまったら) {
+        array->sizeを二倍に
+        array->var_array = realloc(array->var_array, サイズ2倍);
    }
-   array[array->cur_len++] = *newelem;
+   var_arrayに*newelemを入れる;
    return 1;
 }
 ```
 
 みたいな実装にします。そんな難しくは無いんですが、今回の内容からすると本質的では無いのでやらなくていいかなぁ。ただやならくても大変さは大差無い気もするので、どっちでもいいです。
-なお、実際にやるなら上記のelem_arrayは前述のElementArrayにして、cur_lenはこのElementArrayのlenを使うように書くのが良いでしょう。もしやるなら関数名などももうちょっと真面目に考えてください。
+もしやるなら関数名などももうちょっと真面目に考えてください。
+なお、reallocはそんな効率的じゃないので2倍ずつ大きくしています。必要なサイズより最悪で50%くらい余分に確保する場合がありますが、この位は割と一般的です。
 
-そんな事はせずに一旦ローカル変数に詰めていって最後に必要な分だけallocする場合は、
-ローカル変数での配列のサイズの最大値が要りますね。
+ま、こんな事はせずに一旦ローカル変数に詰めていって最後に必要な分だけallocするで良いです。
+その場合は、ローカル変数での配列のサイズの最大値が要りますね。
 name定義の時のオペレーターの最大サイズをMAX_NAME_OP_NUMBERSとでも定義しておきましょう。
 今回の用途なら256くらいでいいかな。
 
