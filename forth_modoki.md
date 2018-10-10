@@ -1664,41 +1664,74 @@ evalから呼ぶ、compile_exec_array()という関数を作りましょう。
 compile_exec_arrayがやる事は、"{"か"}"が現れるまではparse_oneを呼んで、結果を配列に詰めていきます。
 簡単の為、ローカル変数の配列に詰めていって、最後にElementArrayをmallocしてmemcpyしてu.byte_codesに入れますか。
 
-またはreallocを使ってElementArrayが自動的に伸びていくような物を作っても良い。
-その場合は、
+その場合は、ローカル変数での配列のサイズの最大値が要りますね。
+name定義の時のオペレーターの最大サイズをMAX_NAME_OP_NUMBERSとでも定義しておきましょう。
+今回の用途なら256くらいでいいかな。
+
+またはreallocを使ってElementArrayが自動的に伸びていくような物を作っても良いです。
+少し発展的な話題なので、おまけとして解説だけしておきます。
+
+
+### おまけ：reallocを使った、自動的に伸びる配列
+
+reallocを使って勝手にサイズが伸びていくような配列を自作する、という手があります。
+その場合は、毎回少し大きめに確保しておいて、いっぱいになったらまた少し大きめに伸ばす、
+という戦略になります。
+少し大きめがどれくらいかは自由に決めて良いのですが、一般的にはいっぱいになるとそれまでのサイズの2倍にする、
+というのが良くやられる戦略です。
+reallocはそんな効率的じゃないので一つ増やすごとにやってちゃ駄目な訳です。
+
+さて、普通なら、現在のサイズとどこまでうまっているかを持つ構造体を作る事になります。
 
 ```
-struct AutoArray {
+sturct AutoArray{
+   int size;
+   int len;
+   struct Element *elements;
+};
+```
+
+ですが今回はsturct ElementArrayという物がすでにあるので、これを持つのが良いでしょう。
+
+```
+sturct AutoArray{
    int size;
    struct ElementArray *var_array;
 };
+```
 
+var_array->lenで、現在どこまで使っているかを、sizeでvar_array->elementsが現在どこまで確保されているかを表します。
 
+以下では解説の為にあえて前者で解説しますが、実装するなら後者で実装してください。
+
+さて、このような構造体に対して、以下のようなAPIにするのがいいでしょう。
+
+```
 void auto_array_init(struct AutoArray *out);
 void add_element(struct AutoArray *array, struct Element *newelem);
 ```
 
-みたいなインターフェースにして、
+使う側はこのadd_elementを呼んで行くだけで、最後にarray->elementsに伸びた配列が入る、という仕組みです。
+実装としては以下のような感じでしょうか。
 
 ```
-int add_element(struct AutoArray *array, struct Element *newelem) {
-   if(var_arrayのlenがsizeまで届いてしまったら) {
+void add_element(struct AutoArray *array, struct Element *newelem) {
+   if(lenがsizeまで届いてしまったら) {
         array->sizeを二倍に
-        array->var_array = realloc(array->var_array, サイズ2倍);
+        array->elements = realloc(array->elements, array->size);
    }
-   var_arrayに*newelemを入れる;
-   return 1;
+   arrayのelementsに*newelemを入れる;
 }
 ```
 
-みたいな実装にします。そんな難しくは無いんですが、今回の内容からすると本質的では無いのでやらなくていいかなぁ。ただやならくても大変さは大差無い気もするので、どっちでもいいです。
-もしやるなら関数名などももうちょっと真面目に考えてください。
-なお、reallocはそんな効率的じゃないので2倍ずつ大きくしています。必要なサイズより最悪で50%くらい余分に確保する場合がありますが、この位は割と一般的です。
+みたいな実装にします。
+reallocは引数のポインタを伸ばすのですが、たまにその領域でそれ以上伸ばせない場合は、別のアドレスに必要なメモリを確保してそこに内容をコピーしてそちらのアドレスを返す、という事をする場合があります。
+だから結果をarray->elementsに代入する必要があります。
 
-ま、こんな事はせずに一旦ローカル変数に詰めていって最後に必要な分だけallocするで良いです。
-その場合は、ローカル変数での配列のサイズの最大値が要りますね。
-name定義の時のオペレーターの最大サイズをMAX_NAME_OP_NUMBERSとでも定義しておきましょう。
-今回の用途なら256くらいでいいかな。
+こうしてみるとそんな難しくは無いんですが、今回の内容からすると本質的では無いのでやらなくていいかなぁ。ただローカル変数の配列に一旦取ってからmallocするのもそんな大変さは大差無い気もするので、どっちでもいいです。
+もしやるなら関数名などももうちょっと真面目に考えてください。
+
+reallocはメモリが足りない時は失敗する場合もありますが、今回はその場合の処理はしなくてOKです。
 
 
 ### ネストした定義
