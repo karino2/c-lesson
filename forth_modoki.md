@@ -1894,15 +1894,95 @@ abc
 この後の解説はどれを選ぶのかで変わってくるので、ここまで来たらslackで何やるか教えてください。
 以下は先着一名様のやリ方で書きます。
 
-
 eval_exec_arrayさえ出来てしまえば、あとはプリミティブの所でC_FUNCTIONを呼んだのと似たようなコードを追加すれば良いだけなので自分で出来るでしょう。
 
 なお実行可能配やC_FUNCTIONなどのような関数として使われるexecutable nameをPost Scriptではオペレータとも呼びます。
 
 
+追記：協議の結果、3で行く事になりました。
+
+### ネスト無しでのeval_exec_arrayの実行
+
+まず簡単の為、ネストは無い前提の実行から説明します。
+
+parse_oneと同じシグニチャの、get_next_tokenという関数を作る事にします。
+これはparser.cに実装する事にしましょう。
+概念的には以下のようなコードになります。
+
+```
+static struct ElementArray *exec_array = NULL;
+
+int get_next_token(int prev_ch, struct Token *out_token) {
+   if(exec_array == null) {
+      return parse_one(prev_ch, out_token);
+   } else {
+      exec_arrayから一つElement取り出して返す
+   }
+
+```
+
+ただexec_arrayはElement、parserはTokenなのでちょっとミスマッチがあります。
+ここは適当に辻褄を合わせます。だいたいはElementに対応する同じ物がTokenにあるので、それを入れればいいはずです。
+
+以上の事を実際に実装しようとすると、もうちょっといろいろやる必要が出てきます。
+感じとしては以下みたいなコードになるでしょう（説明の為にイモっぽく実装してあるので、理解したらもっと普通に実装して良いです）。
+
+
+```
+static struct ElementArray *exec_array = NULL;
+static int operation_pos = 0;
+
+
+// EOF以外ならなんでもいい。
+#define CONTINUE 1
+
+int get_next_token(int prev_ch, struct Token *out_token) {
+   if(exec_array == null) {
+      // TODO: prev_chがCONTINUEの時の処理をする
+      return parse_one(prev_ch, out_token);
+   }
+
+   // TODO: ここで空の実行可能配列の場合のエラー処理を入れる
+
+   struct Element *cur = exec_array->elements[operation_pos];
+   operation_pos++;
+
+   // TODO: ここでcurの内容とほぼ同じになるようにout_tokenを偽造する。
+
+   if(exec_array->len == operation_pos) {
+       exec_array = NULL;
+       operation_pos = 0;
+       return EOF;
+   }
+   return CONTINUE;
+}
+```
+
+TODOと書いてある所は自分で考えて実装してみて下さい。
+
+で、外から実行可能配列をセットするAPIも足します。名前はset_exec_array_to_parserにしましょう。
+
+基本的なアイデアはcl_getcで文字列を外から設定出来るようにしたのと似ているので、それを参考にしてください。
+
+この後evalのparse_oneをこのget_next_tokenに置き換えます。
+
+これらが終わると、ネスト無しのeval_exec_arrayはだいたい以下のようなコードに出来るはずです。
+
+
+```
+void eval_exec_array(struct ElementArray *elemarr) {
+   set_exec_array_to_parser(elemarr);
+   eva();
+}
+```
+
+一文字先読みしている文字などの辻褄あわせはちょっと気をつける必要があるかもしれませんが、
+だいたいこんな感じで実装出来るはずです（たぶん）。
+
+
 ### ネストした呼び出しの実行
 
-さて、eval_exec_arrayでは一つ難しい事があります。
+さて、eval_exec_arrayでは一つ難しい事があります。それはネストした実行の場合です。
 以下のようなコードを考えてみましょう。
 
 ```
