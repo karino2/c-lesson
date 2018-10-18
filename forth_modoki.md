@@ -1972,7 +1972,7 @@ TODOと書いてある所は自分で考えて実装してみて下さい。
 ```
 void eval_exec_array(struct ElementArray *elemarr) {
    set_exec_array_to_parser(elemarr);
-   eva();
+   eval();
 }
 ```
 
