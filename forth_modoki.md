@@ -2061,14 +2061,14 @@ void eval_exec_array() {
    while(co_stackに要素が入ってたら) {
       struct Continuation* cont = co_peek();
       set_cont(cont);
-      while(get_next_token()が取れる間){
-         switch(token->ltype) {
+      while(get_next_token()が取れる間){ 
+         switch(token->ltype) { // 注:1
          case 実行可能配列以外なら:
-            普通の処理をする;
+            普通の処理をする;  // 注:2
          case 実行可能配列なら:
              struct Continuation next_cont = {exec_array: token->byte_codes, pc: 0};
-             co_push(&next_cont);
-             1つ目のwhileから抜ける
+             co_push(&next_cont); // 注:3
+             1つ目のwhileから抜ける // 注:4
          } 
       }
       co_pop();
@@ -2084,6 +2084,24 @@ eval_exec_arrayを呼ぶ時は、呼ぶ前にco_pushで対象の実行可能配�
 つまりeval_exec_arrayはいつもスタックトップの継続から続きを実行していき、
 その実行可能配列の実行が終わったらスタックの次の継続の実行を再開していきます。
 これはC言語を始めとした多くのプログラミング言語の関数呼び出しと同じ仕組みを手動で実装してる事になります。
+
+今回の疑似コードはこれまでよりも擬似度合いが高くて、そのままでは実装出来ない形になっています。
+良く意味を理解した上で実装していってください。
+細かい所についてもうちょっと補足をしておきます。
+
+上記の注1のtokenは、その一行上のget_next_tokenで得られるtokenです。
+
+注2の所はevalの処理と同じになりますが、evalを呼び出すとどんどん次のtokenまで取っていってしまうので駄目です。
+token一つ分だけ処理します。
+まずevalからコピペしてきてテストまで動かし、commitして、それからリファクタリングとして2つの関数の構造を見直すのがいいと思います。
+eval_exec_arrayとevalは大部分は一本化出来るはずです。
+
+注3の所では、現在まで進んでoperation_posをまたトップの継続のpcに戻す処理も必要です。
+これはco_pushをする時はいつも必要なので、co_pushの中でやってしまう方がいいかもしれません。
+するとget_next_token周りはcontinuation.cに移す方がいいかもしれません。
+
+注4は、単にbreakとするとswtichから抜けるだけでwhileからは抜けません。
+このまま実装するならgotoになりますが、関数化したりswitchでなくしたりなどでgotoを使わなくするのは可能なはずですので、考えてみてください。
 
 ### 継続をあらわに実装するメリット
 
