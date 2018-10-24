@@ -629,7 +629,7 @@ PostScriptはすごくシンプルな言語仕様なので、他のプログラ�
 
 - [PostScript 基礎文法最速マスター](http://d.hatena.ne.jp/dayflower/20100203/1265185183)  
 言語自体の解説として割と良いが、実行可能配列の解説が後ろの方なのがこのシリーズ的には惜しい。
-- [PostScript Language Tutorial & Cookbook(pdf)](https://www-cdf.fnal.gov)  
+- [PostScript Language Tutorial & Cookbook(pdf)](https://www-cdf.fnal.gov/offline/PostScript/BLUEBOOK.PDF)  
 いわゆるBlue Book。例がプリンタ周りの事が多いので名前ほど入門向けでは無いけれど、最後のBuilt-inのプリミティブの一覧が便利。
 - [PostScript Language Program Design (pdf)](https://www-cdf.fnal.gov/offline/PostScript/GREENBK.PDF)  
 いわゆるGreen Book。英語が読めるならこの2.3から2章の終わりまでを読むのも良い。ただしプリミティブの説明は無いのでBlue Bookの最後と併用する。
