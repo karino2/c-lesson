@@ -373,7 +373,7 @@ cfuncとして登録するのでは無く、この2つはstreqして特別処理
 {dup 5 gt}
 exec
 5
-ifjmp
+jmpif
 {hoge}
 exec
 -7
