@@ -2000,7 +2000,7 @@ void eval_exec_array(execarr) {
 
 以下のサイトの前半のC言語のところなども参考にしてみてください。
 
-[Schemeの実装におけるスタックフレーム](http://practical-scheme.net/docs/stadck-j.html)
+[Schemeの実装におけるスタックフレーム](http://practical-scheme.net/docs/stack-j.html)
 
 
 さて、これらのC言語のスタックフレームで暗黙に処理している事は、自分が実装するスタックであらわに実装する事もできます。
