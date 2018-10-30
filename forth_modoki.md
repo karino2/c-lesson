@@ -2217,7 +2217,7 @@ Blue Bookの最後の所にこの形式でオペレータの一覧が書いて�
 |*proc1*| **exec**| *-* | スタック先頭の実行可能配列を実行する|
 |*bool1 proc1*| **if**| *-* | bool1がtrueならproc1を実行。|
 |*bool1 proc1 proc2*| **ifelse** | *-* | bool1がtrueならproc1を、そうでなければproc2を実行 |
-|*n proc1*| **reapeat**| *-*|n回proc1を実行|
+|*n proc1*| **repeat**| *-*|n回proc1を実行|
 |*proc1 proc2*|**while**| *-* | proc1を実行し、スタックトップがtrueだったらproc2を実行、をスタックトップがfalseになるまで繰り返す。PostScriptには無い独自拡張。|
 
 
