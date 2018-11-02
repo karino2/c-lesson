@@ -2664,7 +2664,7 @@ Emitterは、例えば以下みたいに作ります。
 ```
 void compile_exec_array(...) {
   ...
-  struct Element array[MAX_ELEMENT];
+  struct Element array[MAX_NAME_OP_NUMBERS];
   // これまでのコード
 
   struct Emitter emitter;
