@@ -3,6 +3,18 @@ title: "第二回 簡易アセンブラとディスアセンブラを作ろう"
 layout: page
 ---
 
+<style>
+   .column{
+        padding: 0.5em 1em;
+        margin: 2em 0;
+        color: #5d627b;
+        background: white;
+        border-top: solid 5px #5d627b;
+        box-shadow: 0 3px 5px rgba(0, 0, 0, 0.22);
+    }
+</style>
+
+
 第二回はQEMUを使ってARMのバイナリを動かしたり、バイナリを生成したりディスアセンブルしたりするコードを書きます。
 
 OSの無い環境でプログラムを動かす事で、C言語の土台の理解を深める事を目的とします。
