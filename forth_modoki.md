@@ -2115,6 +2115,32 @@ Blue Bookの最後の所にこの形式でオペレータの一覧が書いて�
 |*any1 any2*| **exch**| *any2 any1* | スタックのトップ2つの要素を入れ替える|
 |*any1*| **dup** | *any1 any1*| スタックの先頭の要素を2つに複製 |
 |*any_n any_(n-1) ... any0 n* | **index** | *any_n any_(n-1) ... any0 any_n* |n番目の要素を複製してトップに置く|
+|*any_n any_(n-1) ... any0 n j* | **roll** | *any_(j-1) any_(j-2) ... any0 any_n any_(n-1) ... any_j* | nとjを取り除いた後のn個をjだけ回転する。なおjがnより大きい時はnの剰余で回転する。 |
+
+
+rollは少し分かりにくいので補足しておきます。
+
+例えば以下のようなコードがあるとします。
+
+```
+1 2 3 4 5 6 7 4 3 roll
+```
+
+この時、スタックトップの3と4をまず取り除いて、
+残り1 2 3 4 5 6 7のうち、要素4つを3だけ回転します。つまり、4 5 6 7を3だけ回転するので5 6 7 4になって、
+
+```
+1 2 3 5 6 7 4
+```
+
+かな？
+回転は一つずつやると以下の順番だと思います。
+
+1. 7 4 5 6
+2. 6 7 4 5
+3. 5 6 7 4
+
+たぶん。（誰か念の為gsで確認してください）。
 
 
 制御オペレータ
@@ -2678,25 +2704,25 @@ jmp
 ようするに実行時に前述のバイトコードに相当するようなコードになっていればいいので、例えば
 
 ```
-2
-index % cond {123} {456} condに
-6
+3
+1
+roll % {123} {456} condに
+5
 jmp_not_if
-pop % condがtrue。この時点ではスタックはcond {123} {456}。123の方を実行したい
-exch
+pop % condがtrue。この時点ではスタックは{123} {456}。123の方を実行したい
 pop
 exec
-5
+3
 jmp
-exch % condがfalse。この時点ではスタックはcond {123} {456}。456の方を実行したい
-pop
-exch
+exch % condがfalse。この時点ではスタックは{123} {456}。456の方を実行したい
 pop
 exec
 ```
 
 という感じでいけそうですかね？全然自信無いですが。
 この辺まで来るとやってるみなさんの方が脳内だけで考えて書いている私より詳しくなってると思うので、間違ってたら直して教えてください。
+
+execの結果スタックの状態が変えられてしまう可能性があるので、execの前にスタックの操作が終わっている必要があります。
 
 複雑なコードではありますが、これをハードコードで吐けば良いので、このコードがあってれば実装は簡単です。
 
@@ -2735,7 +2761,7 @@ void compile_exec_array(...) {
   } else if(EXECUTABLE_WORDだったら) {
      if("ifelse"だったら) {
         arrayに以下のコードを詰める
-             2 index 6 jmp_not_if pop exch pop exec 5 jmp exch pop exch pop exec
+             3 1 roll 5 jmp_not_if ...
      } else {
         arrayにそのEXECUTABLE_WORDを詰める
      }
@@ -2794,9 +2820,9 @@ void emit_elem(struct Elem *elem);
 
 ```
 void ifelse_compile() {
-  emit_elem(2);
-  emit_elem("index");
-  emit_elem(6);
+  emit_elem(3);
+  emit_elem(1);
+  emit_elem("roll");
   ...
 }
 ```
@@ -2822,9 +2848,9 @@ void emit_elem(struct Emitter *emitter, struct Elem *elem) {
 
 ```
 void ifelse_compile(struct Emitter *emitter) {
-  emit_elem(emitter, 2);
-  emit_elem(emitter, "index");
-  emit_elem(emitter, 6);
+  emit_elem(emitter, 3);
+  emit_elem(emitter, 1);
+  emit_elem(emitter, "roll");
   ...
 }
 ```
@@ -3042,8 +3068,9 @@ jmp
 ### repeatを実装する
 
 さて、最後にrepeatが残るのですが、普通にローカル変数をカウンタに使えば実装出来るでしょう。
+と思ったけど変数を上書きする手段が無いですね。継続スタックから一個ローカル変数を捨てる、lpopでも作りましょうか。
 
-実装方法は自分で考えてみてください。（私は考えてみてないので、原理的に不可能、とかあったら教えてください）
+たぶんそれ位で実装出来るかな？ちょっと自分で考えて実装してみてください。（私は考えてみてないので、原理的に不可能、とかあったら教えてください）
 
 
 ## 継続をあらわに実装するメリット
