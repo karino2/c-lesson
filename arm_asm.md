@@ -1140,10 +1140,6 @@ ldrしたあとにaddする訳ですね。
 
 ### LDMIAとSTMDB
 
-
-
-
-
 r13の指しているアドレスのメモリに、ロードしたりストアしたりする。
 複数レジスタを一気にストアするstore multipleの略のSTMと、そのロード版のLDMがある。
 
@@ -1151,7 +1147,7 @@ r13の指しているアドレスのメモリに、ロードしたりストア�
 そこで一つストアする事とアドレスをどう進めるかのくみあわせをDBとかAIとかで指示する。
 
 DBはdecement beforeで、保存する前にdecrementしてから保存する、という意味。
-AIはafter increment。
+IAはincrement after。
 この2つは対応して使う必要がある。
 STMDBとLDMIAの2つだけ覚えれば良い（なおLDMと何も指定しないとLDMIAと同じ意味なので、STMDBとLDMという人もいる）。
 
