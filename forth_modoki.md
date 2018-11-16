@@ -2821,7 +2821,7 @@ void compile_exec_array(...) {
   } else if(EXECUTABLE_WORDだったら) {
      if("ifelse"だったら) {
         arrayに以下のコードを詰める
-             3 1 roll 5 jmp_not_if ...
+             3 2 roll 5 jmp_not_if ...
      } else {
         arrayにそのEXECUTABLE_WORDを詰める
      }
@@ -2881,7 +2881,7 @@ void emit_elem(struct Elem *elem);
 ```
 void ifelse_compile() {
   emit_elem(3);
-  emit_elem(1);
+  emit_elem(2);
   emit_elem("roll");
   ...
 }
@@ -2909,7 +2909,7 @@ void emit_elem(struct Emitter *emitter, struct Elem *elem) {
 ```
 void ifelse_compile(struct Emitter *emitter) {
   emit_elem(emitter, 3);
-  emit_elem(emitter, 1);
+  emit_elem(emitter, 2);
   emit_elem(emitter, "roll");
   ...
 }
@@ -2929,7 +2929,7 @@ void compile_exec_array(...) {
 ```
 
 これでなんとか出来そうですかね？
-頭で考えてるだけなので書いてみて何か問題あったら言ってください。
+頭で考えてるだけなので書いてみて何か問題あったら教えてください。
 
 
 ### 辞書を2つ作る
