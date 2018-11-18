@@ -1167,6 +1167,13 @@ PostScriptの辞書をサポートしたくなったらちょっとの変更で�
 {: .column}
 
 
+### dictを解放する時の説明動画を作りました
+
+線形リストのfreeの所はmallocに慣れていないと混乱しそうなので、動画を作ってみました。
+良く分からない人は参考にどうぞ。
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/jxy7AlAmB3w" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
 # 08 プリミティブを辞書に登録しよう
 
 ユーザーが定義したものではない、処理系から最初から入っている関数などを「プリミティブ」と呼びます。
@@ -3078,10 +3085,13 @@ jmp
 ```
 do {
  elem = co_pop();
-} while (elemがContinuation);
+} while (elemがContinuationじゃない間);
 ```
 
-という感じです。つまりco stackにも種類を表す必要がありそうですね。
+という感じです。
+continuationの前に積まれている物全てと、continuationを一つポップします。
+
+つまりco stackにも種類を表す必要がありそうですね。
 ここまで来るとこのスタックはcontinuationのスタックというよりはC言語のスタックフレームに近い物になります。（引数が無い所が違うけれど）
 
 
