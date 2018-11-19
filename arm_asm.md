@@ -1390,7 +1390,7 @@ Eは1110、3は0011、Aは1010、とそれぞれやっていくと以下にな�
 
 ### 3. データシートの該当する場所に合わせて区切り直す
 
-ARM7DI Data Sheetを見る。
+[ARM7DI Data Sheet](https://developer.arm.com/docs/ddi0027/latest/arm7di-data-sheet)を見る。
 本当に何も分かってない時は4.1のInstruction set summary（p25 図8）に合わせてどの命令か調べるのだけど、
 今回は実はmovと知っていて解読したいという前提だとします（さぼり。ただ勉強目的ではこちらが普通）。
 
@@ -1551,7 +1551,7 @@ cmpとblとbneやbgtとstmdbとldmiaなどを実装する。あとはLSRとかAN
 
 最低限のセットアップだけで関数を呼ぶ。リンカの使い方とかも。
 
-[ARMのProceduer call standard](https://developer.arm.com/products/architecture/cpu-architecture/a-profile/docs/ihi0042/e/procedure-call-standard-for-the-arm-architecture）
+[ARMのProceduer call standard](https://developer.arm.com/products/architecture/cpu-architecture/a-profile/docs/ihi0042/e/procedure-call-standard-for-the-arm-architecture)
 
 要約すると
 
