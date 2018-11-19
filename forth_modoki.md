@@ -3081,11 +3081,11 @@ jmp
 
 これまでのcont stlackを以下とすると、
 
-![cont stackローカル変数実装前](contstack_prev.jpg)
+![cont stackローカル変数実装前](costack_prev.jpg)
 
 ローカル変数を実装すると以下のようになります。
 
-![ローカル変数実装後](contstack_after.jpg)
+![ローカル変数実装後](costack_after.jpg)
 
 ようするにcont stackの方のスタックにも、Elementを詰めるようにする、という事です。
 
