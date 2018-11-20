@@ -2173,7 +2173,7 @@ sturct Node mnemonic_root;
 sturct Node label_root;
 
 int mnemonic_id = 1;
-int label_id = 1;
+int label_id = 10000;
 
 int to_mnemonic_symbol(char *str, int len) {
     if(ツリーにあったら) return そのノードのvalue；
