@@ -1186,7 +1186,7 @@ printからputcharを呼ぶだけで、両者で何が使われているか、�
 まずOSが無い場合、メモリというのはアドレスに普通にマップされています。
 versatilepbのメモリマップはここを見ると以下のようになっています。
 
-TODO:参照先調べる
+[Versatile Application Baseboard for ARM926EJ-S User Guideの4.1章](http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.dui0225d/BBAJIHEC.html)
 
 - 0x0-0x03FFFFFF 64MB SDRAMの下位64MB
 - 0x04000000- 0x07FFFFFF SDRAMの上位64MB
