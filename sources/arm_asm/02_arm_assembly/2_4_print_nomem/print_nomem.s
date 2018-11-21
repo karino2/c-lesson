@@ -10,7 +10,7 @@ busy:
 
 
 print:
-  ldr r3,[r0]
+  ldrb r3,[r0]
   ldr r1,=0x101f1000
 loop:
   str r3,[r0]
