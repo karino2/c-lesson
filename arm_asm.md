@@ -1313,6 +1313,10 @@ DBはdecrement beforeで、保存する前にdecrementしてから保存する�
 IAはincrement after。
 この2つは対応して使う必要がある。
 
+stmdbの挙動は以下。
+
+![stmdbの模式図](stmdb.jpg)
+
 C言語でも、以下のような感じでpushしたら
 
 ```
@@ -1359,6 +1363,8 @@ r13!みたいなの。
 つけないとr13にはもとの値のまま。
 
 普通はスタックに物を詰めたらposを進めたいのでビックリマークつける。
+
+![stmdbのwrite back模式図](stmdb_writeback.jpg)
 
 
 ### print_funとputchar_funを実装してみよう
