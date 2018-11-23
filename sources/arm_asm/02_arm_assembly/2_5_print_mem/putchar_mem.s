@@ -18,13 +18,13 @@ putchar:
 print:
   // TODO: Fix this function too.
   ldrb r3,[r0]
-loop:  
+_loop:  
   
 
   add r0, r0, #1
   ldrb r3,[r0]
   cmp r3,#0
-  bne loop
+  bne _loop
   mov r15, r14
 
 msg1: .asciz "First text.\n"
