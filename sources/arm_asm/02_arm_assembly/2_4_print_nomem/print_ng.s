@@ -16,8 +16,8 @@ loop:
   ldrb r3,[r0]
   cmp r3,#0
   bne loop
-busy:
-  b busy
+end:
+  b end
 
 msg1: .asciz "First text.\n"
 msg2: .asciz "Second text!\n"

@@ -10,5 +10,5 @@ _start:
     b print_hex
 print_hex:
     // TODO: implement here
-busy:
-    b busy
+end:
+    b end

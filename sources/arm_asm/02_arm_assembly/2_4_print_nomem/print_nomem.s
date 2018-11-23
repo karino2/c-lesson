@@ -5,8 +5,8 @@ _start:
   bl print
   ldr r0,=msg2
   bl print
-busy:
-  b busy
+end:
+  b end
 
 
 print:

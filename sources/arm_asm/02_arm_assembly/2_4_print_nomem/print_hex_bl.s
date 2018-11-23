@@ -7,8 +7,8 @@ _start:
   mov r0, #0x68
   bl print_hex
 
-busy:
-  b busy
+end:
+  b end
 
 
 print_hex:
