@@ -8,7 +8,25 @@
 _start:
     ldr r1,=0xdeadbeaf
     b print_hex
+
 print_hex:
-    // TODO: implement here
+    lsr r2, r1, r3
+    and r2, r2, #0x0f
+    cmp r2, #0x0a
+    blt over_ten
+    add r2, r2, #0x07
+
+over_ten:
+    add r2, r2, #0x30
+    str r2, [r0]
+
+    sub r3, r3, #4
+
+    cmp r3, #0
+    bge print_hex
+    b busy
+
 busy:
     b busy
+
+# output >> DEADBEAF
