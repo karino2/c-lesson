@@ -4,6 +4,7 @@
 static char buf[100*1024];
 
 static int to_buffer = 0;
+static int pos = 0;
 
 void cl_enable_buffer_mode() {
     to_buffer = 1;
@@ -18,7 +19,8 @@ void cl_printf(char *fmt, ...) {
     va_start(arg_ptr, fmt);
 
     if(to_buffer) {
-        vsprintf(buf, fmt, arg_ptr);
+        pos += vsprintf(&buf[pos], fmt, arg_ptr);
+        pos++;
     } else {
         vprintf(fmt, arg_ptr);
     }
