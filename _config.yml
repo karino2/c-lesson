@@ -32,6 +32,10 @@ plugins:
   - jekyll-feed
   - jekyll-seo-tag
 
+header_pages:
+  - forth_modoki.md
+  - arm_asm.md
+
 # Exclude from processing.
 # The following items will not be processed, by default. Create a custom list
 # to override the default setting.

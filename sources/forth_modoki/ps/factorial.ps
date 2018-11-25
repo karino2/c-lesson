@@ -1,0 +1,16 @@
+/factorial {
+  dup
+  %スタックをいつも 「途中経過、j」でwhileが評価されるとし、
+  %jを途中経過に掛けてjを1減らす
+  {dup 1 gt} 
+  {
+    1 sub
+    exch
+    1 index
+    mul
+    exch
+  } while
+  pop
+} def
+
+10 factorial
