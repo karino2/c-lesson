@@ -11,7 +11,7 @@ end:
 putchar:
   // TODO: fix here!
   ldr r1,=0x101f1000
-  ldr r0, [r1]
+  str r0, [r1]
   mov r15, r14
 
 

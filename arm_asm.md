@@ -1084,7 +1084,7 @@ putchar_bad.sで以下のコードを書いてみてください。
 ```
 putchar:
     ldr r1,=0x101f1000
-    ldr r0, [r1]
+    str r0, [r1]
     mov r15, r14
 ```
 
@@ -1097,7 +1097,7 @@ putchar:
 
 ```
 print:
-    ldr r3,[r0]
+    ldrb r3,[r0]
     ldr r1,=0x101f1000
 loop:
     str r3,[r0]
@@ -1113,7 +1113,7 @@ loop:
 
 ```
 print:
-    ldr r3,[r0]  // r3に一文字読み込む
+    ldrb r3,[r0]  // r3に一文字読み込む
 loop:
     /*
     str r3,[r0]
