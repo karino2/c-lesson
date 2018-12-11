@@ -100,4 +100,4 @@ C言語自体の説明は折に触れてやっていきたい。
 
 [第二回 簡易アセンブラとディスアセンブラを作ろう](arm_asm.md)
 
-おまけ [bare metalでのgdb入門](gbd.md)
+おまけ [bare metalでのgdb入門](gdb.md)
