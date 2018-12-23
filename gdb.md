@@ -15,6 +15,14 @@ gdbでのリモートデバッグを普段から使っている人ならbare met
 
 内容的には比較的独立しているので、ページを分けておきます。
 
+### 入門動画
+
+概要的な動画を最初に作ってみました。
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/gl4MjK3LQT8" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+この動画を見なくてもここの解説は理解出来ると思いますが、概要をまず知りたい、という人は良かったら見てみてください。
+
 ## hello_arm.binをgdbでデバッグ実行する
 
 gdbを使ってQEMU内のプロセスをデバッグ実行する場合は、リモートデバッグという形になります。
