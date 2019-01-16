@@ -2012,11 +2012,39 @@ hello_arm.binを逆アセンブル出来るくらいの逆アセンブラを作�
 
 ### cl_printfとかの解説
 
-printfと同じ事するが、UnitTest用にバッファに書き出すようにも出来るcl_printfの解説と使い方を書く。
-誰か書いて。
-バッファ取る方法とかヘッダファイルも誰かが用意してPRくれる。
+UnitTest用に、以下の五つの関数を用意してあります。
+良かったら使ってください。
+メインとなるのはcl_printfです。
 
-バッファから何行目を取る、みたいなのと、リセットがあれば良さそう。
+- cl_enable_buffer_modeとcl_disable_buffer_mode
+- cl_printf
+- cl_get_result(int lineNum)
+- cl_clear_output
+
+cl_printfは通常のprintfと同じように使えますが、
+cl_enable_buffer_modeが呼ばれると標準出力じゃなくて、内部のバッファに出力するようになります。
+
+出力した結果はcl_get_resultで取れます。
+ただこの出力した結果はclearしないとずっと残り続けるので、テストが終わったらcl_clear_outputを呼びます。
+
+だいたい以下のように使います。
+
+```
+cl_enable_buffer_mode();
+
+cl_printf("Hello world\n");
+cl_printf("Hello c-lesson\n");
+
+char *actual = cl_get_result(0);
+char *actual2 = cl_get_result(1);
+
+assert_str_eq("Hello world\n", acutal);
+assert_str_eq("Hello c-lesson\n", acutal2);
+
+cl_clear_output();
+```
+
+逆アセンブルした結果はcl_printfで出力しておくと良いでしょう。
 
 ## 1ワードを出力する
 
