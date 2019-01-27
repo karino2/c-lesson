@@ -2548,6 +2548,29 @@ EOFとかエラーはマイナスで返す。
 
 当然もう一回読んだら前の結果は上書きされちゃう（から次の行に行く前に必要なのはどっかにmallocしてコピーしてね）。
 
+イメージとしては以下のような実装になります。変数名とかサイズのdefineとかは適当なので自分で良いと思ったのにしてください。（考えてこのままでいいと思ったらそれでもいいです）
+
+```
+static char buf[BUF_SIZE];
+int cl_getline(char **out_buf) {
+     // bufにいろいろ詰める。省略
+
+    *out_buf = buf;
+    return len;
+}
+```
+
+使う側は以下のように、バッファを確保せずに使うイメージでいます。
+
+```
+char *str;
+int len;
+
+len = cl_getline(&str);
+```
+
+改行の扱いとかは少し違いますが、[Linuxなどのgetline](http://man7.org/linux/man-pages/man3/getline.3.html)を参考にしています。
+
 
 ### 部分文字列で文字列を処理する
 
