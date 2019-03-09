@@ -3303,14 +3303,27 @@ C言語を使うシチュエーションでは、何か独自のバイナリフ�
 
 ### volatile使ってC言語側でprint_msgを作る
 
+sources/06_c_function/call_c
+
+にある。hello.cの先頭にあるコメントを読んで実行してみる。
 
 ### gcc -Sしてみる
 
-gccとclangを見る。
+とりあえず詳細はおいといて、gccにアセンブリを吐かせて眺めてみる。
 細かい事は上のドキュメントなんて読まずに吐かせたコード見るのがゆとり。
 
+sources/06_c_function/call_cのhello.cをコンパイルしてアセンブリを吐く。
+
+```
+arm-none-eabi-gcc -O0 -fomit-frame-pointer hello.c -S -o hello_gcc.s
+```
  
 ### アセンブリから文字列を渡して表示してみる
+
+sources/06_c_function/call_c/hello.s
+
+hello.cの先頭に書いてあるコマンドを実行してバイナリを作って、QEMUから実行。
+
 
 ## ローダー入門
 
@@ -3337,6 +3350,36 @@ hello_arm.elfをobjdumpしたりバイナリエディタで見たりして、ロ
 ## gcc -Sでいろいろ見てみる
 
 構造体の実体を渡すとどういうコードになるか、とか、配列のプラプラでちゃんとwritebackになるかとかを見る。（なるよね？）
+
+
+sources/06_c_function/c_sources/hello_printf.c
+
+あたりをやってみる。
+
+gcc
+
+```
+arm-none-eabi-gcc -O0 -fomit-frame-pointer hello_printf.c -S -o hello_printf_gcc.s
+```
+
+frame-pointerの説明は今となっては不要と思うので-fomit-frame-pointerつけた。
+
+clang
+
+```
+clang -emit-llvm hello_printf.c -c -o hello_printf.bc
+llc -march=arm hello_printf.bc -o hello_printf_clang.s
+```
+
+llcの所でllvmが無いぞ、とか言われたらapt-get installしてください。
+
+読む時のtips。
+
+- sp, lr, pcはそれぞれr13, r14, r15の事。(http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.kui0097a/armcc_cihigdfh.htm)
+- 疑似命令はasのドキュメントを読むのが良い（ただ要ら無さそうなのは適当に推測して調べないのも大切） (https://sourceware.org/binutils/docs-2.27/as/Pseudo-Ops.html#Pseudo-Ops)
+
+
+clangの方が読みやすいので、以後はclangの方を見ていこうと思う（ちょっとコマンドラインめんどくさいけど）
 
 
 ### スタックウォークしてみる
