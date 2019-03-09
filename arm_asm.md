@@ -2702,7 +2702,6 @@ return 全read_lenの合計;
 ```
 struct Emitter;
 
-void emit_byte(struct Emitter* emitter, char onebyte);
 void emit_word(struct Emitter* emitter, int oneword);
 ```
 
