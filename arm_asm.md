@@ -3300,19 +3300,97 @@ C言語を使うシチュエーションでは、何か独自のバイナリフ�
 
 # 06 Cの関数をより詳細に理解する
 
-アセンブリを理解した今、Cの関数をより詳細に見ていく事が出来ます。
+ここまではbare metal（OS無し）の上でのバイナリやアセンブリを見てきました。
 
+ここからは、それらの知識を元に、OSの上で動くバイナリとC言語の関係や、C言語のコンパイル結果を見ていく事でC言語の理解を深めていこうと思います。
 
-## リンカ入門
+### コンパイラとQEMUのセットアップ
 
-リンカとは何か、をアセンブリのレベルで。
-ローダーの説明の後にもうちょっと詳細を説明する。
+ここからは普通にOSがある場合の話をしていきます。
+
+ここまではversatilePBを使ってきたのでこの上にLinuxを動かしてもいいのですが、少し大変なので手抜きとしてuser modeを使います。
+これの詳細は本題とは関係ないので解説しません。
+
+```
+sudo apt install qemu-user
+sudo apt install gcc-arm-linux-gnueabi
+```
+
+そしてコンパイルはarm-linux-gnueabi-gccという名前のコンパイラを使います。
+objdumpなども同様です。
+
+動作確認として、sources/arm_asm/06_c_function/sep_compで、以下を実行してみましょう。
+
+```
+arm-linux-gnueabi-gcc hello_printf.c main.c
+qemu-arm -L /usr/arm-linux-gnueabi ./a.out
+```
+
+コンパイルの方では何かワーニングが出ると思いますが気にせず進めます。
+
+これでHello Worldと表示されればOKです。
+
+## 分割コンパイルとリンカ
+
+ここでは分割コンパイルとリンカについて簡単に説明します。
+C言語で開発をしていると、この辺のトラブルがちょくちょく出てくるので、基本的な事を知っておくと便利です。
+
+ここでは以下のフォルダで作業します。
+
+sources/arm_asm/06_c_function/sep_comp
+
+### 分割コンパイルをしてみる。
+
+-cでコンパイルだけする。
+
+```
+arm-linux-gnueabi-gcc -c main.c
+arm-linux-gnueabi-gcc -c hello_printf.c
+```
+
 
 ### nmでシンボルを確認する
 
+```
+nm main.o
+```
+
+でprint_somethingがUと表示されているのを確認。
+
+
 ### 2つのアセンブリファイルをリンクしてみる
 
-簡単に複数アセンブリのリンクをnmを交えて話をする。
+
+リンク
+
+```
+arm-linux-gnueabi-ld hello_printf.o main.o -lc --entry main
+```
+
+ただこれでは実行する時にld.so.1がどうとか、で怒られる。
+
+実際は以下の方が良い。
+
+```
+arm-linux-gnueabi-gcc hello_printf.o main.o
+```
+
+理由を知りたければ-vを解読する事になる。
+
+リンクしたら解決されているのを確認。
+
+```
+nm a.out
+```
+
+ではTとなっている。
+
+
+### オブジェクトファイルの話
+
+text, data, bssと未解決のシンボルの話。
+
+ロードアドレスが0x8000になっている事も確認。
 
 
 ## アセンブリからC関数を呼ぶ
