@@ -3530,6 +3530,39 @@ C言語で開発をしていると、この辺のトラブルがちょくちょ�
 
 sources/arm_asm/06_c_function/sep_comp
 
+### コンパイラとQEMUのセットアップ
+
+ここからはC言語の方をメインにしたいので、bare metalで面倒な時は普通にOSがある場合でいろいろ試したい。
+
+ここまではversatilePBを使ってきたのでこの上にLinuxを動かしてもいいのですが、少し大変なので手抜きとしてuser modeを使います。
+これは厳密にはOSの上で動かすのとは違うのですが、実行ファイル側はOS上で実行するのと同じなので、ここでの説明としては十分です。
+
+```
+sudo apt install qemu-user
+sudo apt install gcc-arm-linux-gnueabi
+```
+
+そしてコンパイルはarm-linux-gnueabi-gccという名前のコンパイラを使います。
+objdumpなども同様です。少し名前が変わってるので並べておきましょう。
+
+|bare metal| OSあり |
+|----- | ----- |
+|arm-none-eabi-gcc | arm-linux-gnueabi-gcc |
+
+noneがlinuxに、eabiがenuabiになってる事に注意してください。
+
+動作確認として、sources/arm_asm/06_c_function/sep_compで、以下を実行してみましょう。
+
+```
+arm-linux-gnueabi-gcc hello_printf.c main.c
+qemu-arm -L /usr/arm-linux-gnueabi ./a.out
+```
+
+これでHello Worldと表示されればOKです。
+
+ここからは基本的にはこのOSアリ版を使っていきますが、たまに先ほどやったcall_c_msgを見る事もあって、その場合はbare metal版になります。
+コマンド名を間違えないように注意してください。
+
 ### 分割コンパイルをしてみる。
 
 gccやclangというコマンドは、コンパイラと呼ばれていますが、
@@ -3709,38 +3742,6 @@ elfの話も簡単にここで。
 
 ロードアドレスが0x8000になっている事も確認。
 
-### コンパイラとQEMUのセットアップ
-
-ここからはC言語の方をメインにしたいので、bare metalで面倒な時は普通にOSがある場合でいろいろ試したい。
-
-ここまではversatilePBを使ってきたのでこの上にLinuxを動かしてもいいのですが、少し大変なので手抜きとしてuser modeを使います。
-これは厳密にはOSの上で動かすのとは違うのですが、実行ファイル側はOS上で実行するのと同じなので、ここでの説明としては十分です。
-
-```
-sudo apt install qemu-user
-sudo apt install gcc-arm-linux-gnueabi
-```
-
-そしてコンパイルはarm-linux-gnueabi-gccという名前のコンパイラを使います。
-objdumpなども同様です。少し名前が変わってるので並べておきましょう。
-
-|bare metal| OSあり |
-|----- | ----- |
-|arm-none-eabi-gcc | arm-linux-gnueabi-gcc |
-
-noneがlinuxに、eabiがenuabiになってる事に注意してください。
-
-動作確認として、sources/arm_asm/06_c_function/sep_compで、以下を実行してみましょう。
-
-```
-arm-linux-gnueabi-gcc hello_printf.c main.c
-qemu-arm -L /usr/arm-linux-gnueabi ./a.out
-```
-
-これでHello Worldと表示されればOKです。
-
-当初は、ここからは全部OS上で話をする気だったのですが、意外と構成が面倒なので
-TODO:
 
 
 ## ローダー入門
