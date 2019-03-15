@@ -3450,15 +3450,63 @@ r3に一回代入しているのは意味が分かりませんが(コンパイ�
 基本的にはこういうコードを生成しています。hello.cのソースと、生成したアセンブリを良く見比べて、この事を確認してください。
 
  
-### アセンブリから文字列を渡して表示してみる
+### 課題: アセンブリから文字列を渡して表示してみる
 
+アセンブリ側からC言語の関数に何かを渡してみましょう。
+以下の場所
 
+sources/arm_asm/06_c_function/call_c_msg
 
-sources/06_c_function/call_c/hello.s
+に、print_msg.cとmain.sというファイルが作ってありますが、main.sの方は未完成です。
+これを完成させてください。(print_msg.cの先頭に実行すべきコマンドがコメントで書いてあります)
 
-hello.cの先頭に書いてあるコマンドを実行してバイナリを作って、QEMUから実行。
+print_msg.cは以下のような中身になっています。
 
+```
+#define UART ((volatile char *)0x101f1000)
 
+void print_msg(char *s) {
+    while(*s) {
+        *UART = *s++;
+    }
+}
+```
+
+アセンブリは、main.sというファイル名のファイルに書いて行く事にします。
+先ほどのhello.sを参考に書いてください。
+
+ヒント:
+
+どうやって呼び出したらいいか想像する為には、print_msg.cのアセンブリを吐かせてみましょう。
+例えば以下みたいなコマンドで、tmp_print_msg.sというファイルにアセンブリが吐かれます。
+
+```
+arm-none-eabi-gcc -O0 -fomit-frame-pointer print_msg.c -S -o tmp_print_msg.s
+```
+
+変数を渡すのに関係ありそうな所を抜き出すと以下のようになっています。
+
+```
+print_msg:
+        sub     sp, sp, #8
+        str     r0, [sp, #4]
+        b       .L2
+.L3:
+...
+.L2:
+        ldr     r3, [sp, #4]
+        ldrb    r3, [r3]        @ zero_extendqisi2
+        cmp     r3, #0
+        bne     .L3
+        nop
+        add     sp, sp, #8
+        @ sp needed
+        bx      lr
+```
+
+なかなか解読は大変ですが、r0を\[sp, #4\]に入れて、あとはこの\[sp, #4\]をC言語側の変数sのように使っているようです。
+
+ですからr0に変数の先頭のアドレスが入っていれば良さそう？
 
 
 ## 分割コンパイルとリンカ
