@@ -3304,37 +3304,166 @@ C言語を使うシチュエーションでは、何か独自のバイナリフ�
 
 ここからは、それらの知識を元に、OSの上で動くバイナリとC言語の関係や、C言語のコンパイル結果を見ていく事でC言語の理解を深めていこうと思います。
 
-### コンパイラとQEMUのセットアップ
+## アセンブリからC関数を呼ぶ
 
-ここからは普通にOSがある場合の話をしていきます。
+ここまでARM向けのコードはフルアセンブリで書いてきましたが、C言語の関数を呼んだり、逆にCからアセンブリの関数（？）を呼んだりできます。
 
-ここまではversatilePBを使ってきたのでこの上にLinuxを動かしてもいいのですが、少し大変なので手抜きとしてuser modeを使います。
-これは厳密にはOSの上で動かすのとは違うのですが、実行ファイル側はOS上で実行するのと同じなので、ここでの説明としては十分です。
+ここでは、最低限のセットアップだけでCの関数をアセンブリから呼ぶ、という事をやってみましょう。
+
+
+### C言語の関数はアセンブリからどう見えなくてはいけないか？
+
+C言語の関数がアセンブリからどう見えなくてはいけないのか？というのは、
+実はC言語では決まっていません。
+ターゲットとなる環境が決めています。
+
+ARMの場合は以下の文書がそれにあたります。
+
+[ARMのProceduer call standard](https://developer.arm.com/products/architecture/cpu-architecture/a-profile/docs/ihi0042/e/procedure-call-standard-for-the-arm-architecture)
+
+要約すると
+
+- r0, r1 r2...と引数に使え
+- r13にはスタックに使うアドレスをセットしておけ
+- スタックはstmdb-ldmaiの方向に伸ばせ
+
+という風になってないといけない、という事が書いてあります。
+
+実際に見てみる方が早いので、以下、実際にやっていきましょう。
+
+### volatile使ってC言語側でprint_msgを作る
 
 ```
-sudo apt install qemu-user
-sudo apt install gcc-arm-linux-gnueabi
+sources/06_c_function/call_c
 ```
 
-そしてコンパイルはarm-linux-gnueabi-gccという名前のコンパイラを使います。
-objdumpなども同様です。少し名前が変わってるので並べておきましょう。
+にある。hello.cの先頭にあるコメントを読んで、同じコマンドを実行してみましょう。
+いつもの通りHello Worldが表示されたと思います。
 
-|これまで| これから |
-|----- | ----- |
-|arm-none-eabi-gcc | arm-linux-gnueabi-gcc |
+ここでvolatileというのは、C言語のコンパイラにUARTのアドレスなど特別な意味を持つ、という事を教える為のキーワードです。
+これが無いとただ無意味にメモリに値をひたすら上書きしているだけ、とコンパイラは判断し、最適化で最後に書き込んだ値しか書き込んでくれません。
 
-noneがlinuxに、eabiがenuabiになってる事に注意してください。
+そこでvolatileというキーワードをつけて、ここへの代入はメモリとは違って意味があるので、最適化しないでください、とコンパイラに指示を出します。
 
-動作確認として、sources/arm_asm/06_c_function/sep_compで、以下を実行してみましょう。
+### hello_c.sを眺めてみる
+
+以下ではhello_c.sとhello.cが実際にどう実行されていくかを見ていきましょう。
+
+アセンブリ側は以下のようになっています。
 
 ```
-arm-linux-gnueabi-gcc hello_printf.c main.c
-qemu-arm -L /usr/arm-linux-gnueabi ./a.out
+.globl _start
+_start:
+    ldr r13,=0x07FFFFFF
+    bl hello_c
+loop:
+    b loop
 ```
 
-これでHello Worldと表示されればOKです。
+まずldr命令でr13にスタックに使うメモリのアドレスを指定している。これは2.5でやった奴ですね。
+
+そして次が新しい。bl hello_cという行。
+blはr15を保存しつつジャンプする、という奴でした。
+問題はhello_c。
+
+これはラベルに見えるけれど、そのラベルはこのファイル内には無い。
+どこにあるか？というと、hello.cの側にあります。
+
+次にこちらを見ていきましょう。
+
+### hello.cを見てみる
+
+ではC言語側を見てみましょう。
+
+すると、以下のような関数が定義されています。
+
+```
+int hello_c() {
+    ...
+}
+```
+
+これが先ほどblしていたhello_cというラベルの正体になります。
+
+もう少し詳しく見るべく、このCのソースがどういうアセンブリになるかをコンパイラに吐かせてみましょう。
+その為には-Sというオプションを付けます。
+
+sources/06_c_function/call_cのhello.cをコンパイルしてアセンブリを吐く。
+
+```
+arm-none-eabi-gcc -O0 -fomit-frame-pointer hello.c -S -o hello_gcc.s
+```
+
+オプションの-oでは出力先のファイル名を指定します。これでhello_gcc.sというファイルが生成される。
+中を見てみましょう。
+
+最初の方に.eabi_attributeとかがずらずら出ますが、これらはあまり気にしないのがゆとり（自分も良く知りませんし、無くても最終的には同じバイナリになります）。
+
+その次に、hello_cというラベルがある。
+
+```
+hello_c:
+        @ Function supports interworking.
+        @ args = 0, pretend = 0, frame = 0
+        @ frame_needed = 0, uses_anonymous_args = 0
+        @ link register save eliminated.
+        ldr     r3, .L3
+        mov     r2, #72
+        strb    r2, [r3]
+        ldr     r3, .L3
+        ...
+```
+
+.L3ってなんだ？というと、最後の方に埋め込まれている、UARTのアドレスです。
+
+```
+.L3:
+        .word   270471168
+```
+
+270471168ってなんだよ、というと、0x101f1000の事です。
+
+r3にこのアドレスを入れて、あとはひたすらアスキーコードをstrbでこのアドレスに代入している訳ですね。
+ここまで進めてきた人なら、この程度のアセンブリを読むのはなんでも無いでしょう。
+
+最後の所はちょっと興味深い。
+
+
+```
+hello_c:
+...
+        mov     r3, #1
+        mov     r0, r3
+        bx      lr
+```
+
+lrはr14の事です。bxはthumb命令が絡むので詳細は説明しませんが、ようするにbの事です。
+
+r3に一回代入しているのは意味が分かりませんが(コンパイラはたまにこういう意味の無いコードを生成する)、ようするにr0に1を入れて、b r14してます。
+
+これがC言語の関数という物をコンパイラがコンパイルする時の基本になります。
+
+1. r13はすでに適切にセットされていると思う
+2. 関数名と同じラベルを作る
+3. 関数の最後ではr0に結果を入れてb r14する（つまりr14には呼び出し元のアドレスが入っている）
+
+基本的にはこういうコードを生成しています。hello.cのソースと、生成したアセンブリを良く見比べて、この事を確認してください。
+
+ 
+### アセンブリから文字列を渡して表示してみる
+
+
+
+sources/06_c_function/call_c/hello.s
+
+hello.cの先頭に書いてあるコマンドを実行してバイナリを作って、QEMUから実行。
+
+
+
 
 ## 分割コンパイルとリンカ
+
+TODO: bare metalで書き直し
 
 ここでは分割コンパイルとリンカについて簡単に説明します。
 C言語で開発をしていると、この辺のトラブルがちょくちょく出てくるので、基本的な事を知っておくと便利です。
@@ -3522,43 +3651,38 @@ elfの話も簡単にここで。
 
 ロードアドレスが0x8000になっている事も確認。
 
+### コンパイラとQEMUのセットアップ
 
-## アセンブリからC関数を呼ぶ
+ここからはC言語の方をメインにしたいので、bare metalで面倒な時は普通にOSがある場合でいろいろ試したい。
 
-最低限のセットアップだけで関数を呼ぶ。リンカの使い方とかも。
-
-[ARMのProceduer call standard](https://developer.arm.com/products/architecture/cpu-architecture/a-profile/docs/ihi0042/e/procedure-call-standard-for-the-arm-architecture)
-
-要約すると
-
-- r0, r1 r2...と引数に使え
-- r13にはスタックに使うアドレスをセットしておけ
-- スタックはstmdb-ldmaiの方向に伸ばせ
-
-という事。
-
-### volatile使ってC言語側でprint_msgを作る
-
-sources/06_c_function/call_c
-
-にある。hello.cの先頭にあるコメントを読んで実行してみる。
-
-### gcc -Sしてみる
-
-とりあえず詳細はおいといて、gccにアセンブリを吐かせて眺めてみる。
-細かい事は上のドキュメントなんて読まずに吐かせたコード見るのがゆとり。
-
-sources/06_c_function/call_cのhello.cをコンパイルしてアセンブリを吐く。
+ここまではversatilePBを使ってきたのでこの上にLinuxを動かしてもいいのですが、少し大変なので手抜きとしてuser modeを使います。
+これは厳密にはOSの上で動かすのとは違うのですが、実行ファイル側はOS上で実行するのと同じなので、ここでの説明としては十分です。
 
 ```
-arm-none-eabi-gcc -O0 -fomit-frame-pointer hello.c -S -o hello_gcc.s
+sudo apt install qemu-user
+sudo apt install gcc-arm-linux-gnueabi
 ```
- 
-### アセンブリから文字列を渡して表示してみる
 
-sources/06_c_function/call_c/hello.s
+そしてコンパイルはarm-linux-gnueabi-gccという名前のコンパイラを使います。
+objdumpなども同様です。少し名前が変わってるので並べておきましょう。
 
-hello.cの先頭に書いてあるコマンドを実行してバイナリを作って、QEMUから実行。
+|bare metal| OSあり |
+|----- | ----- |
+|arm-none-eabi-gcc | arm-linux-gnueabi-gcc |
+
+noneがlinuxに、eabiがenuabiになってる事に注意してください。
+
+動作確認として、sources/arm_asm/06_c_function/sep_compで、以下を実行してみましょう。
+
+```
+arm-linux-gnueabi-gcc hello_printf.c main.c
+qemu-arm -L /usr/arm-linux-gnueabi ./a.out
+```
+
+これでHello Worldと表示されればOKです。
+
+当初は、ここからは全部OS上で話をする気だったのですが、意外と構成が面倒なので
+TODO:
 
 
 ## ローダー入門
@@ -3586,6 +3710,7 @@ hello_arm.elfをobjdumpしたりバイナリエディタで見たりして、ロ
 ## コンパイラの吐くアセンブリをいろいろ見てみる
 
 構造体の実体を渡すとどういうコードになるか、とか、配列のプラプラでちゃんとwritebackになるかとかを見る。（なるよね？）
+sizeofも見たい。
 
 
 sources/06_c_function/c_sources/hello_printf.c
