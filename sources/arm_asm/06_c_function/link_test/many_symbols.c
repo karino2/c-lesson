@@ -6,7 +6,7 @@ static int g_static_in_hello=1;
 static int g_static_uninit;
 char *g_text = "abc";
 char *g_text_uninit;
-char g_text_arr[] = "abc";
+char g_text_arr[] = "def";
 
 
 extern void func_in_main(char *str);
