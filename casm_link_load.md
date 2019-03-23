@@ -59,7 +59,7 @@ ARMの場合は以下の文書が「C言語の関数は、アセンブリから�
 ### volatile使ってC言語側でprint_msgを作る
 
 ```
-sources/06_c_function/call_c
+sources/casm_link/01_call_c/1_1_call_c
 ```
 
 にある。hello.cの先頭にあるコメントを読んで、同じコマンドを実行してみましょう。
@@ -113,7 +113,7 @@ int hello_c() {
 もう少し詳しく見るべく、このCのソースがどういうアセンブリになるかをコンパイラに吐かせてみましょう。
 その為には-Sというオプションを付けます。
 
-sources/06_c_function/call_cのhello.cをコンパイルしてアセンブリを吐く。
+sources/casm_link/01_call_c/1_1_call_cのhello.cをコンパイルしてアセンブリを吐く。
 
 ```
 arm-none-eabi-gcc -O0 -fomit-frame-pointer hello.c -S -o hello_gcc.s
@@ -180,7 +180,7 @@ r3に一回代入しているのは意味が分かりませんが(コンパイ�
 アセンブリ側からC言語の関数に何かを渡してみましょう。
 以下の場所
 
-sources/arm_asm/06_c_function/call_c_msg
+sources/casm_link/01_call_c/1_2_call_c_msg
 
 に、print_msg.cとmain.sというファイルが作ってありますが、main.sの方は未完成です。
 これを完成させてください。(print_msg.cの先頭に実行すべきコマンドがコメントで書いてあります)
@@ -250,7 +250,7 @@ C言語で開発をしていると、この辺のトラブルがちょくちょ�
 
 ここでは以下のフォルダで作業します。
 
-sources/arm_asm/06_c_function/sep_comp
+sources/casm_link/02_sep_comp/
 
 ### コンパイラとQEMUのセットアップ
 
@@ -273,7 +273,7 @@ objdumpなども同様です。少し名前が変わってるので並べてお�
 
 noneがlinuxに、eabiがenuabiになってる事に注意してください。
 
-動作確認として、sources/arm_asm/06_c_function/sep_compで、以下を実行してみましょう。
+動作確認として、sources/casm_link/02_sep_compで、以下を実行してみましょう。
 
 ```
 arm-linux-gnueabi-gcc hello_printf.c main.c
@@ -546,7 +546,7 @@ Disassembly of section .rodata:
 
 それでは以上を元に、リンクについてもう少し細かい話をしていきます。
 
-## リンク入門
+# 03 リンク入門
 
 ここまで見てきた分割コンパイルの話を元に、リンクという物について解説してみたいと思います。
 リンクというのはC言語とプラットフォームの境界に当たる所なので、
@@ -583,7 +583,7 @@ bssとは何か、とか、なぜ初期化されないグローバル変数は�
 
 以下に、さまざまなグローバル変数や関数を置きました。
 
-sources/arm_asm/06_c_function/link_test
+sources/casm_link/03_link_test
 
 まずはmany_symbols.cとmain.cのコードを見てみてください。
 それほど難しいコードでは無いのですぐに理解出来ると思います。
@@ -960,7 +960,7 @@ TODO: なんか書く
 sizeofも見たい。
 文字列が配列とポインタでどう違うかも見たい。
 
-sources/06_c_function/c_sources/hello_printf.c
+sources/casm_link/04_c_sources/hello_printf.c
 
 あたりをやってみる。
 
