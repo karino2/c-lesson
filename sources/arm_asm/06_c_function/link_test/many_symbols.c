@@ -7,6 +7,7 @@ static int g_static_uninit;
 char *g_text = "abc";
 char *g_text_uninit;
 char g_text_arr[] = "def";
+int g_large_buf[1024*1024];
 
 
 extern void func_in_main(char *str);
