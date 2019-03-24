@@ -15,6 +15,7 @@ extern void func_in_main(char *str);
 
 int print_something(char *str) {
     func_in_main(str);
+    func_in_main(g_text_uninit);
     return g_in_main;
 }
 
