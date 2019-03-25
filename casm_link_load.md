@@ -719,6 +719,12 @@ nm a.out
 
 ![objectファイル内のレイアウト](object_layout.png)
 
+text領域でグローバル変数を参照する時は、data領域の先頭から何番目か、という情報だけでまずは書いておく。
+data領域では配列などはそこに実際の値を埋め込んでおくが、ポインタなどの場合は実際のデータはrodataに書いておいて、そこへのアドレスが入っている場合もある。
+
+data領域もrodataも、先頭から何番目か、というインデックスだけで参照する（つまりdataもrodataも0番にロードされるかのようなコードになっている）。
+
+
 ### 参考リンク
 
 nmのシンボルの種類は公式ドキュメントを見ると書いてあります。[https://sourceware.org/binutils/docs/binutils/nm.html](https://sourceware.org/binutils/docs/binutils/nm.html)
