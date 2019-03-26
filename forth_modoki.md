@@ -3456,11 +3456,11 @@ iload 1 // ローカル変数1の中身をスタックにpush
 
 Javaバイトコードはよく出来ているので本格的なVMを勉強したい時にはおすすめの題材です。
 
-Javaバイトコードの入門は以下のブログが良く書けています。
+以下参考文献など。
 
-[わらばんし仄聞記 Javaバイトコードの読み方](http://warabanshi.hatenablog.com/entry/2014/12/25/235644)
-
-また、命令などは仕様書の6章を読むのが一番正確。
-
-[JVM Spec, 6. Instruction Set](https://docs.oracle.com/javase/specs/jvms/se7/html/jvms-6.html)
+- [わらばんし仄聞記 Javaバイトコードの読み方](http://warabanshi.hatenablog.com/entry/2014/12/25/235644) Javaバイトコードの入門としては短くて分かりやすいと思います。
+- [Introduction to Java's bytecode reading](https://www.waitingforcode.com/java-bytecode/introduction-to-java-s-bytecode-reading/read) バイトコードを実際に読む時の入門。コメントの形で解説が書かれているのでぱっと見解説があまり無いように見えるが、良く読むと結構いろいろ書いてある
+   - [Reading Java methods in bytecode](https://www.waitingforcode.com/java-bytecode/reading-java-methods-in-bytecode/read) 同サイトのもうちょっと長い関数の解説。これも結構コメントで解説が書かれている。
+- [JVM Spec, 6. Instruction Set](https://docs.oracle.com/javase/specs/jvms/se7/html/jvms-6.html) 命令などは仕様書の6章を読むのが一番正確。
+- [Amazon: JAVAバーチャルマシン (THE JAVA SERIES)](https://www.amazon.co.jp/dp/490090063X) 自分は昔この本読みました。今ならもっと良い本があると思いますが、この本は割とself containedで理解は出来ました。
 
