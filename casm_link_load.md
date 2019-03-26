@@ -1290,9 +1290,70 @@ print_something:
 
 特に機械の生成するアセンブリはこのような意味に分けて分かりやすく、みたいなのが無く全部だーっと出てしまうので、頭の中で意識的にブロックのような物に分けて読んでいくようにしましょう。
 
+### 結果を返す場合
+
+次にsum.cをコンパイルしてアセンブリを読んでみましょう。
+まずcのソースコードを読みます。
+
+```
+int sum(int begin, int end) {
+    int res = 0;
+    for(int i = begin; i <= end; i++) {
+        res+=i;
+    }
+    return res;
+}
+```
+
+ちょっと普通っぽい関数になりました。
+注目するのは
+
+1. 中で関数は呼び出していない
+2. 引数が二つにローカル変数一つ
+3. 最後に結果を返している
+
+という所です。
+
+ではmycomp.shを使って、アセンブリを表示してみましょう。
+
+```
+sum:
+	.fnstart
+@ %bb.0:
+	sub	sp, sp, #16
+	str	r0, [sp, #12]
+	str	r1, [sp, #8]
+	mov	r0, #0
+	str	r0, [sp, #4]
+	ldr	r0, [sp, #12]
+	str	r0, [sp]
+	b	.LBB0_1
+.LBB0_1:                                @ =>This Inner Loop Header: Depth=1
+	ldr	r0, [sp]
+	ldr	r1, [sp, #8]
+	cmp	r0, r1
+	bgt	.LBB0_4
+	b	.LBB0_2
+.LBB0_2:                                @   in Loop: Header=BB0_1 Depth=1
+	ldr	r0, [sp]
+	ldr	r1, [sp, #4]
+	add	r0, r1, r0
+	str	r0, [sp, #4]
+	b	.LBB0_3
+.LBB0_3:                                @   in Loop: Header=BB0_1 Depth=1
+	ldr	r0, [sp]
+	add	r0, r0, #1
+	str	r0, [sp]
+	b	.LBB0_1
+.LBB0_4:
+	ldr	r0, [sp, #4]
+	add	sp, sp, #16
+	mov	pc, lr
+```
+
+
 ### 引数がいっぱいある場合
 
-### 結果を返す場合
 
 ### 構造体の実体を渡すとどうなるか
 
