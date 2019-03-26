@@ -1241,6 +1241,53 @@ C言語の関数を呼ぶ時は
 今回のr0はそもそもにprint_somethingの引数がr0なので、そのまま渡せばよい。
 だから関数名のラベルにblすれば良い、という事でputsにblしている訳です。
 
+だから元のアセンブリは、
+
+```
+print_something:
+        .fnstart
+@ %bb.0:
+        push    {r11, lr}
+        mov     r11, sp
+        sub     sp, sp, #8
+        str     r0, [sp]
+        ldr     r0, [sp]
+        bl      puts
+        mov     sp, r11
+        pop     {r11, lr}
+        mov     pc, lr
+```
+
+以下のように三つに分けて考えると良い。
+
+まず使う予定の物を使う前に保存する所。
+
+```
+print_something:
+        .fnstart
+@ %bb.0:
+        push    {r11, lr}
+        mov     r11, sp
+```
+
+本体
+
+```
+        sub     sp, sp, #8
+        str     r0, [sp]
+        ldr     r0, [sp]
+        bl      puts
+```
+
+使ったレジスタを元に戻してreturn
+
+```
+        mov     sp, r11
+        pop     {r11, lr}
+        mov     pc, lr
+```
+
+特に機械の生成するアセンブリはこのような意味に分けて分かりやすく、みたいなのが無く全部だーっと出てしまうので、頭の中で意識的にブロックのような物に分けて読んでいくようにしましょう。
 
 ### 引数がいっぱいある場合
 
