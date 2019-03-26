@@ -3379,13 +3379,6 @@ emitterが言語から触れて実行可能配列を組み立てるような関�
 Java VMのバイトコードはPostScriptを理解したあとだと結構簡単に読めるので、
 簡単にその話をしておきます。あくまで概要くらいですし、動作確認してないので動かなかったらごめんなさい。
 
-Javaバイトコードの簡単なリファレンスは以下が良さそう（英語ですが）
-
-[Java Virtual Machine
-Online Instruction Reference](https://cs.au.dk/~mis/dOvs/jvmspec/ref-Java.html)
-
-学生の頃この本の日本語訳を読みました（20年くらい前ですね）。あんま訳は良くなかったですが本は良かったです。
-
 まずJavaのバイトコードとPostScriptの違いは、オペレータに引数がある所です。
 オペレータと引数を合わせて一つのトークンのように読んでいくと良いと思います。
 
@@ -3462,3 +3455,12 @@ iload 1 // ローカル変数1の中身をスタックにpush
 真面目なVMを作るならJavaバイトコードのようにstoreでもインデックスを指定出来る方がいいでしょうね。
 
 Javaバイトコードはよく出来ているので本格的なVMを勉強したい時にはおすすめの題材です。
+
+Javaバイトコードの入門は以下のブログが良く書けています。
+
+[わらばんし仄聞記 Javaバイトコードの読み方](http://warabanshi.hatenablog.com/entry/2014/12/25/235644)
+
+また、命令などは仕様書の6章を読むのが一番正確。
+
+[JVM Spec, 6. Instruction Set](https://docs.oracle.com/javase/specs/jvms/se7/html/jvms-6.html)
+
