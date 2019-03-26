@@ -1260,8 +1260,7 @@ print_something:
 
 以下のように三つに分けて考えると良い。
 
-まず使う予定の物を使う前に保存する所。
-
+**まず使う予定の物を使う前に保存する所**
 ```
 print_something:
         .fnstart
@@ -1270,8 +1269,7 @@ print_something:
         mov     r11, sp
 ```
 
-本体
-
+**本体**
 ```
         sub     sp, sp, #8
         str     r0, [sp]
@@ -1279,8 +1277,7 @@ print_something:
         bl      puts
 ```
 
-使ったレジスタを元に戻してreturn
-
+**後始末（使ったレジスタを元に戻してreturn）**
 ```
         mov     sp, r11
         pop     {r11, lr}
