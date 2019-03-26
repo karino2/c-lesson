@@ -1,12 +1,11 @@
 #include <stdio.h>
 
 void print_something(char *str) {
-    printf(str);
+    puts(str);
 }
 
-
 int main() {
-    print_something("Hello World\n");
+    print_something("Hello World");
     return 0;
 }
 

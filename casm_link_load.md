@@ -1042,7 +1042,7 @@ C言語で分からない事があったらアセンブリを読んでみる、�
 コンパイルする時のコンパイラとしてはgccとclangの二つの選択肢があります。
 基本的にはclangで解説をしていきたいのですが、何故clangで解説したいのかを理解する為に、まずは両者の生成するアセンブリコードを比較してみましょう。
 
-sources/casm_link/04_c_sources/hello_printf.c
+sources/casm_link/04_c_sources/hello_puts.c
 
 をコンパイルしてみる事にします。
 
@@ -1052,12 +1052,12 @@ sources/casm_link/04_c_sources/hello_printf.c
 これまでもなんどかやっていますね。
 
 ```
-arm-none-eabi-gcc -O0 -fomit-frame-pointer hello_printf.c -S -o hello_printf_gcc.s
+arm-none-eabi-gcc -O0 -fomit-frame-pointer hello_puts.c -S -o hello_puts_gcc.s
 ```
 
 生成されるコードが一番簡単になるように、-fomit-frame-pointerつけましたが、これはあっても無くても良いです。
 
-こうしてhello_printf_gcc.sというファイルにアセンブリが出力されるので見てみてください。
+こうしてhello_puts_gcc.sというファイルにアセンブリが出力されるので見てみてください。
 いろいろ付加情報が生成されますが、必要な所だけ見ていくのがこの手の作業のコツです。
 例えばprint_somethingのあたりだけ見てみると以下のようになっていると思います。
 
@@ -1067,7 +1067,7 @@ print_something:
         sub     sp, sp, #12
         str     r0, [sp, #4]
         ldr     r0, [sp, #4]
-        bl      printf
+        bl      puts
         nop
         add     sp, sp, #12
         @ sp needed
@@ -1090,11 +1090,12 @@ apt-getでは取れなさそうで自分でビルドする必要がありそう�
 具体的には以下のような手順です。
 
 ```
-clang -emit-llvm hello_printf.c -c -o hello_printf.bc
-llc -march=arm hello_printf.bc -o hello_printf_clang.s
+clang -emit-llvm hello_puts.c -c -o hello_puts.bc
+llc -march=arm hello_puts.bc -o hello_puts_clang.s
 ```
 
 llcの所でllvmが無いぞ、とか言われたらapt-get installしてください。
+幾つかignoring processorというメッセージが出ますが、ちゃんとアセンブリは生成されると思います。
 
 これで生成されるprint_somethingのコードが以下。
 
@@ -1107,7 +1108,7 @@ print_something:
         sub     sp, sp, #8
         str     r0, [sp]
         ldr     r0, [sp]
-        bl      printf
+        bl      puts
         mov     sp, r11
         pop     {r11, lr}
         mov     pc, lr
@@ -1140,13 +1141,13 @@ C言語ではプログラムは関数を構成単位に書かれる事が多い�
 ### 引数一つ、戻り値無しの関数呼び出し
 
 まずは一番簡単な関数のケースとして、引数が一つだけの関数呼び出しの例として、
-先ほどのhello_printf.cのprint_somethingのコードを読んでみましょう。
+先ほどのhello_puts.cのprint_somethingのコードを読んでみましょう。
 
 C言語では以下のようなコードが、
 
 ```
 void print_something(char *str) {
-    printf(str);
+    puts(str);
 }
 ```
 
@@ -1161,7 +1162,7 @@ print_something:
         sub     sp, sp, #8
         str     r0, [sp]
         ldr     r0, [sp]
-        bl      printf
+        bl      puts
         mov     sp, r11
         pop     {r11, lr}
         mov     pc, lr
@@ -1170,12 +1171,49 @@ print_something:
 順番に見ていきましょう。
 まず.fnstartという疑似命令は何なのか私は知りません。
 
-そして
+そして関数では、「その関数で使う予定のレジスタは関数を抜ける前に元に戻す」という約束になっています。これは第二回のスタックを使って関数を作る話と一緒ですね。
+
+だからだいたい
+
+- 関数の先頭で、その関数で使う予定のレジスタの「元の値」をスタックにpush
+- 関数の最後で、使ったレジスタを「元の値」に戻す為スタックからpop
+
+という処理が行われる事になります。
+また、pushとpopはr13（つまりsp）に対して行われる為、r13だけはpushで保存してpopで元に戻す、とはいきません。
+
+その辺の事情を考えて関数の前半を見ると以下のようになっています。
+
+```
+    push    {r11, lr}
+    mov     r11, sp
+```
+
+r11とlrを保存しています。lrはblした時に勝手に現在のr15が書かれるレジスタの事でした。だからこの関数の呼び出し元のアドレスが入っている訳です。
+
+そしてprint_somethingはputsを呼び出すので、この時にbl命令が使われてlrが上書きされてしまうので、bl呼び出すをする前に元の値を保存しておく必要があります。
+だから最初に保存している訳ですね。
+
+次のr11にはspを保存しています。これはspはpushでは保存しづらいので（r13のwritebackだった事を思い出してください）、レジスタに代入しておく訳です。
+
+関数の最後の所ではこの値を元に戻してreturn相当の事をしているはずです。
+見てみましょう。
+
+```
+    mov     sp, r11
+    pop     {r11, lr}
+    mov     pc, lr
+```
+
+まずspを戻し、次にr11とlrを戻しています。
+これでprint_somethingの中で使ったレジスタは全部元の値に戻りました。
+
+最後にpcにlrを代入しています。これで呼び出し元に戻るのでした。
 
 
-### 引数がある場合
 
 ### 引数がいっぱいある場合
+
+### 結果を返す場合
 
 ### 構造体の実体を渡すとどうなるか
 
