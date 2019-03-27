@@ -1533,9 +1533,28 @@ many_sumと前のmain側の両方でスタックに何を入れたのか、を�
 
 ### doubleを渡すとどうなるか？
 
+ファイルを分けるのが面倒になってきたので以下のファイルにまとめて書いてみました。
+
+sources/casm_link/04_c_sources/various_args.c
+
+doubleというのはどういう物なのか、軽く見てみましょう。
+まずはmain_double_addの方を見ると、何かわからない数字を入れていますね。
+
+浮動小数点のコードを読む時は、実際の値を知るのは結構難しい。
+ただ、8バイトで一つの変数を表している事に着目して、どこがdoubleの変数を表しているかを追っていくと良いと思います。
+
 
 ### 構造体の実体を渡すとどうなるか
 
+以下のソースで、
+
+sources/casm_link/04_c_sources/various_args.c
+
+main_struct_bodyとmain_struct_pointerのコードを比較してみてください。
+構造体に詰める所は両者同じですが、そのあとが大きく違うと思います。
+
+main_struct_bodyでは何をやっているのでしょうか？struct_arg関数側も見てみてください。
+struct_pointer_arg関数とはどう違うでしょうか？
 
 
 ### 配列のプラプラ
