@@ -1557,9 +1557,12 @@ main_struct_bodyでは何をやっているのでしょうか？struct_arg関数
 struct_pointer_arg関数とはどう違うでしょうか？
 
 
-### 配列のプラプラ
+### ポインタのプラプラについて
 
-ちゃんとwritebackになるかとかを見る。（なるよね？）
+sources/casm_link/04_c_sources/pointer_array.c
+
+ここで、intarrayとstructArrayでは、同じptr++でも生成されるコードが違っています。
+iterate_array_ptr()とiterate_struct_array_ptr()を比較しましょう。
 
 ### sizeofがどうなるか
 
