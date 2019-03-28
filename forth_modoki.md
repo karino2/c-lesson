@@ -1583,7 +1583,7 @@ C言語では配列の長さが実行時にしかわからなかったり、イ�
 struct ElementArray {
    int len;
    struct Element elements[0];
-];
+};
 ```
 
 この長さが0の配列宣言は特殊な意味があって、sizoeofの時にはこのElement型の配列の直前までのサイズとなります。(「確保の仕組み」の所の図参照）。
