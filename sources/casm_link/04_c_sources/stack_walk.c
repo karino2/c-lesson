@@ -4,25 +4,9 @@ void print_number(int address) {
     printf("address: %x\n", address);
 }
 
-// #define INVESTIGATE 1
-#undef INVESTIGATE
-
 int func3 (int a4) {
-#ifdef INVESTIGATE
-    // &a4 +4 == org_sp, func2's r11 address.
-    print_number(((int)&a4)+ 4);
+    // TODO: print func2's local avriable a3 here.
 
-    // func2 r11 val
-    print_number( *((int*)(((int)&a4)+ 4)));
-
-    // &a3
-    print_number( *((int*)(((int)&a4)+ 4)) -8);
- 
-    // *(&a3) == a3
-    print_number(*((int*)(*((int*)(((int)&a4)+ 4)) -8)));
-#else
-    printf("We get a3 value, %d\n", *((int*)(*((int*)(((int)&a4)+ 4)) -8)));
-#endif
     return a4*3;
 }
 
@@ -31,9 +15,6 @@ int func2(int a2) {
     for(int i = 0; i < 10; i++) {
         a3+=i;
     }
-#ifdef INVESTIGATE
-    printf("func2's a3 address = %x\n", (int) &a3);
-#endif
     return func3(a2+a3)+2;
 }
 
