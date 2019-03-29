@@ -1759,3 +1759,6 @@ func2のアセンブリの先頭の方を見ると、func2の時点のr11に、1
 
 
 
+### 課題: stack_walk2.cでmain_msgを出力せよ
+
+func3を書き直して、func3の中でmain_msgを出力してください。
