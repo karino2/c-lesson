@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-void print_number(int address) {
+void print_address(int address) {
     printf("address: %x\n", address);
 }
 

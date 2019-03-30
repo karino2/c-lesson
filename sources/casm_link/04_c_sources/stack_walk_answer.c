@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-void print_number(int address) {
+void print_address(int address) {
     printf("address: %x\n", address);
 }
 
@@ -10,16 +10,16 @@ void print_number(int address) {
 int func3 (int a4) {
 #ifdef INVESTIGATE
     // &a4 +4 == org_sp, func2's r11 address.
-    print_number(((int)&a4)+ 4);
+    print_address(((int)&a4)+ 4);
 
     // func2 r11 val
-    print_number( *((int*)(((int)&a4)+ 4)));
+    print_address( *((int*)(((int)&a4)+ 4)));
 
     // &a3
-    print_number( *((int*)(((int)&a4)+ 4)) -8);
+    print_address( *((int*)(((int)&a4)+ 4)) -8);
  
     // *(&a3) == a3
-    print_number(*((int*)(*((int*)(((int)&a4)+ 4)) -8)));
+    print_address(*((int*)(*((int*)(((int)&a4)+ 4)) -8)));
 #else
     printf("We get a3 value, %d\n", *((int*)(*((int*)(((int)&a4)+ 4)) -8)));
 #endif
