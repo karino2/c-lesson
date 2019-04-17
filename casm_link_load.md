@@ -2116,8 +2116,11 @@ sources/casm_link/hello_jit.c
 ```
 
 mallocみたいな物と思ってください。
+重要なのはPROT_EXECのフラグがついている事です。
 
-このバッファにバイナリを詰める
+詳しく引数の意味を知りたい人は[man mmap](http://man7.org/linux/man-pages/man2/mmap.2.html)を読むと良いけれど、やや辛いか。
+
+こうやって作ったバッファ、binary_bufにバイナリを詰める
 
 ```
     // mov r0, #5
