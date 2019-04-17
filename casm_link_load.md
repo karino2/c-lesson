@@ -2101,12 +2101,67 @@ loopとendというラベルを使っているのが新しい所ですが、ま�
 sum_range_inline.cのsum_range_inlineの実装を埋めて、テストをパスするようにしてください。
 気まぐれでendの所も足すようにしたので注意してsum_rangeの方を見てみてください。
 
-### sum_tillをJITしよう
+### JIT入門
 
+```
+sources/casm_link/hello_jit.c
+```
 
-### 課題: sum_range_jit.cを完成させよ
+実行可能な領域はmmapで作る。
+
+```
+(int*)mmap(0, 1024,
+                PROT_READ | PROT_WRITE | PROT_EXEC,
+                MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+```
+
+mallocみたいな物と思ってください。
+
+このバッファにバイナリを詰める
+
+```
+    // mov r0, #5
+    binary_buf[0] = 0xe3a00005;
+    // mov r15, r14
+    binary_buf[1] = 0xe1a0f00e;
+```
+
+そして関数ポインタにキャストする。
+
+```
+    int (*funcvar)();
+    
+    funcvar = (int(*)())binary_buf;
+```
+
+そして呼ぶ。
+
+```
+    res = funcvar();
+    assert_true(res == 5);
+```
+
+### 課題: sum_till_jit.cを完成させよ
 
 ## 超簡易PostScriptもどきをJITしよう
+
+変数がr0とr1の二つの引数をとって、intの結果を返す関数を生成する。
+この関数は、実行可能ワードr0とr1のある、add, mul, div, subだけのあるPostScriptのサブセットとする。
+最後にはスタックの中身は一つになるようにし、それを戻りとする。
+
+例えば以下は、
+
+```
+1 2 add r1 sub 4 mul
+```
+
+以下のようなC関数にJITされるとする。
+
+```
+int generated(int r0, int r1) {
+   return ((1+2)-r1)*4;
+}
+```
 
 
 # おわりに
