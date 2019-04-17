@@ -2003,7 +2003,7 @@ JITにはインラインアセンブリは要らないのですが、デバッ�
 まずは以下のファイルを見てください。
 
 ```
-sources/casm_link/hello_inline.c
+sources/casm_link/05_inline_asm/hello_inline.c
 ```
 
 まず、以下のような関数があります。
@@ -2135,7 +2135,7 @@ asm("パーセントを使ったアセンブリ文" :"=r"(Cの変数名));
 次に、ちょっと複雑な例としてラベルやジャンプのあるケースを見てみましょう。
 
 ```
-sources/casm_link/sum_inline.c
+sources/casm_link/05_inline_asm/sum_inline.c
 ```
 
 を見てみてください。
@@ -2190,7 +2190,7 @@ sum_range_inline.cのsum_range_inlineの実装を埋めて、テストをパス�
 ### JIT入門
 
 ```
-sources/casm_link/hello_jit.c
+sources/casm_link/05_inline_asm/hello_jit.c
 ```
 
 実行可能な領域はmmapで作る。
@@ -2306,6 +2306,8 @@ int generated(int r0, int r1) {
    return ((1+2)-r1)*4;
 }
 ```
+
+以下では sources/casm_link/06_jit_ps で作業します。
 
 ### 方針
 
