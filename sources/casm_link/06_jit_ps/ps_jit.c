@@ -19,16 +19,20 @@ int* allocate_executable_buf(int size) {
                  MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
 }
 
-void init_jit() {
+void ensure_jit_buf() {
     if(binary_buf == NULL) {
         binary_buf = allocate_executable_buf(1024);
     }
 }
 
 int* jit_script(char *input) {
+    ensure_jit_buf();
     /*
     TODO: emit binary here
     */
+    // dummy code to avoid crash.
+    binary_buf[0] = 0xe1a0f00e; // 0xe1a0f00e
+
     return binary_buf;
 }
 
@@ -50,9 +54,7 @@ int main() {
     /*
      TODO: Make below test pass.
     */
-    init_jit();
-
-    funcvar = (int(*)(int))jit_script("3 7 add r1 sub 4 mul");
+    funcvar = (int(*)(int, int))jit_script("3 7 add r1 sub 4 mul");
 
     res = funcvar(1, 5);
     assert_int_eq(20, res);
