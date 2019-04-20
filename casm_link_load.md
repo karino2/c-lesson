@@ -267,10 +267,11 @@ sources/casm_link/02_sep_comp/
 
 ```
 sudo apt install qemu-user
-sudo apt install gcc-arm-linux-gnueabi
+sudo apt-get install gcc-multilib-arm-linux-gnueabi
 ```
 
-OS上で（この場合はARMのLinux上）実行するバイナリを作る為には、コンパイルはarm-linux-gnueabi-gccという名前のコンパイラを使います。
+OS上で（この場合はARMのLinux上）実行するバイナリを作る為には、コンパイルはarm-linux-gnueabi-gccという名前のコンパイラを使います。(ひょっとしたらsudo apt install gcc-arm-linux-gnueabiもいる？たぶん要らないと思うので誰か確認したら教えてください)
+
 objdumpなども同様です。少し名前が変わってるので並べておきましょう。
 
 |bare metal| OSあり |
@@ -1109,7 +1110,7 @@ llc -march=arm hello_puts.bc -o hello_puts_clang.s
 clangの所でbits/libc-header-start.hが無いと言われたら、以下で32bit用のヘッダファイルを入れて下さい。
 
 ```
-sudo apt-get install gcc-multilib
+sudo apt-get install gcc-multilib-arm-linux-gnueabi
 ```
 
 llcの所でllvmが無いぞ、とか言われたらこちらもapt-get installしてください。
