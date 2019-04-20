@@ -1102,11 +1102,18 @@ apt-getでは取れなさそうで自分でビルドする必要がありそう�
 具体的には以下のような手順です。
 
 ```
-clang -emit-llvm hello_puts.c -c -o hello_puts.bc
+clang -m32 -emit-llvm hello_puts.c -c -o hello_puts.bc
 llc -march=arm hello_puts.bc -o hello_puts_clang.s
 ```
 
-llcの所でllvmが無いぞ、とか言われたらapt-get installしてください。
+clangの所でbits/libc-header-start.hが無いと言われたら、以下で32bit用のヘッダファイルを入れて下さい。
+
+```
+sudo apt-get install gcc-multilib
+```
+
+llcの所でllvmが無いぞ、とか言われたらこちらもapt-get installしてください。
+
 幾つかignoring processorというメッセージが出ますが、ちゃんとアセンブリは生成されると思います。
 
 これで生成されるprint_somethingのコードが以下。
