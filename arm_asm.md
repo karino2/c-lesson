@@ -121,7 +121,7 @@ $ qemu-system-arm -M versatilepb -m 128M -nographic -kernel hello_arm.bin -seria
 これは
 
 1. 「Ctrlを押しながらaを押す」
-2.「両方離す」
+2. 「両方離す」
 3. 「その後xを押す」
 
 という意味です。
