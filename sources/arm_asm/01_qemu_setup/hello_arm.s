@@ -17,6 +17,8 @@ _start:
     str r1,[r0]
     mov r1,#0x6c
     str r1,[r0]
+    mov r1,#0x6c
+    str r1,[r0]
     mov r1,#0x6f
     str r1,[r0]
     mov r2,#0x0D
