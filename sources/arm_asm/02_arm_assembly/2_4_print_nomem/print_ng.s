@@ -11,7 +11,7 @@ print:
   ldrb r3,[r0]
   ldr r1,=0x101f1000
 loop:
-  str r3,[r0]
+  str r3,[r1]
   add r0, r0, #1
   ldrb r3,[r0]
   cmp r3,#0
