@@ -195,7 +195,7 @@ git checkout -b 02_int_parser_getc
 returnで先読みしてしまった文字を返し、字句の種類と値は引数で返しましょう。
 返す用の引数はout_という名前にします。例えばint *out_val, int *out_typeなどです。
 
-このparse_oneの型が決まったら一旦enumと合わせてgitterで見せて下さい。
+このparse_oneの型が決まったら一旦enumと合わせて[gitter](https://gitter.im/karino2_program_lesson/c-lesson)で見せて下さい。
 
 次にこのparse_oneを実装して、それを使うコードを書きます。
 
@@ -770,7 +770,7 @@ PostScriptはすごくシンプルな言語仕様なので、他のプログラ�
 
 05_evalのディレクトリの中を実装していきますが、パーサーとスタックは自分が作ったものを持ってきて下さい。
 別のブランチで作った物をどう持ってくるのか？という問題があるかもしれませんが、いったん別のディレクトリにcpするとかの原始的な方法でOKです。
-（わからなかったらgitterで聞いて下さい）
+（わからなかったら[gitter](https://gitter.im/karino2_program_lesson/c-lesson)で聞いて下さい）
 
 main関数は#if 0でコメントアウトしておいて下さい。
 
