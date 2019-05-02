@@ -54,5 +54,5 @@ int main() {
     test_eval_num_two();
     test_eval_num_add();
 
-    return 1;
+    return 0;
 }

@@ -22,7 +22,7 @@ int main() {
     assert(answer1 == 123);
     assert(answer2 == 456);
 
-    return 1;
+    return 0;
 
 
 }

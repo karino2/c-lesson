@@ -17,5 +17,5 @@ int main() {
     assert(answer2 == 456);
     assert(answer3 == 1203);
 
-    return 1;
+    return 0;
 }
