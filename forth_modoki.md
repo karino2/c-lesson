@@ -455,7 +455,7 @@ executable nameは、ローマ字で始まって空白以外が続く文字と�
 ```
 char* input = "add";
 char* expect_name = "add";
-int expect_type = EXECUTABLE_NAME
+int expect_type = EXECUTABLE_NAME;
 ```
 
 テストが追加出来たらparse_oneを実装する前に一回このテストがfailする事を確認します。
@@ -471,7 +471,7 @@ executable nameとほとんど同じですが、literal nameはスラッシュ�
 ```
 char* input = "/add";
 char* expect_name = "add";
-int expect_type = LITERAL_NAME
+int expect_type = LITERAL_NAME;
 ```
 
 としましょう。expect_nameにスラッシュが無い事に注意してください。
