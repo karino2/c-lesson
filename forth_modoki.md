@@ -1121,7 +1121,7 @@ dict_put()の場合なら、
 void dict_put(char* key, int value) {
     int idx = hash(key);
     struct Node *head = array[idx];
-    if(head == nul) {
+    if(head == NULL) {
        headをallocする
        head->next = NULL;
        headのkeyとvalueをセット;
