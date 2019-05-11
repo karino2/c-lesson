@@ -1367,7 +1367,7 @@ if(tokenがEXECUTABLE_NAMEなら) {
 
 ### 3 evalでElementの型を見てC関数なら呼ぶ
 
-先程のevalの所のコードで、EXECUTABLE_NAMEの所の処理に、ELEMENT_C_FUNCTIONの時の処理を追加します。
+先程のevalの所のコードで、EXECUTABLE_NAMEの所の処理に、ELEMENT_C_FUNCの時の処理を追加します。
 疑似コードで書くとだいたい以下のようになるでしょう。
 
 ```
@@ -1379,7 +1379,7 @@ if(tokenがEXECUTABLE_NAMEなら) {
        // ユーザー定義のnameかプリミティブ。
        struct Element elem = dict_get(token.u.name)
 
-       if(elem.etype == ELEMENT_C_FUNCTION){
+       if(elem.etype == ELEMENT_C_FUNC){
          elem.u.cfunc();
        } else {
          //ユーザー定義のname。辞書からnumberを取り出してスタックにプッシュ
