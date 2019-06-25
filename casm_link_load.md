@@ -43,7 +43,7 @@ C言語の関数がアセンブリからどう見えなくてはいけないの�
 
 ARMの場合は以下の文書が「C言語の関数は、アセンブリからどう見えないといけないか？」という決まりを説明したものになります。
 
-[ARMのProceduer call standard](https://developer.arm.com/products/architecture/cpu-architecture/a-profile/docs/ihi0042/e/procedure-call-standard-for-the-arm-architecture)
+[ARMのProceduer call standard](https://developer.arm.com/docs/ihi0042/latest/procedure-call-standard-for-the-arm-architecture-abi-2018q4-documentation)
 
 読むのは面倒なのでここで必要な事だけ要約すると
 
@@ -270,7 +270,7 @@ sudo apt install qemu-user
 sudo apt-get install gcc-multilib-arm-linux-gnueabi
 ```
 
-OS上で（この場合はARMのLinux上）実行するバイナリを作る為には、コンパイルはarm-linux-gnueabi-gccという名前のコンパイラを使います。(ひょっとしたらsudo apt install gcc-arm-linux-gnueabiもいる？たぶん要らないと思うので誰か確認したら教えてください)
+OS上で（この場合はARMのLinux上）実行するバイナリを作る為には、コンパイルはarm-linux-gnueabi-gccという名前のコンパイラを使います。(ひょっとしたらsudo apt install gcc-arm-linux-gnueabiもいる？たぶん要らないと思うので誰か確認したら教えてください) (自分は必要ありませんでした。環境は Docker で構築した ubuntu 18.04.1 LTS by yoheikikuta)
 
 objdumpなども同様です。少し名前が変わってるので並べておきましょう。
 
