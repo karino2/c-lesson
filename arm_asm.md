@@ -83,6 +83,7 @@ C言語を学ぶなら一回くらいやっておいてもいいでしょう。
 ### QEMUとARM用gccをインストール
 
 今回はARM用のQEMU環境であるqemu-system-armと、ARM用のクロスコンパイルのためのパッケージであるgcc-arm-embeddedをインストールします。
+QEMU環境用のDockerfileを [sources/arm_asm/Dockerfile.ARM_ASM](sources/arm_asm/Dockerfile.ARM_ASM) に準備したので必要であれば使ってください。
 
 ```
 sudo add-apt-repository ppa:team-gcc-arm-embedded/ppa
