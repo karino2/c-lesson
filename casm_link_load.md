@@ -1038,7 +1038,7 @@ arm-linux-gnueabi-gcc -S many_symbols.c
 
 最後に自分が良く書けているなぁ、と思ったサイトを紹介しておきます。
 
-![Beginner's Guide to Linkers](https://www.lurklurk.org/linkers/linkers.html)
+[Beginner's Guide to Linkers](https://www.lurklurk.org/linkers/linkers.html)
 
 この位知っておけばいいだろう、という踏み込み具合がちょうどよくて分かりやすいページだと思います。
 ダイナミックリンクライブラリやC++も入っていたり、私が説明した事の先を知るのにちょうど良いくらいのページです。
