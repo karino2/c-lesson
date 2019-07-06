@@ -261,10 +261,11 @@ sources/casm_link/02_sep_comp/
 ### コンパイラとQEMUのセットアップ
 
 ここからはC言語の方をメインにしたいので、bare metalで面倒な時は普通にOSがある場合でいろいろ試したい。
-必要な環境構築用のDockerfileを [sources/casm_link/Dockerfile.CASM_LINK](sources/casm_link/Dockerfile.CASM_LINK) に準備したので必要であれば使ってください。
 
 ここまではversatilePBを使ってきたのでこの上にLinuxを動かしてもいいのですが、少し大変なので手抜きとしてuser modeを使います。
 これは厳密にはOSの上で動かすのとは違うのですが、実行ファイル側はOS上で実行するのと同じなので、ここでの説明としては十分です。
+（なお、必要な環境構築用のDockerfileを [sources/casm_link/Dockerfile.CASM_LINK](sources/casm_link/Dockerfile.CASM_LINK) に準備したので使い方が分かる人はどうぞ）
+
 
 ```
 sudo apt install qemu-user
