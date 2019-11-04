@@ -123,4 +123,7 @@ C言語自体の説明は折に触れてやっていきたい。
 
 # やった人の感想
 
-- [c-lesson 第一回「簡易PostScriptインタプリタを作ろう」を終えた](https://yoheikikuta.github.io/clesson_first_postscript/) by 菊田さん
+菊田さん
+- [c-lesson 第一回「簡易PostScriptインタプリタを作ろう」を終えた](https://yoheikikuta.github.io/clesson_first_postscript/)
+- [c-lesson 第二回「簡易アセンブラとディスアセンブラを作ろう」を終えた](https://yoheikikuta.github.io/clesson_second_asm/)
+- [c-lesson 第三回「バイナリやアセンブリから見るC言語とリンカ」を終えて全内容を終了した](https://yoheikikuta.github.io/clesson_casm_link/)
