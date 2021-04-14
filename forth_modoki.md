@@ -2323,8 +2323,11 @@ PostScriptは、この言語でプログラムをする事自体がプログラ�
 あと、他人のコードも動かしてみましょう。
 自分のコードは自分の処理系の癖を知ってて無意識に手加減してしまう事があるので。
 
-最初にこのコースをやったOikawa124さんのソースへのリンクを貼っておきます。
-[github:Oikawa124/c-lesson/PostScriptコード](https://github.com/Oikawa124/c-lesson/tree/11_extra/sources/forth_modoki/11_extra/PostScript_source_codes)
+これまでにこのコースをやった方の書いたソースへのリンクを貼っておきます。
+
+- [github:Oikawa124/c-lesson/PostScriptコード](https://github.com/Oikawa124/c-lesson/tree/11_extra/sources/forth_modoki/11_extra/PostScript_source_codes)
+- [github:harukawa/c-lesson/PostScriptコード](https://github.com/harukawa/c-lesson/tree/11_postscript/sources/forth_modoki/interpreter/ps)
+- [github:yoheikikuta/c-lesson/PostScriptコード](https://github.com/yoheikikuta/c-lesson/tree/11_postscript_scripts/sources/forth_modoki/interpreter/postscript_scripts)
 
 
 **PostScriptに見る、スタックと関数の関係**  
