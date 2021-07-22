@@ -1,1 +1,3 @@
 *.out
+.jekyll-cache/
+_site/
