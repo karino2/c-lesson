@@ -1,6 +1,7 @@
 ---
 title: "第二回 簡易アセンブラとディスアセンブラを作ろう"
 layout: page
+classes: wide
 ---
 
 <style>
