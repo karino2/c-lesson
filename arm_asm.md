@@ -15,6 +15,7 @@ classes: wide
     }
 </style>
 
+[第一回](https://karino2.github.io/c-lesson/forth_modoki.html)でそれなりの規模のCプログラムを書いて標準的なデータ構造を学びました。
 
 第二回はQEMUを使ってARMのバイナリを動かしたり、バイナリを生成したりディスアセンブルしたりするコードを書きます。
 
