@@ -2055,6 +2055,7 @@ UnitTest用に、以下の五つの関数を用意してあります。
 - cl_enable_buffer_modeとcl_disable_buffer_mode
 - cl_printf
 - cl_get_result(int lineNum)
+- cl_get_all_result()
 - cl_clear_output
 
 cl_printfは通常のprintfと同じように使えますが、
@@ -2081,6 +2082,9 @@ cl_clear_output();
 ```
 
 逆アセンブルした結果はcl_printfで出力しておくと良いでしょう。
+
+cl_get_all_result()は出力したものがすべてつなげた文字列として取れます（間のヌル文字は取り除かれてjoinされたものが返ります）。
+テストのコードをcl_printfの呼ばれる回数に依存したくないケースで使ってください。
 
 ## 1ワードを出力する
 
