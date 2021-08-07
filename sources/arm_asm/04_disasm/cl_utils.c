@@ -1,5 +1,5 @@
 #include <stdarg.h>
-#include <stdio.h>
+
 
 static char buf[100*1024];
 static char buf2[100*1024];
