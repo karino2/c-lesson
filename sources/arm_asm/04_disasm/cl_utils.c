@@ -2,6 +2,7 @@
 
 
 static char buf[100*1024];
+static char buf2[100*1024];
 
 static int to_buffer = 0;
 static int pos = 0;
@@ -22,6 +23,23 @@ char *cl_get_result(int num) {
         i++;
     }
     return &buf[i];
+}
+
+char *cl_get_all_result() {
+    int p = 0;
+    int p2 = 0;
+
+    while (p < pos) {
+        if (buf[p] == '\0') {
+            p++;
+            continue;
+        }
+
+        buf2[p2++] = buf[p++];
+    }
+    buf2[p2] = '\0';
+
+    return buf2;
 }
 
 void cl_enable_buffer_mode() {
