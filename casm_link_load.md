@@ -1150,8 +1150,8 @@ pushとpopが使われているのが、stmdbとldmiaに慣れた身にはやや
 
 初めてコンパイラの生成するアセンブリを読む時の、簡単なヒントを。
 
-- sp, lr, pcはそれぞれr13, r14, r15の事。(http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.kui0097a/armcc_cihigdfh.htm)
-- 疑似命令はasのドキュメントを読むのが良い（ただ要ら無さそうなのは適当に推測して調べないのも大切） (https://sourceware.org/binutils/docs-2.27/as/Pseudo-Ops.html#Pseudo-Ops)
+- sp, lr, pcはそれぞれr13, r14, r15の事。([http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.kui0097a/armcc_cihigdfh.htm](http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.kui0097a/armcc_cihigdfh.htm))
+- 疑似命令はasのドキュメントを読むのが良い（ただ要ら無さそうなのは適当に推測して調べないのも大切） ([https://sourceware.org/binutils/docs-2.27/as/Pseudo-Ops.html#Pseudo-Ops](https://sourceware.org/binutils/docs-2.27/as/Pseudo-Ops.html#Pseudo-Ops))
 
 では以下ではclangの生成するアセンブリを読んでいきましょう。
 
