@@ -4,67 +4,48 @@
 
 void eval() {}
 
+static void verify_stack_pop_number_eq(int expects[], int nexpects) {
+    for (int i = 0; i < nexpects; i++) {
+        StackElement* actual = stack_pop();
+
+        assert(actual != NULL);
+        assert(actual->type == ET_NUMBER);
+        assert(actual->u.number == expects[i]);
+    }
+}
+
 static void test_eval_num_one() {
     char* input = "123";
-    int expect = 123;
+    int expects[1] = { 123 };
 
     cl_getc_set_src(input);
 
     eval();
 
-    StackElement* popped = stack_pop();
-
-    assert(popped != NULL);
-    assert(popped->type == ET_NUMBER);
-
-    int actual = popped->u.number;
-
-    assert(expect == actual);
-
+    verify_stack_pop_number_eq(expects, 1);
 }
 
 static void test_eval_num_two() {
     char* input = "123 456";
-    int expect1 = 456;
-    int expect2 = 123;
+    int expects[2] = { 456, 123 };
 
     cl_getc_set_src(input);
 
     eval();
 
-    StackElement* popped1 = stack_pop();
-    StackElement* popped2 = stack_pop();
-
-    assert(popped1 != NULL);
-    assert(popped1->type == ET_NUMBER);
-
-    assert(popped2 != NULL);
-    assert(popped2->type == ET_NUMBER);
-
-    int actual1 = popped1->u.number;
-    int actual2 = popped2->u.number;
-
-    assert(expect1 == actual1);
-    assert(expect2 == actual2);
+    verify_stack_pop_number_eq(expects, 2);
 }
 
 
 static void test_eval_num_add() {
     char* input = "1 2 add";
-    int expect = 3;
+    int expects[1] = { 3 };
 
     cl_getc_set_src(input);
 
     eval();
 
-    StackElement* popped = stack_pop();
-
-    assert(popped != NULL);
-    assert(popped->type == ET_NUMBER);
-
-    int actual = popped->u.number;
-
-    assert(expect == actual);
+    verify_stack_pop_number_eq(expects, 1);
 }
 
 
