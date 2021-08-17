@@ -97,11 +97,22 @@ static void test_eval_num_add() {
     verify_stack_pop_number_eq(expects, 1);
 }
 
+static void test_eval_num_add_many() {
+    char* input = "1 2 3 add add 4 5 6 7 8 9 add add add add add add";
+    int expects[1] = { 45 };
+
+    cl_getc_set_src(input);
+
+    eval();
+
+    verify_stack_pop_number_eq(expects, 1);
+}
 
 int main() {
     test_eval_num_one();
     test_eval_num_two();
     test_eval_num_add();
+    test_eval_num_add_many();
 
     return 0;
 }
