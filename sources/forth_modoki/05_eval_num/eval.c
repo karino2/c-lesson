@@ -1,8 +1,57 @@
 #include "clesson.h"
 #include "stack.h"
+#include "parser.h"
 #include <assert.h>
 
-void eval() {}
+static int streq(char* s1, char* s2) {
+    return strcmp(s1, s2) == 0;
+}
+
+void eval() {
+    int ch = EOF;
+    Token token = {
+        LT_UNKNOWN,
+        {0}
+    };
+
+    do {
+        ch = parse_one(ch, &token);
+        if (token.ltype != LT_UNKNOWN) {
+            switch (token.ltype) {
+            case LT_NUMBER: {
+                StackElement* element = malloc(sizeof(StackElement));
+                element->type = ET_NUMBER;
+                element->u.number = token.u.number;
+                stack_push(element);
+                break;
+            }
+            case LT_EXECUTABLE_NAME:
+                if (streq(token.u.name, "add")) {
+                    StackElement* e1 = stack_pop();
+                    StackElement* e2 = stack_pop();
+                    if (e1->type != ET_NUMBER || e2->type != ET_NUMBER) {
+                        printf("add expects number operands, but got (%d, %d)\n", e1->type, e2->type);
+                        break;
+                    }
+
+                    StackElement* element = malloc(sizeof(StackElement));
+                    element->type = ET_NUMBER;
+                    element->u.number = e1->u.number + e2->u.number;
+                    stack_push(element);
+                    break;
+                }
+            case LT_SPACE:
+            case LT_OPEN_CURLY:
+            case LT_CLOSE_CURLY:
+            case LT_LITERAL_NAME:
+                break;
+            default:
+                printf("Unknown type %d\n", token.ltype);
+                break;
+            }
+        }
+    } while (ch != EOF);
+}
 
 static void verify_stack_pop_number_eq(int expects[], int nexpects) {
     for (int i = 0; i < nexpects; i++) {
