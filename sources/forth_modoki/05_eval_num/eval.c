@@ -19,25 +19,22 @@ void eval() {
         if (token.ltype != LT_UNKNOWN) {
             switch (token.ltype) {
             case LT_NUMBER: {
-                StackElement* element = malloc(sizeof(StackElement));
-                element->type = ET_NUMBER;
-                element->u.number = token.u.number;
-                stack_push(element);
+                StackElement element = { ET_NUMBER, {.number = token.u.number} };
+                stack_push(&element);
                 break;
             }
             case LT_EXECUTABLE_NAME:
                 if (streq(token.u.name, "add")) {
-                    StackElement* e1 = stack_pop();
-                    StackElement* e2 = stack_pop();
-                    if (e1->type != ET_NUMBER || e2->type != ET_NUMBER) {
-                        printf("add expects number operands, but got (%d, %d)\n", e1->type, e2->type);
+                    StackElement e1, e2;
+                    stack_pop(&e1);
+                    stack_pop(&e2);
+                    if (e1.type != ET_NUMBER || e2.type != ET_NUMBER) {
+                        printf("add expects number operands, but got (%d, %d)\n", e1.type, e2.type);
                         break;
                     }
 
-                    StackElement* element = malloc(sizeof(StackElement));
-                    element->type = ET_NUMBER;
-                    element->u.number = e1->u.number + e2->u.number;
-                    stack_push(element);
+                    StackElement element = { ET_NUMBER, {.number = e1.u.number + e2.u.number} };
+                    stack_push(&element);
                     break;
                 }
             case LT_SPACE:
@@ -55,11 +52,11 @@ void eval() {
 
 static void verify_stack_pop_number_eq(int expects[], int nexpects) {
     for (int i = 0; i < nexpects; i++) {
-        StackElement* actual = stack_pop();
+        StackElement actual;
+        stack_pop(&actual);
 
-        assert(actual != NULL);
-        assert(actual->type == ET_NUMBER);
-        assert(actual->u.number == expects[i]);
+        assert(actual.type == ET_NUMBER);
+        assert(actual.u.number == expects[i]);
     }
 }
 

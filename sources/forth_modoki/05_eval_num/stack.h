@@ -14,6 +14,6 @@ typedef struct {
     } u;
 } StackElement;
 
-void stack_push(StackElement*);
+void stack_push(StackElement* element);
 
-StackElement* stack_pop();
+void stack_pop(StackElement* out_element);
