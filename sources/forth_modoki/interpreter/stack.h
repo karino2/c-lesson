@@ -4,6 +4,7 @@
 typedef enum {
     ET_NUMBER,
     ET_EXECUTABLE_NAME,
+    ET_LITERAL_NAME,
 } StackElementType;
 
 typedef struct {

@@ -37,10 +37,14 @@ void eval() {
                     stack_push(&element);
                     break;
                 }
+            case LT_LITERAL_NAME: {
+                StackElement element = { ET_LITERAL_NAME, {.name = token.u.name} };
+                stack_push(&element);
+                break;
+            }
             case LT_SPACE:
             case LT_OPEN_CURLY:
             case LT_CLOSE_CURLY:
-            case LT_LITERAL_NAME:
                 break;
             default:
                 printf("Unknown type %d\n", token.ltype);
@@ -105,11 +109,27 @@ static void test_eval_num_add_many() {
     verify_stack_pop_number_eq(expects, 1);
 }
 
+static void test_eval_name_one() {
+    char* input = "hoge";
+    char* expect = "hoge";
+
+    cl_getc_set_src(input);
+
+    eval();
+
+    StackElement actual;
+    stack_pop(&actual);
+
+    assert(actual.type == ET_LITERAL_NAME);
+    assert(strcmp(actual.u.name, expect) == 0);
+}
+
 int main() {
     test_eval_num_one();
     test_eval_num_two();
     test_eval_num_add();
     test_eval_num_add_many();
+    test_eval_name_one();
 
     return 0;
 }
