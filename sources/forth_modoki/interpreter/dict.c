@@ -85,6 +85,12 @@ int dict_get(char* key, StackElement* out_element) {
     }
 }
 
+void dict_clear() {
+    for (int i = 0; i < TABLE_SIZE; i++) {
+        dict_array[i] = NULL;
+    }
+}
+
 void dict_print_all() {
     for (int i = 0; i < TABLE_SIZE; i++) {
         Node* head = dict_array[i];

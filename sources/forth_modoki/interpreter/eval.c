@@ -170,6 +170,8 @@ static void verify_dict_put_and_get(
         assert(actual_value.type == ET_NUMBER);
         assert(actual_value.u.number == expect_value);
     }
+
+    dict_clear();
 }
 
 static void test_dict_no_element_name_not_found() {

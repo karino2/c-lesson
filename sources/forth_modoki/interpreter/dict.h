@@ -7,6 +7,8 @@ void dict_put(char* key, StackElement* element);
 
 int dict_get(char* key, StackElement* out_element);
 
+void dict_clear();
+
 void dict_print_all();
 
 #endif
