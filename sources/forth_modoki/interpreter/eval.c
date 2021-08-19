@@ -36,8 +36,26 @@ void eval() {
 
                     StackElement element = { ET_NUMBER, {.number = e1.u.number + e2.u.number} };
                     stack_push(&element);
-                    break;
                 }
+                else if (streq(token.u.name, "def")) {
+                    StackElement number, name;
+                    stack_pop(&number);
+                    stack_pop(&name);
+                    if (number.type != ET_NUMBER || name.type != ET_LITERAL_NAME) {
+                        printf("def expects number and literal name operands, but got (%d, %d)\n", number.type, name.type);
+                        break;
+                    }
+
+                    dict_put(name.u.name, &number);
+                }
+                else {
+                    // 変数名が dict に入っていたら値を stack に push する
+                    StackElement e;
+                    if (dict_get(token.u.name, &e)) {
+                        stack_push(&e);
+                    }
+                }
+                break;
             case LT_LITERAL_NAME: {
                 StackElement element = { ET_LITERAL_NAME, {.name = token.u.name} };
                 stack_push(&element);
@@ -102,6 +120,17 @@ static void test_eval_num_add() {
 static void test_eval_num_add_many() {
     char* input = "1 2 3 add add 4 5 6 7 8 9 add add add add add add";
     int expects[1] = { 45 };
+
+    cl_getc_set_src(input);
+
+    eval();
+
+    verify_stack_pop_number_eq(expects, 1);
+}
+
+static void test_eval_num_def() {
+    char* input = "/abc 12 def abc";
+    int expects[1] = { 12 };
 
     cl_getc_set_src(input);
 
@@ -200,6 +229,7 @@ int main() {
     test_eval_num_two();
     test_eval_num_add();
     test_eval_num_add_many();
+    test_eval_num_def();
     test_eval_name_one();
 
     test_dict_no_element_name_not_found();
