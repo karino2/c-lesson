@@ -1,9 +1,10 @@
 #include "clesson.h"
 #include "stack.h"
 #include "parser.h"
+#include "dict.h"
 #include <assert.h>
 
-static int streq(char* s1, char* s2) {
+int streq(char* s1, char* s2) {
     return strcmp(s1, s2) == 0;
 }
 
@@ -110,7 +111,7 @@ static void test_eval_num_add_many() {
 }
 
 static void test_eval_name_one() {
-    char* input = "hoge";
+    char* input = "/hoge";
     char* expect = "hoge";
 
     cl_getc_set_src(input);
@@ -124,12 +125,87 @@ static void test_eval_name_one() {
     assert(strcmp(actual.u.name, expect) == 0);
 }
 
+static void verify_dict_put_and_get(
+    int ninput, char* input_keys[], StackElement input_elements[],
+    char* target_key, int expect_found, int expect_value
+) {
+    for (int i = 0; i < ninput; i++) {
+        dict_put(input_keys[i], &input_elements[i]);
+    }
+
+    StackElement actual_value;
+    int actual_found = dict_get(target_key, &actual_value);
+
+    assert(actual_found == expect_found);
+    if (expect_found) {
+        assert(actual_value.type == ET_NUMBER);
+        assert(actual_value.u.number == expect_value);
+    }
+}
+
+static void test_dict_no_element_name_not_found() {
+    int ninput = 0;
+    char* input_keys[] = {};
+    StackElement input_elements[] = {};
+
+    char* target_key = "foo";
+
+    int expect_found = 0;
+    int expect_value = -1;
+
+    verify_dict_put_and_get(ninput, input_keys, input_elements, target_key, expect_found, expect_value);
+}
+
+static void test_dict_name_found() {
+    int ninput = 1;
+    char* input_keys[] = { "foo" };
+    StackElement input_elements[] = { { ET_NUMBER, {.number = 42} } };
+
+    char* target_key = "foo";
+
+    int expect_found = 1;
+    int expect_value = 42;
+
+    verify_dict_put_and_get(ninput, input_keys, input_elements, target_key, expect_found, expect_value);
+}
+
+static void test_dict_name_not_found() {
+    int ninput = 1;
+    char* input_keys[] = { "foo" };
+    StackElement input_elements[] = { { ET_NUMBER, {.number = 42} } };
+
+    char* target_key = "bar";
+
+    int expect_found = 0;
+    int expect_value = -1;
+
+    verify_dict_put_and_get(ninput, input_keys, input_elements, target_key, expect_found, expect_value);
+}
+
+static void test_dict_overwritten_name_found() {
+    int ninput = 2;
+    char* input_keys[] = { "foo", "foo" };
+    StackElement input_elements[] = { { ET_NUMBER, {.number = 42} }, { ET_NUMBER, {.number = 420} } };
+
+    char* target_key = "foo";
+
+    int expect_found = 1;
+    int expect_value = 420;
+
+    verify_dict_put_and_get(ninput, input_keys, input_elements, target_key, expect_found, expect_value);
+}
+
 int main() {
     test_eval_num_one();
     test_eval_num_two();
     test_eval_num_add();
     test_eval_num_add_many();
     test_eval_name_one();
+
+    test_dict_no_element_name_not_found();
+    test_dict_name_found();
+    test_dict_name_not_found();
+    test_dict_overwritten_name_found();
 
     return 0;
 }

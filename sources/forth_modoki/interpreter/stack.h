@@ -1,5 +1,5 @@
-#include <stdlib.h>
-#include <string.h>
+#ifndef STACK_H
+#define STACK_H
 
 typedef enum {
     ET_NUMBER,
@@ -18,3 +18,5 @@ typedef struct {
 void stack_push(StackElement* element);
 
 void stack_pop(StackElement* out_element);
+
+#endif

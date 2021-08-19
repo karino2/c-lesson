@@ -1,3 +1,6 @@
+#ifndef PARSER_H
+#define PARSER_H
+
 typedef enum {
     LT_NUMBER,
     LT_SPACE,
@@ -19,3 +22,5 @@ typedef struct {
 } Token;
 
 int parse_one(int prev_ch, Token* out_token);
+
+#endif
