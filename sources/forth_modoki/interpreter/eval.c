@@ -198,6 +198,28 @@ static void test_dict_name_found() {
     verify_dict_put_and_get(ninput, input_keys, input_elements, target_key, expect_found, expect_value);
 }
 
+static void test_dict_name_found_when_hash_collides() {
+    int ninput = 2;
+    // この２つの key の hash が衝突するかは hash の実装に依存する。
+    // このテストでは key の ASCII コードの合計値を hash 値とする実装を想定している。
+    char* input_keys[] = { "foo", "oof" };
+    StackElement input_elements[] = { { ET_NUMBER, {.number = 42} }, { ET_NUMBER, {.number = 24} } };
+
+    char* target_key1 = "foo";
+
+    int expect_found1 = 1;
+    int expect_value1 = 42;
+
+    verify_dict_put_and_get(ninput, input_keys, input_elements, target_key1, expect_found1, expect_value1);
+
+    char* target_key2 = "oof";
+
+    int expect_found2 = 1;
+    int expect_value2 = 24;
+
+    verify_dict_put_and_get(ninput, input_keys, input_elements, target_key2, expect_found2, expect_value2);
+}
+
 static void test_dict_name_not_found() {
     int ninput = 1;
     char* input_keys[] = { "foo" };
@@ -234,6 +256,7 @@ int main() {
 
     test_dict_no_element_name_not_found();
     test_dict_name_found();
+    test_dict_name_found_when_hash_collides();
     test_dict_name_not_found();
     test_dict_overwritten_name_found();
 
