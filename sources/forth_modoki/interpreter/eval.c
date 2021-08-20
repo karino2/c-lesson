@@ -73,20 +73,11 @@ static void def_op() {
 }
 
 static void register_primitives() {
-    StackElement e_add = { ET_C_FUNC, {.cfunc = add_op} };
-    dict_put("add", &e_add);
-
-    StackElement e_sub = { ET_C_FUNC, {.cfunc = sub_op} };
-    dict_put("sub", &e_sub);
-
-    StackElement e_mul = { ET_C_FUNC, {.cfunc = mul_op} };
-    dict_put("mul", &e_mul);
-
-    StackElement e_div = { ET_C_FUNC, {.cfunc = div_op} };
-    dict_put("div", &e_div);
-
-    StackElement e_def = { ET_C_FUNC, {.cfunc = def_op} };
-    dict_put("def", &e_def);
+    dict_put("add", &(StackElement){ ET_C_FUNC, { .cfunc = add_op } });
+    dict_put("sub", &(StackElement){ ET_C_FUNC, { .cfunc = sub_op } });
+    dict_put("mul", &(StackElement){ ET_C_FUNC, { .cfunc = mul_op } });
+    dict_put("div", &(StackElement){ ET_C_FUNC, { .cfunc = div_op } });
+    dict_put("def", &(StackElement){ ET_C_FUNC, { .cfunc = def_op } });
 }
 
 void eval() {
