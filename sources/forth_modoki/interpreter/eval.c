@@ -8,56 +8,38 @@ int streq(char* s1, char* s2) {
     return strcmp(s1, s2) == 0;
 }
 
-static void add_op() {
+static int c_add(int n, int m) { return n + m; }
+static int c_sub(int n, int m) { return n - m; }
+static int c_mul(int n, int m) { return n * m; }
+static int c_div(int n, int m) { return n / m; }
+
+static void calc_op(char* name, int (*c_op)(int, int)) {
     StackElement e1, e2;
     stack_pop(&e1);
     stack_pop(&e2);
     if (e1.type != ET_NUMBER || e2.type != ET_NUMBER) {
-        printf("add expects number operands, but got (%d, %d)\n", e1.type, e2.type);
+        printf("%s expects number operands, but got (%d, %d)\n", name, e1.type, e2.type);
         exit(1);
     }
 
-    StackElement element = { ET_NUMBER, {.number = e1.u.number + e2.u.number} };
+    StackElement element = { ET_NUMBER, {.number = c_op(e2.u.number, e1.u.number)} };
     stack_push(&element);
+}
+
+static void add_op() {
+    calc_op("add", c_add);
 }
 
 static void sub_op() {
-    StackElement e1, e2;
-    stack_pop(&e1);
-    stack_pop(&e2);
-    if (e1.type != ET_NUMBER || e2.type != ET_NUMBER) {
-        printf("sub expects number operands, but got (%d, %d)\n", e1.type, e2.type);
-        exit(1);
-    }
-
-    StackElement element = { ET_NUMBER, {.number = e2.u.number - e1.u.number} };
-    stack_push(&element);
+    calc_op("sub", c_sub);
 }
 
 static void mul_op() {
-    StackElement e1, e2;
-    stack_pop(&e1);
-    stack_pop(&e2);
-    if (e1.type != ET_NUMBER || e2.type != ET_NUMBER) {
-        printf("mul expects number operands, but got (%d, %d)\n", e1.type, e2.type);
-        exit(1);
-    }
-
-    StackElement element = { ET_NUMBER, {.number = e1.u.number * e2.u.number} };
-    stack_push(&element);
+    calc_op("mul", c_mul);
 }
 
 static void div_op() {
-    StackElement e1, e2;
-    stack_pop(&e1);
-    stack_pop(&e2);
-    if (e1.type != ET_NUMBER || e2.type != ET_NUMBER) {
-        printf("div expects number operands, but got (%d, %d)\n", e1.type, e2.type);
-        exit(1);
-    }
-
-    StackElement element = { ET_NUMBER, {.number = e2.u.number / e1.u.number} };
-    stack_push(&element);
+    calc_op("div", c_div);
 }
 
 static void def_op() {
