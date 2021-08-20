@@ -21,6 +21,45 @@ static void add_op() {
     stack_push(&element);
 }
 
+static void sub_op() {
+    StackElement e1, e2;
+    stack_pop(&e1);
+    stack_pop(&e2);
+    if (e1.type != ET_NUMBER || e2.type != ET_NUMBER) {
+        printf("sub expects number operands, but got (%d, %d)\n", e1.type, e2.type);
+        exit(1);
+    }
+
+    StackElement element = { ET_NUMBER, {.number = e2.u.number - e1.u.number} };
+    stack_push(&element);
+}
+
+static void mul_op() {
+    StackElement e1, e2;
+    stack_pop(&e1);
+    stack_pop(&e2);
+    if (e1.type != ET_NUMBER || e2.type != ET_NUMBER) {
+        printf("mul expects number operands, but got (%d, %d)\n", e1.type, e2.type);
+        exit(1);
+    }
+
+    StackElement element = { ET_NUMBER, {.number = e1.u.number * e2.u.number} };
+    stack_push(&element);
+}
+
+static void div_op() {
+    StackElement e1, e2;
+    stack_pop(&e1);
+    stack_pop(&e2);
+    if (e1.type != ET_NUMBER || e2.type != ET_NUMBER) {
+        printf("div expects number operands, but got (%d, %d)\n", e1.type, e2.type);
+        exit(1);
+    }
+
+    StackElement element = { ET_NUMBER, {.number = e2.u.number / e1.u.number} };
+    stack_push(&element);
+}
+
 static void def_op() {
     StackElement number, name;
     stack_pop(&number);
@@ -36,6 +75,15 @@ static void def_op() {
 static void register_primitives() {
     StackElement e_add = { ET_C_FUNC, {.cfunc = add_op} };
     dict_put("add", &e_add);
+
+    StackElement e_sub = { ET_C_FUNC, {.cfunc = sub_op} };
+    dict_put("sub", &e_sub);
+
+    StackElement e_mul = { ET_C_FUNC, {.cfunc = mul_op} };
+    dict_put("mul", &e_mul);
+
+    StackElement e_div = { ET_C_FUNC, {.cfunc = div_op} };
+    dict_put("div", &e_div);
 
     StackElement e_def = { ET_C_FUNC, {.cfunc = def_op} };
     dict_put("def", &e_def);
@@ -138,6 +186,39 @@ static void test_eval_num_add() {
 static void test_eval_num_add_many() {
     char* input = "1 2 3 add add 4 5 6 7 8 9 add add add add add add";
     int expects[1] = { 45 };
+
+    cl_getc_set_src(input);
+
+    eval();
+
+    verify_stack_pop_number_eq(expects, 1);
+}
+
+static void test_eval_num_sub() {
+    char* input = "10 2 sub";
+    int expects[1] = { 8 };
+
+    cl_getc_set_src(input);
+
+    eval();
+
+    verify_stack_pop_number_eq(expects, 1);
+}
+
+static void test_eval_num_mul() {
+    char* input = "8 9 mul";
+    int expects[1] = { 72 };
+
+    cl_getc_set_src(input);
+
+    eval();
+
+    verify_stack_pop_number_eq(expects, 1);
+}
+
+static void test_eval_num_div() {
+    char* input = "27 3 div";
+    int expects[1] = { 9 };
 
     cl_getc_set_src(input);
 
@@ -275,6 +356,9 @@ int main() {
     test_eval_num_two();
     test_eval_num_add();
     test_eval_num_add_many();
+    test_eval_num_sub();
+    test_eval_num_mul();
+    test_eval_num_div();
     test_eval_num_def();
     test_eval_name_one();
 
