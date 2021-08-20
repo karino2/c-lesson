@@ -21,9 +21,24 @@ static void add_op() {
     stack_push(&element);
 }
 
+static void def_op() {
+    StackElement number, name;
+    stack_pop(&number);
+    stack_pop(&name);
+    if (number.type != ET_NUMBER || name.type != ET_LITERAL_NAME) {
+        printf("def expects number and literal name operands, but got (%d, %d)\n", number.type, name.type);
+        exit(1);
+    }
+
+    dict_put(name.u.name, &number);
+}
+
 static void register_primitives() {
     StackElement e_add = { ET_C_FUNC, {.cfunc = add_op} };
     dict_put("add", &e_add);
+
+    StackElement e_def = { ET_C_FUNC, {.cfunc = def_op} };
+    dict_put("def", &e_def);
 }
 
 void eval() {
@@ -42,35 +57,23 @@ void eval() {
                 stack_push(&element);
                 break;
             }
-            case LT_EXECUTABLE_NAME:
-                if (streq(token.u.name, "def")) {
-                    StackElement number, name;
-                    stack_pop(&number);
-                    stack_pop(&name);
-                    if (number.type != ET_NUMBER || name.type != ET_LITERAL_NAME) {
-                        printf("def expects number and literal name operands, but got (%d, %d)\n", number.type, name.type);
-                        break;
-                    }
+            case LT_EXECUTABLE_NAME: {
+                StackElement e;
+                if (!dict_get(token.u.name, &e)) {
+                    printf("fail to resolve name %s\n", token.u.name);
+                    exit(1);
+                }
 
-                    dict_put(name.u.name, &number);
+                if (e.type == ET_C_FUNC) {
+                    // プリミティブ。事前に登録してある関数を実行
+                    e.u.cfunc();
                 }
                 else {
-                    StackElement e;
-                    if (!dict_get(token.u.name, &e)) {
-                        printf("fail to resolve name %s\n", token.u.name);
-                        exit(1);
-                    }
-
-                    if (e.type == ET_C_FUNC) {
-                        // プリミティブ。事前に登録してある関数を実行
-                        e.u.cfunc();
-                    }
-                    else {
-                        // ユーザ定義の変数。変数が指す値を stack に push する
-                        stack_push(&e);
-                    }
+                    // ユーザ定義の変数。変数が指す値を stack に push する
+                    stack_push(&e);
                 }
                 break;
+            }
             case LT_LITERAL_NAME: {
                 StackElement element = { ET_LITERAL_NAME, {.name = token.u.name} };
                 stack_push(&element);
