@@ -5,6 +5,7 @@ typedef enum {
     ET_NUMBER,
     ET_EXECUTABLE_NAME,
     ET_LITERAL_NAME,
+    ET_C_FUNC,
 } StackElementType;
 
 typedef struct {
@@ -12,6 +13,7 @@ typedef struct {
     union {
         int number;
         char* name;
+        void (*cfunc)();
     } u;
 } StackElement;
 

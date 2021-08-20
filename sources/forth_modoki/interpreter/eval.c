@@ -8,6 +8,24 @@ int streq(char* s1, char* s2) {
     return strcmp(s1, s2) == 0;
 }
 
+static void add_op() {
+    StackElement e1, e2;
+    stack_pop(&e1);
+    stack_pop(&e2);
+    if (e1.type != ET_NUMBER || e2.type != ET_NUMBER) {
+        printf("add expects number operands, but got (%d, %d)\n", e1.type, e2.type);
+        exit(1);
+    }
+
+    StackElement element = { ET_NUMBER, {.number = e1.u.number + e2.u.number} };
+    stack_push(&element);
+}
+
+static void register_primitives() {
+    StackElement e_add = { ET_C_FUNC, {.cfunc = add_op} };
+    dict_put("add", &e_add);
+}
+
 void eval() {
     int ch = EOF;
     Token token = {
@@ -25,19 +43,7 @@ void eval() {
                 break;
             }
             case LT_EXECUTABLE_NAME:
-                if (streq(token.u.name, "add")) {
-                    StackElement e1, e2;
-                    stack_pop(&e1);
-                    stack_pop(&e2);
-                    if (e1.type != ET_NUMBER || e2.type != ET_NUMBER) {
-                        printf("add expects number operands, but got (%d, %d)\n", e1.type, e2.type);
-                        break;
-                    }
-
-                    StackElement element = { ET_NUMBER, {.number = e1.u.number + e2.u.number} };
-                    stack_push(&element);
-                }
-                else if (streq(token.u.name, "def")) {
+                if (streq(token.u.name, "def")) {
                     StackElement number, name;
                     stack_pop(&number);
                     stack_pop(&name);
@@ -49,9 +55,18 @@ void eval() {
                     dict_put(name.u.name, &number);
                 }
                 else {
-                    // 変数名が dict に入っていたら値を stack に push する
                     StackElement e;
-                    if (dict_get(token.u.name, &e)) {
+                    if (!dict_get(token.u.name, &e)) {
+                        printf("fail to resolve name %s\n", token.u.name);
+                        exit(1);
+                    }
+
+                    if (e.type == ET_C_FUNC) {
+                        // プリミティブ。事前に登録してある関数を実行
+                        e.u.cfunc();
+                    }
+                    else {
+                        // ユーザ定義の変数。変数が指す値を stack に push する
                         stack_push(&e);
                     }
                 }
@@ -171,7 +186,9 @@ static void verify_dict_put_and_get(
         assert(actual_value.u.number == expect_value);
     }
 
+    // ユーザが put した element を掃除するために、一度全ての element を削除してからプリミティブを登録し直す
     dict_clear();
+    register_primitives();
 }
 
 static void test_dict_no_element_name_not_found() {
@@ -249,6 +266,8 @@ static void test_dict_overwritten_name_found() {
 }
 
 int main() {
+    register_primitives();
+
     test_eval_num_one();
     test_eval_num_two();
     test_eval_num_add();
