@@ -4,10 +4,6 @@
 #include "dict.h"
 #include <assert.h>
 
-int streq(char* s1, char* s2) {
-    return strcmp(s1, s2) == 0;
-}
-
 static int c_add(int n, int m) { return n + m; }
 static int c_sub(int n, int m) { return n - m; }
 static int c_mul(int n, int m) { return n * m; }
