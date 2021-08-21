@@ -6,7 +6,10 @@ typedef enum {
     ET_EXECUTABLE_NAME,
     ET_LITERAL_NAME,
     ET_C_FUNC,
+    ET_EXECUTABLE_ARRAY,
 } StackElementType;
+
+typedef struct StackElementArray StackElementArray;
 
 typedef struct {
     StackElementType type;
@@ -14,8 +17,14 @@ typedef struct {
         int number;
         char* name;
         void (*cfunc)();
+        StackElementArray* byte_codes;
     } u;
 } StackElement;
+
+struct StackElementArray {
+    int len;
+    StackElement elements[0];
+};
 
 void stack_push(StackElement* element);
 

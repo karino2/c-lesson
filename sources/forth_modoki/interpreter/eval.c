@@ -4,6 +4,8 @@
 #include "dict.h"
 #include <assert.h>
 
+#define MAX_NAME_OP_NUMBERS 256
+
 static int c_add(int n, int m) { return n + m; }
 static int c_sub(int n, int m) { return n - m; }
 static int c_mul(int n, int m) { return n * m; }
@@ -39,15 +41,15 @@ static void div_op() {
 }
 
 static void def_op() {
-    StackElement number, name;
-    stack_pop(&number);
-    stack_pop(&name);
-    if (number.type != ET_NUMBER || name.type != ET_LITERAL_NAME) {
-        printf("def expects number and literal name operands, but got (%d, %d)\n", number.type, name.type);
+    StackElement value, key;
+    stack_pop(&value);
+    stack_pop(&key);
+    if ((value.type != ET_NUMBER && value.type != ET_EXECUTABLE_ARRAY) || key.type != ET_LITERAL_NAME) {
+        printf("def expects number or executable array as value and literal name as key, but got (%d, %d)\n", value.type, key.type);
         exit(1);
     }
 
-    dict_put(name.u.name, &number);
+    dict_put(key.u.name, &value);
 }
 
 static void register_primitives() {
@@ -56,6 +58,82 @@ static void register_primitives() {
     dict_put("mul", &(StackElement){ ET_C_FUNC, { .cfunc = mul_op } });
     dict_put("div", &(StackElement){ ET_C_FUNC, { .cfunc = div_op } });
     dict_put("def", &(StackElement){ ET_C_FUNC, { .cfunc = def_op } });
+}
+
+static void compile_exec_array(StackElement* out_element) {
+    int ch = EOF;
+    Token token = {
+        LT_UNKNOWN,
+        {0}
+    };
+
+    int i = 0;
+    StackElement tmp[MAX_NAME_OP_NUMBERS];
+
+    do {
+        ch = parse_one(ch, &token);
+        switch (token.ltype) {
+        case LT_NUMBER:
+            tmp[i++] = (StackElement){ ET_NUMBER, {.number = token.u.number} };
+            break;
+        case LT_EXECUTABLE_NAME:
+            tmp[i++] = (StackElement){ ET_EXECUTABLE_NAME, {.name = token.u.name} };
+            break;
+        case LT_LITERAL_NAME:
+            tmp[i++] = (StackElement){ ET_LITERAL_NAME, {.name = token.u.name} };
+            break;
+        case LT_OPEN_CURLY:
+        case LT_CLOSE_CURLY:
+        case LT_SPACE:
+            break;
+        default:
+            break;
+        }
+    } while (token.ltype != EOF && token.ltype != LT_CLOSE_CURLY);
+
+    StackElementArray* array = malloc(sizeof(StackElementArray) + sizeof(StackElement) * i);
+    array->len = i;
+    memcpy(array->elements, tmp, sizeof(StackElement) * i);
+    *out_element = (StackElement){ ET_EXECUTABLE_ARRAY, {.byte_codes = array} };
+}
+
+static void eval_exec_array(StackElementArray* exec_array) {
+    for (int i = 0; i < exec_array->len; i++) {
+        StackElement e = exec_array->elements[i];
+        switch (e.type) {
+        case ET_NUMBER:
+        case ET_LITERAL_NAME:
+            stack_push(&e);
+            break;
+        case ET_EXECUTABLE_NAME: {
+            StackElement e_name;
+            if (!dict_get(e.u.name, &e_name)) {
+                printf("fail to resolve name %s\n", e.u.name);
+                exit(1);
+            }
+
+            if (e_name.type == ET_C_FUNC) {
+                // プリミティブ。事前に登録してある関数を実行
+                e_name.u.cfunc();
+            }
+            else if (e_name.type == ET_EXECUTABLE_ARRAY) {
+                // 実行可能配列。バイトコードを実行
+                eval_exec_array(e_name.u.byte_codes);
+            }
+            else {
+                // ユーザ定義の変数。変数が指す値を stack に push する
+                stack_push(&e_name);
+            }
+            break;
+        }
+        case ET_C_FUNC:
+            e.u.cfunc();
+            break;
+        case ET_EXECUTABLE_ARRAY:
+            eval_exec_array(e.u.byte_codes);
+            break;
+        }
+    }
 }
 
 void eval() {
@@ -67,6 +145,7 @@ void eval() {
 
     do {
         ch = parse_one(ch, &token);
+
         if (token.ltype != LT_UNKNOWN) {
             switch (token.ltype) {
             case LT_NUMBER: {
@@ -85,6 +164,10 @@ void eval() {
                     // プリミティブ。事前に登録してある関数を実行
                     e.u.cfunc();
                 }
+                else if (e.type == ET_EXECUTABLE_ARRAY) {
+                    // 実行可能配列。バイトコードを実行
+                    eval_exec_array(e.u.byte_codes);
+                }
                 else {
                     // ユーザ定義の変数。変数が指す値を stack に push する
                     stack_push(&e);
@@ -96,8 +179,13 @@ void eval() {
                 stack_push(&element);
                 break;
             }
+            case LT_OPEN_CURLY: {
+                StackElement e;
+                compile_exec_array(&e);
+                stack_push(&e);
+                break;
+            }
             case LT_SPACE:
-            case LT_OPEN_CURLY:
             case LT_CLOSE_CURLY:
                 break;
             default:
@@ -199,6 +287,39 @@ static void test_eval_num_div() {
 static void test_eval_num_def() {
     char* input = "/abc 12 def abc";
     int expects[1] = { 12 };
+
+    cl_getc_set_src(input);
+
+    eval();
+
+    verify_stack_pop_number_eq(expects, 1);
+}
+
+static void test_eval_exec_array_num() {
+    char* input = "/num { 42 } def num";
+    int expects[1] = { 42 };
+
+    cl_getc_set_src(input);
+
+    eval();
+
+    verify_stack_pop_number_eq(expects, 1);
+}
+
+static void test_eval_exec_array_num_many() {
+    char* input = "/num { 42 7 3 } def num";
+    int expects[3] = { 3, 7, 42 };
+
+    cl_getc_set_src(input);
+
+    eval();
+
+    verify_stack_pop_number_eq(expects, 3);
+}
+
+static void test_eval_exec_array_func() {
+    char* input = "/add3 { 3 add } def 4 add3";
+    int expects[1] = { 7 };
 
     cl_getc_set_src(input);
 
@@ -329,6 +450,9 @@ int main() {
     test_eval_num_mul();
     test_eval_num_div();
     test_eval_num_def();
+    test_eval_exec_array_num();
+    test_eval_exec_array_num_many();
+    test_eval_exec_array_func();
     test_eval_name_one();
 
     test_dict_no_element_name_not_found();
