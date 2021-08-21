@@ -113,6 +113,11 @@ int parse_one(int prev_ch, Token* out_token) {
         out_token->u.onechar = '}';
         return cl_getc();
     }
+    else if (prev_ch == '%') {
+        int c;
+        while ((c = cl_getc()) != EOF && c != '\n');
+        return cl_getc();
+    }
     else if (prev_ch == EOF) {
         out_token->ltype = LT_END_OF_FILE;
         return EOF;

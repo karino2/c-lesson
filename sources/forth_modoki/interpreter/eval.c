@@ -840,6 +840,17 @@ static void test_eval_while() {
     verify_stack_pop_number_eq(expects, 4);
 }
 
+static void test_eval_comments() {
+    char* input = "1 \% hello this is comment\n2\n3 \% ignore me";
+    int expects[3] = { 3, 2, 1 };
+
+    cl_getc_set_src(input);
+
+    eval();
+
+    verify_stack_pop_number_eq(expects, 3);
+}
+
 static void test_eval_name_one() {
     char* input = "/hoge";
     char* expect = "hoge";
@@ -1016,6 +1027,8 @@ int main() {
     test_eval_ifelse_true();
     test_eval_ifelse_false();
     test_eval_while();
+
+    test_eval_comments();
 
     test_dict_no_element_name_not_found();
     test_dict_name_found();
