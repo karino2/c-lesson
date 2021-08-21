@@ -12,6 +12,10 @@ static int c_mul(int n, int m) { return n * m; }
 static int c_div(int n, int m) { return n / m; }
 static int c_eq(int n, int m) { return n == m; }
 static int c_neq(int n, int m) { return n != m; }
+static int c_gt(int n, int m) { return n > m; }
+static int c_ge(int n, int m) { return n >= m; }
+static int c_lt(int n, int m) { return n < m; }
+static int c_le(int n, int m) { return n <= m; }
 
 static void calc_op(char* name, int (*c_op)(int, int)) {
     StackElement e1, e2;
@@ -32,6 +36,10 @@ static void mul_op() { calc_op("mul", c_mul); }
 static void div_op() { calc_op("div", c_div); }
 static void eq_op() { calc_op("eq", c_eq); }
 static void neq_op() { calc_op("neq", c_neq); }
+static void gt_op() { calc_op("gt", c_gt); }
+static void ge_op() { calc_op("ge", c_ge); }
+static void lt_op() { calc_op("lt", c_lt); }
+static void le_op() { calc_op("le", c_le); }
 
 static void def_op() {
     StackElement value, key;
@@ -56,6 +64,11 @@ static void register_primitives() {
     register_primitive("div", div_op);
     register_primitive("eq", eq_op);
     register_primitive("neq", neq_op);
+    register_primitive("gt", gt_op);
+    register_primitive("ge", ge_op);
+    register_primitive("lt", lt_op);
+    register_primitive("le", le_op);
+
     register_primitive("def", def_op);
 }
 
@@ -332,6 +345,138 @@ static void test_eval_num_neq_false() {
     verify_stack_pop_number_eq(expects, 1);
 }
 
+static void test_eval_num_gt_true_when_greater() {
+    char* input = "3 2 gt";
+    int expects[1] = { 1 };
+
+    cl_getc_set_src(input);
+
+    eval();
+
+    verify_stack_pop_number_eq(expects, 1);
+}
+
+static void test_eval_num_gt_false_when_equal() {
+    char* input = "3 3 gt";
+    int expects[1] = { 0 };
+
+    cl_getc_set_src(input);
+
+    eval();
+
+    verify_stack_pop_number_eq(expects, 1);
+}
+
+static void test_eval_num_gt_false_when_less() {
+    char* input = "3 4 gt";
+    int expects[1] = { 0 };
+
+    cl_getc_set_src(input);
+
+    eval();
+
+    verify_stack_pop_number_eq(expects, 1);
+}
+
+static void test_eval_num_ge_true_when_greater() {
+    char* input = "3 2 ge";
+    int expects[1] = { 1 };
+
+    cl_getc_set_src(input);
+
+    eval();
+
+    verify_stack_pop_number_eq(expects, 1);
+}
+
+static void test_eval_num_ge_true_when_equal() {
+    char* input = "3 3 ge";
+    int expects[1] = { 1 };
+
+    cl_getc_set_src(input);
+
+    eval();
+
+    verify_stack_pop_number_eq(expects, 1);
+}
+
+static void test_eval_num_ge_false_when_less() {
+    char* input = "3 4 ge";
+    int expects[1] = { 0 };
+
+    cl_getc_set_src(input);
+
+    eval();
+
+    verify_stack_pop_number_eq(expects, 1);
+}
+
+static void test_eval_num_lt_false_when_greater() {
+    char* input = "3 2 lt";
+    int expects[1] = { 0 };
+
+    cl_getc_set_src(input);
+
+    eval();
+
+    verify_stack_pop_number_eq(expects, 1);
+}
+
+static void test_eval_num_lt_false_when_equal() {
+    char* input = "3 3 lt";
+    int expects[1] = { 0 };
+
+    cl_getc_set_src(input);
+
+    eval();
+
+    verify_stack_pop_number_eq(expects, 1);
+}
+
+static void test_eval_num_lt_true_when_less() {
+    char* input = "3 4 lt";
+    int expects[1] = { 1 };
+
+    cl_getc_set_src(input);
+
+    eval();
+
+    verify_stack_pop_number_eq(expects, 1);
+}
+
+static void test_eval_num_le_false_when_greater() {
+    char* input = "3 2 le";
+    int expects[1] = { 0 };
+
+    cl_getc_set_src(input);
+
+    eval();
+
+    verify_stack_pop_number_eq(expects, 1);
+}
+
+static void test_eval_num_le_true_when_equal() {
+    char* input = "3 3 le";
+    int expects[1] = { 1 };
+
+    cl_getc_set_src(input);
+
+    eval();
+
+    verify_stack_pop_number_eq(expects, 1);
+}
+
+static void test_eval_num_le_true_when_less() {
+    char* input = "3 4 le";
+    int expects[1] = { 1 };
+
+    cl_getc_set_src(input);
+
+    eval();
+
+    verify_stack_pop_number_eq(expects, 1);
+}
+
 static void test_eval_num_def() {
     char* input = "/abc 12 def abc";
     int expects[1] = { 12 };
@@ -538,6 +683,18 @@ int main() {
     test_eval_num_eq_false();
     test_eval_num_neq_true();
     test_eval_num_neq_false();
+    test_eval_num_gt_true_when_greater();
+    test_eval_num_gt_false_when_equal();
+    test_eval_num_gt_false_when_less();
+    test_eval_num_ge_true_when_greater();
+    test_eval_num_ge_true_when_equal();
+    test_eval_num_ge_false_when_less();
+    test_eval_num_lt_false_when_greater();
+    test_eval_num_lt_false_when_equal();
+    test_eval_num_lt_true_when_less();
+    test_eval_num_le_false_when_greater();
+    test_eval_num_le_true_when_equal();
+    test_eval_num_le_true_when_less();
     test_eval_num_def();
     test_eval_exec_array_num();
     test_eval_exec_array_num_many();
