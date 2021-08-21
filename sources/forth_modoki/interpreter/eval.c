@@ -115,6 +115,20 @@ static void exec_op() {
     eval_exec_array(e.u.byte_codes);
 }
 
+static void if_op() {
+    StackElement p, b;
+    stack_pop(&p);
+    stack_pop(&b);
+    if (p.type != ET_EXECUTABLE_ARRAY || b.type != ET_NUMBER) {
+        printf("if expects executable array and number, but got (%d, %d)\n", p.type, b.type);
+        exit(1);
+    }
+
+    if (b.u.number) {
+        eval_exec_array(p.u.byte_codes);
+    }
+}
+
 static void def_op() {
     StackElement value, key;
     stack_pop(&value);
@@ -150,6 +164,7 @@ static void register_primitives() {
     register_primitive("roll", roll_op);
 
     register_primitive("exec", exec_op);
+    register_primitive("if", if_op);
 
     register_primitive("def", def_op);
 }
@@ -713,6 +728,28 @@ static void test_eval_exec_func() {
     verify_stack_pop_number_eq(expects, 1);
 }
 
+static void test_eval_if_true() {
+    char* input = "3 1 { 1 add } if";
+    int expects[1] = { 4 };
+
+    cl_getc_set_src(input);
+
+    eval();
+
+    verify_stack_pop_number_eq(expects, 1);
+}
+
+static void test_eval_if_false() {
+    char* input = "3 0 { 1 add } if";
+    int expects[1] = { 3 };
+
+    cl_getc_set_src(input);
+
+    eval();
+
+    verify_stack_pop_number_eq(expects, 1);
+}
+
 static void test_eval_name_one() {
     char* input = "/hoge";
     char* expect = "hoge";
@@ -883,6 +920,8 @@ int main() {
 
     test_eval_exec_nums();
     test_eval_exec_func();
+    test_eval_if_true();
+    test_eval_if_false();
 
     test_dict_no_element_name_not_found();
     test_dict_name_found();
