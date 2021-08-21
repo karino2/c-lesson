@@ -11,6 +11,10 @@ static int isdigit(int c) {
     return '0' <= c && c <= '9';
 }
 
+static int isspace(int c) {
+    return c == ' ' || c == '\n';
+}
+
 static void parser_print_all() {
     int ch = EOF;
     Token token = {
@@ -65,9 +69,9 @@ int parse_one(int prev_ch, Token* out_token) {
 
         return c;
     }
-    else if (prev_ch == ' ') {
+    else if (isspace(prev_ch)) {
         int c;
-        while ((c = cl_getc()) != EOF && c == ' ');
+        while ((c = cl_getc()) != EOF && isspace(c));
 
         out_token->ltype = LT_SPACE;
         return c;
@@ -77,7 +81,7 @@ int parse_one(int prev_ch, Token* out_token) {
         name[0] = prev_ch;
 
         int c, i = 1;
-        while ((c = cl_getc()) != EOF && c != ' ') {
+        while ((c = cl_getc()) != EOF && !isspace(c)) {
             name[i++] = c;
         }
         name[i] = '\0';
@@ -90,7 +94,7 @@ int parse_one(int prev_ch, Token* out_token) {
         char* name = malloc(NAME_SIZE * sizeof(char));
 
         int c, i = 0;
-        while ((c = cl_getc()) != EOF && c != ' ') {
+        while ((c = cl_getc()) != EOF && !isspace(c)) {
             name[i++] = c;
         }
         name[i] = '\0';

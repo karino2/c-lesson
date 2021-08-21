@@ -389,6 +389,16 @@ static void test_eval_num_two() {
     verify_stack_pop_number_eq(expects, 2);
 }
 
+static void test_eval_num_two_separated_by_newline() {
+    char* input = "123\n456";
+    int expects[2] = { 456, 123 };
+
+    cl_getc_set_src(input);
+
+    eval();
+
+    verify_stack_pop_number_eq(expects, 2);
+}
 
 static void test_eval_num_add() {
     char* input = "1 2 add";
@@ -961,6 +971,7 @@ int main() {
     test_eval_name_one();
     test_eval_num_one();
     test_eval_num_two();
+    test_eval_num_two_separated_by_newline();
     test_eval_num_add();
     test_eval_num_add_many();
     test_eval_num_sub();
