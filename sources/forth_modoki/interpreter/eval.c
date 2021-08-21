@@ -61,6 +61,26 @@ static void dup_op() {
     stack_push(&e);
 }
 
+static void index_op() {
+    StackElement ne;
+    stack_pop(&ne);
+    if (ne.type != ET_NUMBER) {
+        printf("index expects number, but got %d\n", ne.type);
+        exit(1);
+    }
+
+    int n = ne.u.number;
+
+    StackElement* es = malloc(sizeof(StackElement) * (n + 1));
+    for (int i = 0; i <= n; i++) {
+        stack_pop(&es[i]);
+    }
+    for (int i = n; i >= 0; i--) {
+        stack_push(&es[i]);
+    }
+    stack_push(&es[n]);
+}
+
 static void def_op() {
     StackElement value, key;
     stack_pop(&value);
@@ -92,6 +112,7 @@ static void register_primitives() {
     register_primitive("pop", pop_op);
     register_primitive("exch", exch_op);
     register_primitive("dup", dup_op);
+    register_primitive("index", index_op);
 
     register_primitive("def", def_op);
 }
@@ -545,6 +566,28 @@ static void test_eval_num_dup() {
     verify_stack_pop_number_eq(expects, 3);
 }
 
+static void test_eval_num_index() {
+    char* input = "2 4 6 8 2 index";
+    int expects[5] = { 4, 8, 6, 4, 2 };
+
+    cl_getc_set_src(input);
+
+    eval();
+
+    verify_stack_pop_number_eq(expects, 5);
+}
+
+static void test_eval_num_index_top() {
+    char* input = "2 4 6 8 0 index";
+    int expects[5] = { 8, 8, 6, 4, 2 };
+
+    cl_getc_set_src(input);
+
+    eval();
+
+    verify_stack_pop_number_eq(expects, 5);
+}
+
 static void test_eval_exec_array_num() {
     char* input = "/num { 42 } def num";
     int expects[1] = { 42 };
@@ -756,6 +799,8 @@ int main() {
     test_eval_num_pop();
     test_eval_num_exch();
     test_eval_num_dup();
+    test_eval_num_index();
+    test_eval_num_index_top();
 
     test_eval_num_def();
 
