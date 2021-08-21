@@ -82,7 +82,12 @@ static void compile_exec_array(StackElement* out_element) {
         case LT_LITERAL_NAME:
             tmp[i++] = (StackElement){ ET_LITERAL_NAME, {.name = token.u.name} };
             break;
-        case LT_OPEN_CURLY:
+        case LT_OPEN_CURLY: {
+            StackElement e;
+            compile_exec_array(&e);
+            tmp[i++] = e;
+            break;
+        }
         case LT_CLOSE_CURLY:
         case LT_SPACE:
             break;
@@ -130,7 +135,7 @@ static void eval_exec_array(StackElementArray* exec_array) {
             e.u.cfunc();
             break;
         case ET_EXECUTABLE_ARRAY:
-            eval_exec_array(e.u.byte_codes);
+            stack_push(&e);
             break;
         }
     }
@@ -328,6 +333,28 @@ static void test_eval_exec_array_func() {
     verify_stack_pop_number_eq(expects, 1);
 }
 
+static void test_eval_exec_array_num_nested() {
+    char* input = "/zz { 6 } def /yy { 4 zz 5 } def /xx { 1 2 yy 3 } def xx";
+    int expects[6] = { 3, 5, 6, 4, 2, 1 };
+
+    cl_getc_set_src(input);
+
+    eval();
+
+    verify_stack_pop_number_eq(expects, 6);
+}
+
+static void test_eval_exec_array_func_nested() {
+    char* input = "/double7 { /double { 2 mul } def 7 double } def double7";
+    int expects[1] = { 14 };
+
+    cl_getc_set_src(input);
+
+    eval();
+
+    verify_stack_pop_number_eq(expects, 1);
+}
+
 static void test_eval_name_one() {
     char* input = "/hoge";
     char* expect = "hoge";
@@ -442,6 +469,7 @@ static void test_dict_overwritten_name_found() {
 int main() {
     register_primitives();
 
+    test_eval_name_one();
     test_eval_num_one();
     test_eval_num_two();
     test_eval_num_add();
@@ -453,7 +481,8 @@ int main() {
     test_eval_exec_array_num();
     test_eval_exec_array_num_many();
     test_eval_exec_array_func();
-    test_eval_name_one();
+    test_eval_exec_array_num_nested();
+    test_eval_exec_array_func_nested();
 
     test_dict_no_element_name_not_found();
     test_dict_name_found();
