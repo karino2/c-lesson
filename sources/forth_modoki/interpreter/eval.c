@@ -24,21 +24,10 @@ static void calc_op(char* name, int (*c_op)(int, int)) {
     stack_push(&element);
 }
 
-static void add_op() {
-    calc_op("add", c_add);
-}
-
-static void sub_op() {
-    calc_op("sub", c_sub);
-}
-
-static void mul_op() {
-    calc_op("mul", c_mul);
-}
-
-static void div_op() {
-    calc_op("div", c_div);
-}
+static void add_op() { calc_op("add", c_add); }
+static void sub_op() { calc_op("sub", c_sub); }
+static void mul_op() { calc_op("mul", c_mul); }
+static void div_op() { calc_op("div", c_div); }
 
 static void def_op() {
     StackElement value, key;
@@ -52,12 +41,16 @@ static void def_op() {
     dict_put(key.u.name, &value);
 }
 
+static void register_primitive(char* key, void (*op)()) {
+    dict_put(key, &(StackElement){ ET_C_FUNC, { .cfunc = op } });
+}
+
 static void register_primitives() {
-    dict_put("add", &(StackElement){ ET_C_FUNC, { .cfunc = add_op } });
-    dict_put("sub", &(StackElement){ ET_C_FUNC, { .cfunc = sub_op } });
-    dict_put("mul", &(StackElement){ ET_C_FUNC, { .cfunc = mul_op } });
-    dict_put("div", &(StackElement){ ET_C_FUNC, { .cfunc = div_op } });
-    dict_put("def", &(StackElement){ ET_C_FUNC, { .cfunc = def_op } });
+    register_primitive("add", add_op);
+    register_primitive("sub", sub_op);
+    register_primitive("mul", mul_op);
+    register_primitive("div", div_op);
+    register_primitive("def", def_op);
 }
 
 static void compile_exec_array(StackElement* out_element) {
