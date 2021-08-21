@@ -54,6 +54,13 @@ static void exch_op() {
     stack_push(&e2);
 }
 
+static void dup_op() {
+    StackElement e;
+    stack_pop(&e);
+    stack_push(&e);
+    stack_push(&e);
+}
+
 static void def_op() {
     StackElement value, key;
     stack_pop(&value);
@@ -84,6 +91,7 @@ static void register_primitives() {
 
     register_primitive("pop", pop_op);
     register_primitive("exch", exch_op);
+    register_primitive("dup", dup_op);
 
     register_primitive("def", def_op);
 }
@@ -526,6 +534,17 @@ static void test_eval_num_exch() {
     verify_stack_pop_number_eq(expects, 2);
 }
 
+static void test_eval_num_dup() {
+    char* input = "3 4 dup";
+    int expects[3] = { 4, 4, 3 };
+
+    cl_getc_set_src(input);
+
+    eval();
+
+    verify_stack_pop_number_eq(expects, 3);
+}
+
 static void test_eval_exec_array_num() {
     char* input = "/num { 42 } def num";
     int expects[1] = { 42 };
@@ -736,6 +755,7 @@ int main() {
 
     test_eval_num_pop();
     test_eval_num_exch();
+    test_eval_num_dup();
 
     test_eval_num_def();
 
