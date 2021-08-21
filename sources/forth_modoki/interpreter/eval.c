@@ -10,6 +10,8 @@ static int c_add(int n, int m) { return n + m; }
 static int c_sub(int n, int m) { return n - m; }
 static int c_mul(int n, int m) { return n * m; }
 static int c_div(int n, int m) { return n / m; }
+static int c_eq(int n, int m) { return n == m; }
+static int c_neq(int n, int m) { return n != m; }
 
 static void calc_op(char* name, int (*c_op)(int, int)) {
     StackElement e1, e2;
@@ -28,6 +30,8 @@ static void add_op() { calc_op("add", c_add); }
 static void sub_op() { calc_op("sub", c_sub); }
 static void mul_op() { calc_op("mul", c_mul); }
 static void div_op() { calc_op("div", c_div); }
+static void eq_op() { calc_op("eq", c_eq); }
+static void neq_op() { calc_op("neq", c_neq); }
 
 static void def_op() {
     StackElement value, key;
@@ -50,6 +54,8 @@ static void register_primitives() {
     register_primitive("sub", sub_op);
     register_primitive("mul", mul_op);
     register_primitive("div", div_op);
+    register_primitive("eq", eq_op);
+    register_primitive("neq", neq_op);
     register_primitive("def", def_op);
 }
 
@@ -282,6 +288,50 @@ static void test_eval_num_div() {
     verify_stack_pop_number_eq(expects, 1);
 }
 
+static void test_eval_num_eq_true() {
+    char* input = "3 3 eq";
+    int expects[1] = { 1 };
+
+    cl_getc_set_src(input);
+
+    eval();
+
+    verify_stack_pop_number_eq(expects, 1);
+}
+
+static void test_eval_num_eq_false() {
+    char* input = "3 2 eq";
+    int expects[1] = { 0 };
+
+    cl_getc_set_src(input);
+
+    eval();
+
+    verify_stack_pop_number_eq(expects, 1);
+}
+
+static void test_eval_num_neq_true() {
+    char* input = "3 2 neq";
+    int expects[1] = { 1 };
+
+    cl_getc_set_src(input);
+
+    eval();
+
+    verify_stack_pop_number_eq(expects, 1);
+}
+
+static void test_eval_num_neq_false() {
+    char* input = "3 3 neq";
+    int expects[1] = { 0 };
+
+    cl_getc_set_src(input);
+
+    eval();
+
+    verify_stack_pop_number_eq(expects, 1);
+}
+
 static void test_eval_num_def() {
     char* input = "/abc 12 def abc";
     int expects[1] = { 12 };
@@ -484,6 +534,10 @@ int main() {
     test_eval_num_sub();
     test_eval_num_mul();
     test_eval_num_div();
+    test_eval_num_eq_true();
+    test_eval_num_eq_false();
+    test_eval_num_neq_true();
+    test_eval_num_neq_false();
     test_eval_num_def();
     test_eval_exec_array_num();
     test_eval_exec_array_num_many();
