@@ -147,6 +147,33 @@ static void ifelse_op() {
     }
 }
 
+static void while_op() {
+    StackElement p, c;
+    stack_pop(&p);
+    stack_pop(&c);
+    if (p.type != ET_EXECUTABLE_ARRAY || c.type != ET_EXECUTABLE_ARRAY) {
+        printf("while expects two executable arrays, but got (%d, %d)\n", p.type, c.type);
+        exit(1);
+    }
+
+    while (1) {
+        eval_exec_array(c.u.byte_codes);
+        StackElement b;
+        stack_pop(&b);
+        if (b.type != ET_NUMBER) {
+            printf("while expects number as a result of condition execution, but got %d\n", b.type);
+            exit(1);
+        }
+
+        if (b.u.number) {
+            eval_exec_array(p.u.byte_codes);
+        }
+        else {
+            break;
+        }
+    }
+}
+
 static void def_op() {
     StackElement value, key;
     stack_pop(&value);
@@ -184,6 +211,7 @@ static void register_primitives() {
     register_primitive("exec", exec_op);
     register_primitive("if", if_op);
     register_primitive("ifelse", ifelse_op);
+    register_primitive("while", while_op);
 
     register_primitive("def", def_op);
 }
@@ -791,6 +819,17 @@ static void test_eval_ifelse_false() {
     verify_stack_pop_number_eq(expects, 1);
 }
 
+static void test_eval_while() {
+    char* input = "0 { dup 3 lt } { dup 1 add } while";
+    int expects[4] = { 3, 2, 1, 0 };
+
+    cl_getc_set_src(input);
+
+    eval();
+
+    verify_stack_pop_number_eq(expects, 4);
+}
+
 static void test_eval_name_one() {
     char* input = "/hoge";
     char* expect = "hoge";
@@ -965,6 +1004,7 @@ int main() {
     test_eval_if_false();
     test_eval_ifelse_true();
     test_eval_ifelse_false();
+    test_eval_while();
 
     test_dict_no_element_name_not_found();
     test_dict_name_found();
