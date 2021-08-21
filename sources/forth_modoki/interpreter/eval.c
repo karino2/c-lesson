@@ -46,6 +46,14 @@ static void pop_op() {
     stack_pop(&e);
 }
 
+static void exch_op() {
+    StackElement e1, e2;
+    stack_pop(&e1);
+    stack_pop(&e2);
+    stack_push(&e1);
+    stack_push(&e2);
+}
+
 static void def_op() {
     StackElement value, key;
     stack_pop(&value);
@@ -75,6 +83,7 @@ static void register_primitives() {
     register_primitive("le", le_op);
 
     register_primitive("pop", pop_op);
+    register_primitive("exch", exch_op);
 
     register_primitive("def", def_op);
 }
@@ -506,6 +515,17 @@ static void test_eval_num_pop() {
     verify_stack_pop_number_eq(expects, 1);
 }
 
+static void test_eval_num_exch() {
+    char* input = "3 4 5 exch";
+    int expects[2] = { 4, 5 };
+
+    cl_getc_set_src(input);
+
+    eval();
+
+    verify_stack_pop_number_eq(expects, 2);
+}
+
 static void test_eval_exec_array_num() {
     char* input = "/num { 42 } def num";
     int expects[1] = { 42 };
@@ -715,6 +735,7 @@ int main() {
     test_eval_num_le_true_when_less();
 
     test_eval_num_pop();
+    test_eval_num_exch();
 
     test_eval_num_def();
 
