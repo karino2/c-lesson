@@ -41,6 +41,11 @@ static void ge_op() { calc_op("ge", c_ge); }
 static void lt_op() { calc_op("lt", c_lt); }
 static void le_op() { calc_op("le", c_le); }
 
+static void pop_op() {
+    StackElement e;
+    stack_pop(&e);
+}
+
 static void def_op() {
     StackElement value, key;
     stack_pop(&value);
@@ -68,6 +73,8 @@ static void register_primitives() {
     register_primitive("ge", ge_op);
     register_primitive("lt", lt_op);
     register_primitive("le", le_op);
+
+    register_primitive("pop", pop_op);
 
     register_primitive("def", def_op);
 }
@@ -488,6 +495,17 @@ static void test_eval_num_def() {
     verify_stack_pop_number_eq(expects, 1);
 }
 
+static void test_eval_num_pop() {
+    char* input = "3 4 pop";
+    int expects[1] = { 3 };
+
+    cl_getc_set_src(input);
+
+    eval();
+
+    verify_stack_pop_number_eq(expects, 1);
+}
+
 static void test_eval_exec_array_num() {
     char* input = "/num { 42 } def num";
     int expects[1] = { 42 };
@@ -695,7 +713,11 @@ int main() {
     test_eval_num_le_false_when_greater();
     test_eval_num_le_true_when_equal();
     test_eval_num_le_true_when_less();
+
+    test_eval_num_pop();
+
     test_eval_num_def();
+
     test_eval_exec_array_num();
     test_eval_exec_array_num_many();
     test_eval_exec_array_func();
