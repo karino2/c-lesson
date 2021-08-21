@@ -6,6 +6,8 @@
 
 #define MAX_NAME_OP_NUMBERS 256
 
+static void eval_exec_array(StackElementArray* exec_array);
+
 static int c_add(int n, int m) { return n + m; }
 static int c_sub(int n, int m) { return n - m; }
 static int c_mul(int n, int m) { return n * m; }
@@ -102,6 +104,17 @@ static void roll_op() {
     }
 }
 
+static void exec_op() {
+    StackElement e;
+    stack_pop(&e);
+    if (e.type != ET_EXECUTABLE_ARRAY) {
+        printf("exec expects executable array, but got %d\n", e.type);
+        exit(1);
+    }
+
+    eval_exec_array(e.u.byte_codes);
+}
+
 static void def_op() {
     StackElement value, key;
     stack_pop(&value);
@@ -135,6 +148,8 @@ static void register_primitives() {
     register_primitive("dup", dup_op);
     register_primitive("index", index_op);
     register_primitive("roll", roll_op);
+
+    register_primitive("exec", exec_op);
 
     register_primitive("def", def_op);
 }
@@ -676,6 +691,28 @@ static void test_eval_exec_array_func_nested() {
     verify_stack_pop_number_eq(expects, 1);
 }
 
+static void test_eval_exec_nums() {
+    char* input = "{ 1 2 3 } exec";
+    int expects[3] = { 3, 2, 1 };
+
+    cl_getc_set_src(input);
+
+    eval();
+
+    verify_stack_pop_number_eq(expects, 3);
+}
+
+static void test_eval_exec_func() {
+    char* input = "{ 1 2 add } exec";
+    int expects[1] = { 3 };
+
+    cl_getc_set_src(input);
+
+    eval();
+
+    verify_stack_pop_number_eq(expects, 1);
+}
+
 static void test_eval_name_one() {
     char* input = "/hoge";
     char* expect = "hoge";
@@ -843,6 +880,9 @@ int main() {
     test_eval_exec_array_func();
     test_eval_exec_array_num_nested();
     test_eval_exec_array_func_nested();
+
+    test_eval_exec_nums();
+    test_eval_exec_func();
 
     test_dict_no_element_name_not_found();
     test_dict_name_found();
