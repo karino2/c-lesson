@@ -41,7 +41,7 @@ static void update_or_insert_list(Node* head, char* key, StackElement* element) 
     while (1) {
         if (streq(key, node->key)) {
             // 同じ key を持つ要素が見つかったら update する
-            head->value = *element;
+            node->value = *element;
             return;
         }
         else if (node->next == NULL) {

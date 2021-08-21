@@ -459,6 +459,20 @@ static void test_dict_overwritten_name_found() {
     verify_dict_put_and_get(ninput, input_keys, input_elements, target_key, expect_found, expect_value);
 }
 
+static void test_dict_overwritten_not_head_name_found() {
+    int ninput = 3;
+    // ハッシュテーブルの head 以外の要素を上書きする場合
+    char* input_keys[] = { "oof", "foo", "foo" };
+    StackElement input_elements[] = { { ET_NUMBER, {.number = 42} }, { ET_NUMBER, {.number = 420} }, { ET_NUMBER, {.number = 4200} } };
+
+    char* target_key = "foo";
+
+    int expect_found = 1;
+    int expect_value = 4200;
+
+    verify_dict_put_and_get(ninput, input_keys, input_elements, target_key, expect_found, expect_value);
+}
+
 int main() {
     register_primitives();
 
@@ -482,6 +496,7 @@ int main() {
     test_dict_name_found_when_hash_collides();
     test_dict_name_not_found();
     test_dict_overwritten_name_found();
+    test_dict_overwritten_not_head_name_found();
 
     return 0;
 }
