@@ -190,7 +190,7 @@ static void register_primitive(char* key, void (*op)()) {
     dict_put(key, &(StackElement){ ET_C_FUNC, { .cfunc = op } });
 }
 
-static void register_primitives() {
+void register_primitives() {
     register_primitive("add", add_op);
     register_primitive("sub", sub_op);
     register_primitive("mul", mul_op);
@@ -228,27 +228,30 @@ static void compile_exec_array(StackElement* out_element) {
 
     do {
         ch = parse_one(ch, &token);
-        switch (token.ltype) {
-        case LT_NUMBER:
-            tmp[i++] = (StackElement){ ET_NUMBER, {.number = token.u.number} };
-            break;
-        case LT_EXECUTABLE_NAME:
-            tmp[i++] = (StackElement){ ET_EXECUTABLE_NAME, {.name = token.u.name} };
-            break;
-        case LT_LITERAL_NAME:
-            tmp[i++] = (StackElement){ ET_LITERAL_NAME, {.name = token.u.name} };
-            break;
-        case LT_OPEN_CURLY: {
-            StackElement e;
-            compile_exec_array(&e);
-            tmp[i++] = e;
-            break;
-        }
-        case LT_CLOSE_CURLY:
-        case LT_SPACE:
-            break;
-        default:
-            break;
+
+        if (token.ltype != LT_UNKNOWN) {
+            switch (token.ltype) {
+            case LT_NUMBER:
+                tmp[i++] = (StackElement){ ET_NUMBER, {.number = token.u.number} };
+                break;
+            case LT_EXECUTABLE_NAME:
+                tmp[i++] = (StackElement){ ET_EXECUTABLE_NAME, {.name = token.u.name} };
+                break;
+            case LT_LITERAL_NAME:
+                tmp[i++] = (StackElement){ ET_LITERAL_NAME, {.name = token.u.name} };
+                break;
+            case LT_OPEN_CURLY: {
+                StackElement e;
+                compile_exec_array(&e);
+                tmp[i++] = e;
+                break;
+            }
+            case LT_CLOSE_CURLY:
+            case LT_SPACE:
+                break;
+            default:
+                break;
+            }
         }
     } while (token.ltype != EOF && token.ltype != LT_CLOSE_CURLY);
 
@@ -297,7 +300,7 @@ static void eval_exec_array(StackElementArray* exec_array) {
     }
 }
 
-void eval() {
+int eval() {
     int ch = EOF;
     Token token = {
         LT_UNKNOWN,
@@ -355,6 +358,14 @@ void eval() {
             }
         }
     } while (ch != EOF);
+
+    StackElement result;
+    stack_peek(&result);
+    if (result.type != ET_NUMBER) {
+        printf("result of input should be number, but got %d\n", result.type);
+        exit(1);
+    }
+    return result.u.number;
 }
 
 static void verify_stack_pop_number_eq(int expects[], int nexpects) {
@@ -851,21 +862,6 @@ static void test_eval_comments() {
     verify_stack_pop_number_eq(expects, 3);
 }
 
-static void test_eval_name_one() {
-    char* input = "/hoge";
-    char* expect = "hoge";
-
-    cl_getc_set_src(input);
-
-    eval();
-
-    StackElement actual;
-    stack_pop(&actual);
-
-    assert(actual.type == ET_LITERAL_NAME);
-    assert(strcmp(actual.u.name, expect) == 0);
-}
-
 static void verify_dict_put_and_get(
     int ninput, char* input_keys[], StackElement input_elements[],
     char* target_key, int expect_found, int expect_value
@@ -976,10 +972,9 @@ static void test_dict_overwritten_not_head_name_found() {
     verify_dict_put_and_get(ninput, input_keys, input_elements, target_key, expect_found, expect_value);
 }
 
-int main() {
+void exec_tests() {
     register_primitives();
 
-    test_eval_name_one();
     test_eval_num_one();
     test_eval_num_two();
     test_eval_num_two_separated_by_newline();
@@ -1036,6 +1031,4 @@ int main() {
     test_dict_name_not_found();
     test_dict_overwritten_name_found();
     test_dict_overwritten_not_head_name_found();
-
-    return 0;
 }
