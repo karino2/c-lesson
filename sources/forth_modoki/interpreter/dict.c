@@ -1,6 +1,7 @@
 #include "dict.h"
-#include "clesson.h"
 #include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
 
 #define TABLE_SIZE 16
 
@@ -56,7 +57,23 @@ static void update_or_insert_list(Node* head, char* key, StackElement* element) 
 static void print_list(Node* head) {
     Node* node = head;
     while (node != NULL) {
-        printf("%s: %d", node->key, node->value.u.number);
+        StackElement e = node->value;
+        switch (e.type) {
+        case ET_NUMBER:
+            printf("%s: %d\n", node->key, e.u.number);
+            break;
+        case ET_C_FUNC:
+            // 事前に登録してある C_FUNC は表示をスキップする
+            break;
+        case ET_EXECUTABLE_ARRAY:
+            printf("%s: EXECUTABLE_ARRAY\n", node->key);
+            break;
+        default:
+            printf("unexpected element type of dict: %d\n", e.type);
+            exit(1);
+        }
+
+        node = node->next;
     }
 }
 
@@ -96,10 +113,12 @@ void dict_clear() {
 }
 
 void dict_print_all() {
+    printf("--- dict ----\n");
     for (int i = 0; i < TABLE_SIZE; i++) {
         Node* head = dict_array[i];
         if (head != NULL) {
             print_list(head);
         }
     }
+    printf("-------------\n");
 }
