@@ -81,6 +81,27 @@ static void index_op() {
     stack_push(&es[n]);
 }
 
+static void roll_op() {
+    StackElement nre, nee;
+    stack_pop(&nre);
+    stack_pop(&nee);
+    if (nre.type != ET_NUMBER || nee.type != ET_NUMBER) {
+        printf("roll expects number, but got (%d, %d)\n", nre.type, nee.type);
+        exit(1);
+    }
+
+    int nelems = nee.u.number;
+    int nrolls = nre.u.number % nelems;
+
+    StackElement* rolled_es = malloc(sizeof(StackElement) * nelems);
+    for (int i = 0; i < nelems; i++) {
+        stack_pop(&rolled_es[(i + nelems - nrolls) % nelems]);
+    }
+    for (int i = nelems - 1; i >= 0; i--) {
+        stack_push(&rolled_es[i]);
+    }
+}
+
 static void def_op() {
     StackElement value, key;
     stack_pop(&value);
@@ -113,6 +134,7 @@ static void register_primitives() {
     register_primitive("exch", exch_op);
     register_primitive("dup", dup_op);
     register_primitive("index", index_op);
+    register_primitive("roll", roll_op);
 
     register_primitive("def", def_op);
 }
@@ -588,6 +610,17 @@ static void test_eval_num_index_top() {
     verify_stack_pop_number_eq(expects, 5);
 }
 
+static void test_eval_num_roll() {
+    char* input = "1 2 3 4 5 6 7 4 3 roll";
+    int expects[7] = { 4, 7, 6, 5, 3, 2, 1 };
+
+    cl_getc_set_src(input);
+
+    eval();
+
+    verify_stack_pop_number_eq(expects, 7);
+}
+
 static void test_eval_exec_array_num() {
     char* input = "/num { 42 } def num";
     int expects[1] = { 42 };
@@ -801,6 +834,7 @@ int main() {
     test_eval_num_dup();
     test_eval_num_index();
     test_eval_num_index_top();
+    test_eval_num_roll();
 
     test_eval_num_def();
 
