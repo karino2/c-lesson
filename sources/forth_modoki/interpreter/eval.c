@@ -129,6 +129,24 @@ static void if_op() {
     }
 }
 
+static void ifelse_op() {
+    StackElement pf, pt, b;
+    stack_pop(&pf);
+    stack_pop(&pt);
+    stack_pop(&b);
+    if (pf.type != ET_EXECUTABLE_ARRAY || pt.type != ET_EXECUTABLE_ARRAY || b.type != ET_NUMBER) {
+        printf("ifelse expects two executable arrays and number, but got (%d, %d, %d)\n", pf.type, pt.type, b.type);
+        exit(1);
+    }
+
+    if (b.u.number) {
+        eval_exec_array(pt.u.byte_codes);
+    }
+    else {
+        eval_exec_array(pf.u.byte_codes);
+    }
+}
+
 static void def_op() {
     StackElement value, key;
     stack_pop(&value);
@@ -165,6 +183,7 @@ static void register_primitives() {
 
     register_primitive("exec", exec_op);
     register_primitive("if", if_op);
+    register_primitive("ifelse", ifelse_op);
 
     register_primitive("def", def_op);
 }
@@ -750,6 +769,28 @@ static void test_eval_if_false() {
     verify_stack_pop_number_eq(expects, 1);
 }
 
+static void test_eval_ifelse_true() {
+    char* input = "3 1 { 1 add } { 2 add } ifelse";
+    int expects[1] = { 4 };
+
+    cl_getc_set_src(input);
+
+    eval();
+
+    verify_stack_pop_number_eq(expects, 1);
+}
+
+static void test_eval_ifelse_false() {
+    char* input = "3 0 { 1 add } { 2 add } ifelse";
+    int expects[1] = { 5 };
+
+    cl_getc_set_src(input);
+
+    eval();
+
+    verify_stack_pop_number_eq(expects, 1);
+}
+
 static void test_eval_name_one() {
     char* input = "/hoge";
     char* expect = "hoge";
@@ -922,6 +963,8 @@ int main() {
     test_eval_exec_func();
     test_eval_if_true();
     test_eval_if_false();
+    test_eval_ifelse_true();
+    test_eval_ifelse_false();
 
     test_dict_no_element_name_not_found();
     test_dict_name_found();
