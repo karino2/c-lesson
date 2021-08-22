@@ -73,16 +73,11 @@ static void index_op() {
         exit(1);
     }
 
-    int n = ne.u.number;
+    int depth = ne.u.number;
 
-    StackElement* es = malloc(sizeof(StackElement) * (n + 1));
-    for (int i = 0; i <= n; i++) {
-        stack_pop(&es[i]);
-    }
-    for (int i = n; i >= 0; i--) {
-        stack_push(&es[i]);
-    }
-    stack_push(&es[n]);
+    StackElement target;
+    stack_peek(depth, &target);
+    stack_push(&target);
 }
 
 static void roll_op() {

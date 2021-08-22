@@ -30,7 +30,7 @@ void stack_push(StackElement* element);
 
 void stack_pop(StackElement* out_element);
 
-void stack_peek(StackElement* out_element);
+void stack_peek(int depth, StackElement* out_element);
 
 void stack_print_all();
 

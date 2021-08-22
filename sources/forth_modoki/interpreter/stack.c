@@ -21,9 +21,9 @@ void stack_pop(StackElement* out_element) {
     *out_element = stack[top--];
 }
 
-void stack_peek(StackElement* out_element) {
-    if (is_stack_empty()) return;
-    *out_element = stack[top];
+void stack_peek(int depth, StackElement* out_element) {
+    if (depth > top) return;
+    *out_element = stack[top - depth];
 }
 
 void stack_print_all() {
