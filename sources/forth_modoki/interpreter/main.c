@@ -14,19 +14,13 @@ int main(int argc, char* argv[]) {
             exit(1);
         }
 
-        fseek(f, 0, SEEK_END);
-        long length = ftell(f);
-        fseek(f, 0, SEEK_SET);
-        char* input = malloc(sizeof(char) * (length + 1));
-        fread(input, sizeof(char), length, f);
-        input[length] = '\0';
-
-        fclose(f);
-
-        cl_getc_set_src(input);
+        cl_getc_set_src_file(f);
 
         register_primitives();
         eval();
+
+        fclose(f);
+
         stack_print_all();
         return 0;
     }

@@ -11,6 +11,7 @@ return EOF if end of file.
 */
 int cl_getc();
 void cl_getc_set_src(char* str);
+void cl_getc_set_src_file(FILE* f);
 
 void eval();
 void exec_tests();
