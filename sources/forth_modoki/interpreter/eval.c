@@ -12,6 +12,7 @@ static int c_add(int n, int m) { return n + m; }
 static int c_sub(int n, int m) { return n - m; }
 static int c_mul(int n, int m) { return n * m; }
 static int c_div(int n, int m) { return n / m; }
+static int c_mod(int n, int m) { return n % m; }
 static int c_eq(int n, int m) { return n == m; }
 static int c_neq(int n, int m) { return n != m; }
 static int c_gt(int n, int m) { return n > m; }
@@ -36,6 +37,7 @@ static void add_op() { calc_op("add", c_add); }
 static void sub_op() { calc_op("sub", c_sub); }
 static void mul_op() { calc_op("mul", c_mul); }
 static void div_op() { calc_op("div", c_div); }
+static void mod_op() { calc_op("mod", c_mod); }
 static void eq_op() { calc_op("eq", c_eq); }
 static void neq_op() { calc_op("neq", c_neq); }
 static void gt_op() { calc_op("gt", c_gt); }
@@ -195,6 +197,7 @@ void register_primitives() {
     register_primitive("sub", sub_op);
     register_primitive("mul", mul_op);
     register_primitive("div", div_op);
+    register_primitive("mod", mod_op);
     register_primitive("eq", eq_op);
     register_primitive("neq", neq_op);
     register_primitive("gt", gt_op);
@@ -452,6 +455,17 @@ static void test_eval_num_mul() {
 static void test_eval_num_div() {
     char* input = "27 3 div";
     int expects[1] = { 9 };
+
+    cl_getc_set_src(input);
+
+    eval();
+
+    verify_stack_pop_number_eq(expects, 1);
+}
+
+static void test_eval_num_mod() {
+    char* input = "27 5 mod";
+    int expects[1] = { 2 };
 
     cl_getc_set_src(input);
 
@@ -977,6 +991,7 @@ void exec_tests() {
     test_eval_num_sub();
     test_eval_num_mul();
     test_eval_num_div();
+    test_eval_num_mod();
     test_eval_num_eq_true();
     test_eval_num_eq_false();
     test_eval_num_neq_true();
