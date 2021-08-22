@@ -1,0 +1,21 @@
+/sq {
+  dup  
+  mul
+} def
+
+/sum_k2 {
+  /k exch def
+  /sum 0 def
+
+  { k 0 gt } 
+  {
+    /sum sum k sq add def
+    /k k 1 sub def
+  } 
+  while
+
+  sum
+} def
+
+10 sum_k2
+% should be 385
