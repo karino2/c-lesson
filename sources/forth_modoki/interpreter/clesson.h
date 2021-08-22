@@ -12,7 +12,7 @@ return EOF if end of file.
 int cl_getc();
 void cl_getc_set_src(char* str);
 
-int eval();
+void eval();
 void exec_tests();
 void register_primitives();
 

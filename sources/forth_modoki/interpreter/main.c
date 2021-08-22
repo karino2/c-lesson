@@ -1,4 +1,5 @@
 #include "clesson.h"
+#include "stack.h"
 #include <stdio.h>
 
 int main(int argc, char* argv[]) {
@@ -25,7 +26,8 @@ int main(int argc, char* argv[]) {
         cl_getc_set_src(input);
 
         register_primitives();
-        printf("%d\n", eval());
+        eval();
+        stack_print_all();
         return 0;
     }
     default:

@@ -302,7 +302,7 @@ static void eval_exec_array(StackElementArray* exec_array) {
     }
 }
 
-int eval() {
+void eval() {
     int ch = EOF;
     Token token = {
         LT_UNKNOWN,
@@ -360,14 +360,6 @@ int eval() {
             }
         }
     } while (ch != EOF);
-
-    StackElement result;
-    stack_peek(&result);
-    if (result.type != ET_NUMBER) {
-        printf("result of input should be number, but got %d\n", result.type);
-        exit(1);
-    }
-    return result.u.number;
 }
 
 static void verify_stack_pop_number_eq(int expects[], int nexpects) {
