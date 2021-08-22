@@ -253,7 +253,7 @@ static void compile_exec_array(StackElement* out_element) {
                 break;
             }
         }
-    } while (token.ltype != EOF && token.ltype != LT_CLOSE_CURLY);
+    } while (token.ltype != LT_END_OF_FILE && token.ltype != LT_CLOSE_CURLY);
 
     StackElementArray* array = malloc(sizeof(StackElementArray) + sizeof(StackElement) * i);
     array->len = i;
