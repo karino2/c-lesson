@@ -2326,6 +2326,7 @@ PostScriptは、この言語でプログラムをする事自体がプログラ�
 これまでにこのコースをやった方の書いたソースへのリンクを貼っておきます。
 
 - [github:Oikawa124/c-lesson/PostScriptコード](https://github.com/Oikawa124/c-lesson/tree/11_extra/sources/forth_modoki/11_extra/PostScript_source_codes)
+   - この`sum_k2`はバグがあるかもしれません。
 - [github:harukawa/c-lesson/PostScriptコード](https://github.com/harukawa/c-lesson/tree/11_postscript/sources/forth_modoki/interpreter/ps)
 - [github:yoheikikuta/c-lesson/PostScriptコード](https://github.com/yoheikikuta/c-lesson/tree/11_postscript_scripts/sources/forth_modoki/interpreter/postscript_scripts)
 
