@@ -15,6 +15,10 @@ static int isspace(int c) {
     return c == ' ' || c == '\n';
 }
 
+static int isalphabet(int c) {
+    return 'A' <= c && c <= 'z';
+}
+
 static void parser_print_all() {
     int ch = EOF;
     Token token = {
@@ -76,12 +80,12 @@ int parse_one(int prev_ch, Token* out_token) {
         out_token->ltype = LT_SPACE;
         return c;
     }
-    else if ('A' <= prev_ch && prev_ch <= 'z') {
+    else if (isalphabet(prev_ch)) {
         char* name = malloc(NAME_SIZE * sizeof(char));
         name[0] = prev_ch;
 
         int c, i = 1;
-        while ((c = cl_getc()) != EOF && !isspace(c)) {
+        while ((c = cl_getc()) != EOF && (isalphabet(c) || isdigit(c))) {
             name[i++] = c;
         }
         name[i] = '\0';
