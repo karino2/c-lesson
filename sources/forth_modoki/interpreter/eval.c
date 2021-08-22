@@ -777,6 +777,17 @@ static void test_eval_exec_array_func_nested() {
     verify_stack_pop_number_eq(expects, 1);
 }
 
+static void test_eval_exec_array_exec_nested() {
+    char* input = "/f { {1 3 add} exec 3} def f";
+    int expects[2] = { 3, 4 };
+
+    cl_getc_set_src(input);
+
+    eval();
+
+    verify_stack_pop_number_eq(expects, 2);
+}
+
 static void test_eval_exec_nums() {
     char* input = "{ 1 2 3 } exec";
     int expects[3] = { 3, 2, 1 };
@@ -790,6 +801,17 @@ static void test_eval_exec_nums() {
 
 static void test_eval_exec_func() {
     char* input = "{ 1 2 add } exec";
+    int expects[1] = { 3 };
+
+    cl_getc_set_src(input);
+
+    eval();
+
+    verify_stack_pop_number_eq(expects, 1);
+}
+
+static void test_eval_exec_func_in_executable_array() {
+    char* input = "{ { 1 2 add } exec } exec";
     int expects[1] = { 3 };
 
     cl_getc_set_src(input);
@@ -843,6 +865,50 @@ static void test_eval_ifelse_false() {
     verify_stack_pop_number_eq(expects, 1);
 }
 
+static void test_eval_ifelse_true_in_executable_array() {
+    char* input = "{ 3 1 { 1 add } { 2 add } ifelse } exec";
+    int expects[1] = { 4 };
+
+    cl_getc_set_src(input);
+
+    eval();
+
+    verify_stack_pop_number_eq(expects, 1);
+}
+
+static void test_eval_ifelse_false_in_executable_array() {
+    char* input = "{ 3 0 { 1 add } { 2 add } ifelse } exec";
+    int expects[1] = { 5 };
+
+    cl_getc_set_src(input);
+
+    eval();
+
+    verify_stack_pop_number_eq(expects, 1);
+}
+
+static void test_eval_ifelse_then_num() {
+    char* input = "3 1 { 1 add } { 2 add } ifelse 7";
+    int expects[2] = { 7, 4 };
+
+    cl_getc_set_src(input);
+
+    eval();
+
+    verify_stack_pop_number_eq(expects, 2);
+}
+
+static void test_eval_ifelse_incomplete_executable_array() {
+    char* input = "/a { {345} ifelse} def 1 {123} a";
+    int expects[1] = { 123 };
+
+    cl_getc_set_src(input);
+
+    eval();
+
+    verify_stack_pop_number_eq(expects, 1);
+}
+
 static void test_eval_while() {
     char* input = "0 { dup 3 lt } { dup 1 add } while";
     int expects[4] = { 3, 2, 1, 0 };
@@ -854,6 +920,28 @@ static void test_eval_while() {
     verify_stack_pop_number_eq(expects, 4);
 }
 
+static void test_eval_while_in_executable_array() {
+    char* input = "{ 0 { dup 3 lt } { dup 1 add } while } exec";
+    int expects[4] = { 3, 2, 1, 0 };
+
+    cl_getc_set_src(input);
+
+    eval();
+
+    verify_stack_pop_number_eq(expects, 4);
+}
+
+static void test_eval_while_then_num() {
+    char* input = "0 { dup 3 lt } { dup 1 add } while 7";
+    int expects[5] = { 7, 3, 2, 1, 0 };
+
+    cl_getc_set_src(input);
+
+    eval();
+
+    verify_stack_pop_number_eq(expects, 5);
+}
+
 static void test_eval_comments() {
     char* input = "1 \% hello this is comment\n2\n3 \% ignore me";
     int expects[3] = { 3, 2, 1 };
@@ -863,6 +951,18 @@ static void test_eval_comments() {
     eval();
 
     verify_stack_pop_number_eq(expects, 3);
+}
+
+static void test_eval_factorial() {
+    char* input = "/factorial { dup {dup 1 gt} { 1 sub exch 1 index mul exch } while pop } def 10 factorial";
+
+    int expects[1] = { 3628800 };
+
+    cl_getc_set_src(input);
+
+    eval();
+
+    verify_stack_pop_number_eq(expects, 1);
 }
 
 static void verify_dict_put_and_get(
@@ -1018,16 +1118,26 @@ void exec_tests() {
     test_eval_exec_array_func();
     test_eval_exec_array_num_nested();
     test_eval_exec_array_func_nested();
+    test_eval_exec_array_exec_nested();
 
     test_eval_exec_nums();
     test_eval_exec_func();
+    test_eval_exec_func_in_executable_array();
     test_eval_if_true();
     test_eval_if_false();
     test_eval_ifelse_true();
     test_eval_ifelse_false();
+    test_eval_ifelse_true_in_executable_array();
+    test_eval_ifelse_false_in_executable_array();
+    test_eval_ifelse_then_num();
+    test_eval_ifelse_incomplete_executable_array();
     test_eval_while();
+    test_eval_while_in_executable_array();
+    test_eval_while_then_num();
 
     test_eval_comments();
+
+    test_eval_factorial();
 
     test_dict_no_element_name_not_found();
     test_dict_name_found();
