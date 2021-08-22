@@ -1,0 +1,28 @@
+/fizzbuzz {
+  /n exch def
+  /i 1 def
+
+  { i n le } 
+  {
+    i 15 mod    
+    { 
+      i 3 mod
+      {
+        i 5 mod
+        { i }
+        { /Buzz }
+        ifelse
+      }
+      { /Fizz }
+      ifelse
+    }
+    { /FizzBuzz }
+    ifelse
+
+    /i i 1 add def
+  } 
+  while
+} def
+
+15 fizzbuzz
+% should be "1 2 /Fizz 4 /Buzz /Fizz 7 8 /Fizz /Buzz 11 /Fizz 13 14 /FizzBuzz"
