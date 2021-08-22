@@ -1,0 +1,14 @@
+/repeat {
+  /block exch def
+  /repeat_count exch def
+
+  { repeat_count 0 gt } 
+  {
+    /repeat_count repeat_count 1 sub def
+    block
+  } 
+  while
+} def
+
+3 { 1 2 } repeat
+% should be "1 2 1 2 1 2"
