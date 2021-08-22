@@ -1,0 +1,20 @@
+/fib {
+  /n exch def
+
+  0 1
+
+  { n 1 gt } 
+  {
+    exch
+    1 index
+    add
+    /n n 1 sub def
+  } 
+  while
+
+  exch
+  pop
+} def
+
+30 fib
+% should be 832040
