@@ -23,4 +23,6 @@ typedef struct {
 
 int parse_one(int prev_ch, Token* out_token);
 
+void token_print(Token* token);
+
 #endif

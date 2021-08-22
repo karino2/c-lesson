@@ -127,3 +127,29 @@ int parse_one(int prev_ch, Token* out_token) {
         return EOF;
     }
 }
+
+void token_print(Token* token) {
+    switch (token->ltype) {
+    case LT_NUMBER:
+        printf("NUMBER: %d\n", token->u.number);
+        break;
+    case LT_SPACE:
+        printf("SPACE\n");
+        break;
+    case LT_OPEN_CURLY:
+        printf("OPEN_CURLY '%c'\n", token->u.onechar);
+        break;
+    case LT_CLOSE_CURLY:
+        printf("CLOSE_CURLY '%c'\n", token->u.onechar);
+        break;
+    case LT_EXECUTABLE_NAME:
+        printf("EXECUTABLE_NAME: %s\n", token->u.name);
+        break;
+    case LT_LITERAL_NAME:
+        printf("LITERAL_NAME: %s\n", token->u.name);
+        break;
+    default:
+        printf("unknown type %d\n", token->ltype);
+        break;
+    }
+}
