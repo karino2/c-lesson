@@ -1,0 +1,48 @@
+/isprime {
+  /n exch def
+  /i 2 def
+
+  % 1 を push しておく。もし素数ではなかったら 0 に置き換える
+  1
+
+  { i n 2 div le }
+  {
+    0 n i mod eq
+    {
+      % n が i で割り切れたので素数ではない。事前に push してあった 1 を 0 に置き換えてからi に n を set して while を脱出
+      pop
+      0
+      /i n def
+    }
+    {
+      i n 2 div eq
+      { 
+        % i == n / 2 まで到達したら素数。i に n を set して while を脱出
+        /i n def
+      }
+      if
+    }
+    ifelse
+
+    /i i 1 add def
+  }
+  while
+} def
+
+/primeseries {
+  /m exch def
+  /j 2 def
+
+  { j m le } 
+  {
+    j isprime
+    { j }
+    if
+
+    /j j 1 add def
+  } 
+  while
+} def
+
+20 primeseries
+% should be "2 3 5 7 11 13 17 19"
