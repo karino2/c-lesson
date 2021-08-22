@@ -216,8 +216,8 @@ void register_primitives() {
     register_primitive("def", def_op);
 }
 
-static void compile_exec_array(StackElement* out_element) {
-    int ch = EOF;
+static int compile_exec_array(int prev_ch, StackElement* out_element) {
+    int ch = prev_ch;
     Token token = {
         LT_UNKNOWN,
         {0}
@@ -242,7 +242,7 @@ static void compile_exec_array(StackElement* out_element) {
                 break;
             case LT_OPEN_CURLY: {
                 StackElement e;
-                compile_exec_array(&e);
+                ch = compile_exec_array(ch, &e);
                 tmp[i++] = e;
                 break;
             }
@@ -259,6 +259,8 @@ static void compile_exec_array(StackElement* out_element) {
     array->len = i;
     memcpy(array->elements, tmp, sizeof(StackElement) * i);
     *out_element = (StackElement){ ET_EXECUTABLE_ARRAY, {.byte_codes = array} };
+
+    return ch;
 }
 
 static void eval_exec_array(StackElementArray* exec_array) {
@@ -345,7 +347,7 @@ int eval() {
             }
             case LT_OPEN_CURLY: {
                 StackElement e;
-                compile_exec_array(&e);
+                ch = compile_exec_array(ch, &e);
                 stack_push(&e);
                 break;
             }
