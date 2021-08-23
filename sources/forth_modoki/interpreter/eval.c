@@ -206,10 +206,10 @@ void register_primitives() {
     register_primitive("index", index_op);
     register_primitive("roll", roll_op);
 
-    register_primitive("exec", exec_op);
-    register_primitive("if", if_op);
-    register_primitive("ifelse", ifelse_op);
-    register_primitive("while", while_op);
+    // register_primitive("exec", exec_op);
+    // register_primitive("if", if_op);
+    // register_primitive("ifelse", ifelse_op);
+    // register_primitive("while", while_op);
 
     register_primitive("def", def_op);
 }
@@ -1113,31 +1113,31 @@ void exec_tests() {
 
     test_eval_num_def();
 
-    test_eval_exec_array_num();
-    test_eval_exec_array_num_many();
-    test_eval_exec_array_func();
-    test_eval_exec_array_num_nested();
-    test_eval_exec_array_func_nested();
-    test_eval_exec_array_exec_nested();
+    // test_eval_exec_array_num();
+    // test_eval_exec_array_num_many();
+    // test_eval_exec_array_func();
+    // test_eval_exec_array_num_nested();
+    // test_eval_exec_array_func_nested();
+    // test_eval_exec_array_exec_nested();
 
-    test_eval_exec_nums();
-    test_eval_exec_func();
-    test_eval_exec_func_in_executable_array();
-    test_eval_if_true();
-    test_eval_if_false();
-    test_eval_ifelse_true();
-    test_eval_ifelse_false();
-    test_eval_ifelse_true_in_executable_array();
-    test_eval_ifelse_false_in_executable_array();
-    test_eval_ifelse_then_num();
-    test_eval_ifelse_incomplete_executable_array();
-    test_eval_while();
-    test_eval_while_in_executable_array();
-    test_eval_while_then_num();
+    // test_eval_exec_nums();
+    // test_eval_exec_func();
+    // test_eval_exec_func_in_executable_array();
+    // test_eval_if_true();
+    // test_eval_if_false();
+    // test_eval_ifelse_true();
+    // test_eval_ifelse_false();
+    // test_eval_ifelse_true_in_executable_array();
+    // test_eval_ifelse_false_in_executable_array();
+    // test_eval_ifelse_then_num();
+    // test_eval_ifelse_incomplete_executable_array();
+    // test_eval_while();
+    // test_eval_while_in_executable_array();
+    // test_eval_while_then_num();
 
     test_eval_comments();
 
-    test_eval_factorial();
+    // test_eval_factorial();
 
     test_dict_no_element_name_not_found();
     test_dict_name_found();
