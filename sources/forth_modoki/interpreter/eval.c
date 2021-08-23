@@ -2,6 +2,7 @@
 #include "stack.h"
 #include "parser.h"
 #include "dict.h"
+#include "continuation.h"
 #include <assert.h>
 
 #define MAX_NAME_OP_NUMBERS 256
@@ -206,10 +207,10 @@ void register_primitives() {
     register_primitive("index", index_op);
     register_primitive("roll", roll_op);
 
-    // register_primitive("exec", exec_op);
-    // register_primitive("if", if_op);
-    // register_primitive("ifelse", ifelse_op);
-    // register_primitive("while", while_op);
+    register_primitive("exec", exec_op);
+    register_primitive("if", if_op);
+    register_primitive("ifelse", ifelse_op);
+    register_primitive("while", while_op);
 
     register_primitive("def", def_op);
 }
@@ -261,42 +262,53 @@ static int compile_exec_array(int prev_ch, StackElement* out_element) {
     return ch;
 }
 
-static void eval_exec_array(StackElementArray* exec_array) {
-    for (int i = 0; i < exec_array->len; i++) {
-        StackElement e = exec_array->elements[i];
-        switch (e.type) {
+static void eval_continuation(Continuation* cont) {
+    for (int pc = cont->pc; pc < cont->exec_array->len; pc++) {
+        StackElement elem = cont->exec_array->elements[pc];
+        switch (elem.type) {
         case ET_NUMBER:
         case ET_LITERAL_NAME:
-            stack_push(&e);
+            stack_push(&elem);
             break;
         case ET_EXECUTABLE_NAME: {
-            StackElement e_name;
-            if (!dict_get(e.u.name, &e_name)) {
-                printf("fail to resolve name %s\n", e.u.name);
+            StackElement exec_name;
+            if (!dict_get(elem.u.name, &exec_name)) {
+                printf("fail to resolve name %s\n", elem.u.name);
                 exit(1);
             }
 
-            if (e_name.type == ET_C_FUNC) {
+            if (exec_name.type == ET_C_FUNC) {
                 // プリミティブ。事前に登録してある関数を実行
-                e_name.u.cfunc();
+                exec_name.u.cfunc();
             }
-            else if (e_name.type == ET_EXECUTABLE_ARRAY) {
-                // 実行可能配列。バイトコードを実行
-                eval_exec_array(e_name.u.byte_codes);
+            else if (exec_name.type == ET_EXECUTABLE_ARRAY) {
+                // 実行可能配列。実行中の continuation と次に実行したい continuation を順番に co_stack に積む
+                co_stack_push(&(Continuation) { cont->exec_array, pc + 1 });
+                co_stack_push(&(Continuation) { exec_name.u.byte_codes, 0 });
+                return;
             }
             else {
                 // ユーザ定義の変数。変数が指す値を stack に push する
-                stack_push(&e_name);
+                stack_push(&exec_name);
             }
             break;
         }
         case ET_C_FUNC:
-            e.u.cfunc();
+            elem.u.cfunc();
             break;
         case ET_EXECUTABLE_ARRAY:
-            stack_push(&e);
+            stack_push(&elem);
             break;
         }
+    }
+}
+
+static void eval_exec_array(StackElementArray* exec_array) {
+    co_stack_push(&(Continuation) { exec_array, 0 });
+
+    Continuation cont;
+    while (co_stack_pop(&cont)) {
+        eval_continuation(&cont);
     }
 }
 
@@ -1113,27 +1125,27 @@ void exec_tests() {
 
     test_eval_num_def();
 
-    // test_eval_exec_array_num();
-    // test_eval_exec_array_num_many();
-    // test_eval_exec_array_func();
-    // test_eval_exec_array_num_nested();
-    // test_eval_exec_array_func_nested();
-    // test_eval_exec_array_exec_nested();
+    test_eval_exec_array_num();
+    test_eval_exec_array_num_many();
+    test_eval_exec_array_func();
+    test_eval_exec_array_num_nested();
+    test_eval_exec_array_func_nested();
+    test_eval_exec_array_exec_nested();
 
-    // test_eval_exec_nums();
-    // test_eval_exec_func();
-    // test_eval_exec_func_in_executable_array();
-    // test_eval_if_true();
-    // test_eval_if_false();
-    // test_eval_ifelse_true();
-    // test_eval_ifelse_false();
-    // test_eval_ifelse_true_in_executable_array();
-    // test_eval_ifelse_false_in_executable_array();
-    // test_eval_ifelse_then_num();
-    // test_eval_ifelse_incomplete_executable_array();
-    // test_eval_while();
-    // test_eval_while_in_executable_array();
-    // test_eval_while_then_num();
+    test_eval_exec_nums();
+    test_eval_exec_func();
+    test_eval_exec_func_in_executable_array();
+    test_eval_if_true();
+    test_eval_if_false();
+    test_eval_ifelse_true();
+    test_eval_ifelse_false();
+    test_eval_ifelse_true_in_executable_array();
+    test_eval_ifelse_false_in_executable_array();
+    test_eval_ifelse_then_num();
+    test_eval_ifelse_incomplete_executable_array();
+    test_eval_while();
+    test_eval_while_in_executable_array();
+    test_eval_while_then_num();
 
     test_eval_comments();
 
