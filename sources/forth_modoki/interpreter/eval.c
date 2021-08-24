@@ -282,6 +282,22 @@ static void eval_continuation(Continuation* cont) {
                 co_stack_push(&(Continuation) { exec_array.u.byte_codes, 0 });
                 return;
             }
+            else if (streq(elem.u.name, "if")) {
+                StackElement exec_array, cond;
+                stack_pop(&exec_array);
+                stack_pop(&cond);
+                if (exec_array.type != ET_EXECUTABLE_ARRAY || cond.type != ET_NUMBER) {
+                    printf("if expects executable array and number, but got (%d, %d)\n", exec_array.type, cond.type);
+                    exit(1);
+                }
+
+                co_stack_push(&(Continuation) { cont->exec_array, pc + 1 });
+                if (cond.u.number) {
+                    co_stack_push(&(Continuation) { exec_array.u.byte_codes, 0 });
+                }
+                return;
+            }
+
             StackElement exec_name;
             if (!dict_get(elem.u.name, &exec_name)) {
                 printf("fail to resolve name %s\n", elem.u.name);
@@ -1000,6 +1016,30 @@ static void test_eval_nested_exec() {
     verify_stack_pop_number_eq(expects, 3);
 }
 
+static void test_eval_nested_if_true() {
+    char* input = "/c { 3 } def /b { 1 { c } if 2 } def /a { b 1 } def a";
+
+    int expects[3] = { 1, 2, 3 };
+
+    cl_getc_set_src(input);
+
+    eval();
+
+    verify_stack_pop_number_eq(expects, 3);
+}
+
+static void test_eval_nested_if_false() {
+    char* input = "/c { 3 } def /b { 0 { c } if 2 } def /a { b 1 } def a";
+
+    int expects[2] = { 1, 2 };
+
+    cl_getc_set_src(input);
+
+    eval();
+
+    verify_stack_pop_number_eq(expects, 2);
+}
+
 static void verify_dict_put_and_get(
     int ninput, char* input_keys[], StackElement input_elements[],
     char* target_key, int expect_found, int expect_value
@@ -1175,6 +1215,8 @@ void exec_tests() {
     test_eval_factorial();
 
     test_eval_nested_exec();
+    test_eval_nested_if_true();
+    test_eval_nested_if_false();
 
     test_dict_no_element_name_not_found();
     test_dict_name_found();
