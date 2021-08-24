@@ -297,6 +297,25 @@ static void eval_continuation(Continuation* cont) {
                 }
                 return;
             }
+            else if (streq(elem.u.name, "ifelse")) {
+                StackElement exec_array_f, exec_array_t, cond;
+                stack_pop(&exec_array_f);
+                stack_pop(&exec_array_t);
+                stack_pop(&cond);
+                if (exec_array_f.type != ET_EXECUTABLE_ARRAY || exec_array_t.type != ET_EXECUTABLE_ARRAY || cond.type != ET_NUMBER) {
+                    printf("ifelse expects two executable arrays and number, but got (%d, %d, %d)\n", exec_array_f.type, exec_array_t.type, cond.type);
+                    exit(1);
+                }
+
+                co_stack_push(&(Continuation) { cont->exec_array, pc + 1 });
+                if (cond.u.number) {
+                    co_stack_push(&(Continuation) { exec_array_t.u.byte_codes, 0 });
+                }
+                else {
+                    co_stack_push(&(Continuation) { exec_array_f.u.byte_codes, 0 });
+                }
+                return;
+            }
 
             StackElement exec_name;
             if (!dict_get(elem.u.name, &exec_name)) {
@@ -1040,6 +1059,30 @@ static void test_eval_nested_if_false() {
     verify_stack_pop_number_eq(expects, 2);
 }
 
+static void test_eval_nested_ifelse_true() {
+    char* input = "/d { 4 } def /c { 3 } def /b { 1 { c } { d } ifelse 2 } def /a { b 1 } def a";
+
+    int expects[3] = { 1, 2, 3 };
+
+    cl_getc_set_src(input);
+
+    eval();
+
+    verify_stack_pop_number_eq(expects, 3);
+}
+
+static void test_eval_nested_ifelse_false() {
+    char* input = "/d { 4 } def /c { 3 } def /b { 0 { c } { d } ifelse 2 } def /a { b 1 } def a";
+
+    int expects[3] = { 1, 2, 4 };
+
+    cl_getc_set_src(input);
+
+    eval();
+
+    verify_stack_pop_number_eq(expects, 3);
+}
+
 static void verify_dict_put_and_get(
     int ninput, char* input_keys[], StackElement input_elements[],
     char* target_key, int expect_found, int expect_value
@@ -1217,6 +1260,8 @@ void exec_tests() {
     test_eval_nested_exec();
     test_eval_nested_if_true();
     test_eval_nested_if_false();
+    test_eval_nested_ifelse_true();
+    test_eval_nested_ifelse_false();
 
     test_dict_no_element_name_not_found();
     test_dict_name_found();
