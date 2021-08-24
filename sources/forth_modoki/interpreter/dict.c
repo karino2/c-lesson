@@ -5,7 +5,7 @@
 
 #define TABLE_SIZE 16
 
-static int streq(char* s1, char* s2) {
+int streq(char* s1, char* s2) {
     return strcmp(s1, s2) == 0;
 }
 

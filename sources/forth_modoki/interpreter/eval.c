@@ -271,6 +271,17 @@ static void eval_continuation(Continuation* cont) {
             stack_push(&elem);
             break;
         case ET_EXECUTABLE_NAME: {
+            if (streq(elem.u.name, "exec")) {
+                StackElement exec_array;
+                stack_pop(&exec_array);
+                if (exec_array.type != ET_EXECUTABLE_ARRAY) {
+                    printf("exec expects executable array, but got: %d\n", exec_array.type);
+                    exit(1);
+                }
+                co_stack_push(&(Continuation) { cont->exec_array, pc + 1 });
+                co_stack_push(&(Continuation) { exec_array.u.byte_codes, 0 });
+                return;
+            }
             StackElement exec_name;
             if (!dict_get(elem.u.name, &exec_name)) {
                 printf("fail to resolve name %s\n", elem.u.name);
@@ -977,6 +988,18 @@ static void test_eval_factorial() {
     verify_stack_pop_number_eq(expects, 1);
 }
 
+static void test_eval_nested_exec() {
+    char* input = "/c { 3 } def /b { { c } exec 2 } def /a { b 1 } def a";
+
+    int expects[3] = { 1, 2, 3 };
+
+    cl_getc_set_src(input);
+
+    eval();
+
+    verify_stack_pop_number_eq(expects, 3);
+}
+
 static void verify_dict_put_and_get(
     int ninput, char* input_keys[], StackElement input_elements[],
     char* target_key, int expect_found, int expect_value
@@ -1150,6 +1173,8 @@ void exec_tests() {
     test_eval_comments();
 
     test_eval_factorial();
+
+    test_eval_nested_exec();
 
     test_dict_no_element_name_not_found();
     test_dict_name_found();

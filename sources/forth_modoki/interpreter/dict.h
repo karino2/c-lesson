@@ -11,4 +11,6 @@ void dict_clear();
 
 void dict_print_all();
 
+int streq(char* s1, char* s2);
+
 #endif
