@@ -34,4 +34,6 @@ void stack_peek(int depth, StackElement* out_element);
 
 void stack_print_all();
 
+void stack_element_debug_string(char* buf, StackElement* element);
+
 #endif

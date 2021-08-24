@@ -1149,7 +1149,7 @@ void exec_tests() {
 
     test_eval_comments();
 
-    // test_eval_factorial();
+    test_eval_factorial();
 
     test_dict_no_element_name_not_found();
     test_dict_name_found();
