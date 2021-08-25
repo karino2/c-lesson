@@ -224,6 +224,21 @@ static void emit(Emitter* em, StackElement elem) {
     em->elems[em->pos++] = elem;
 }
 
+static void compile_ifelse(Emitter* em) {
+    emit(em, number_element(3));
+    emit(em, number_element(2));
+    emit(em, ename_element("roll"));
+    emit(em, number_element(5));
+    emit(em, ename_element("jmp_not_if"));
+    emit(em, ename_element("pop"));
+    emit(em, ename_element("exec"));
+    emit(em, number_element(4));
+    emit(em, ename_element("jmp"));
+    emit(em, ename_element("exch"));
+    emit(em, ename_element("pop"));
+    emit(em, ename_element("exec"));
+}
+
 static int compile_exec_array(int prev_ch, StackElement* out_element) {
     int ch = prev_ch;
     Token token = {
@@ -245,18 +260,7 @@ static int compile_exec_array(int prev_ch, StackElement* out_element) {
                 break;
             case LT_EXECUTABLE_NAME:
                 if (streq(token.u.name, "ifelse")) {
-                    emit(&em, number_element(3));
-                    emit(&em, number_element(2));
-                    emit(&em, ename_element("roll"));
-                    emit(&em, number_element(5));
-                    emit(&em, ename_element("jmp_not_if"));
-                    emit(&em, ename_element("pop"));
-                    emit(&em, ename_element("exec"));
-                    emit(&em, number_element(4));
-                    emit(&em, ename_element("jmp"));
-                    emit(&em, ename_element("exch"));
-                    emit(&em, ename_element("pop"));
-                    emit(&em, ename_element("exec"));
+                    compile_ifelse(&em);
                 }
                 else {
                     emit(&em, ename_element(token.u.name));
