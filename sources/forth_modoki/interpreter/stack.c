@@ -38,6 +38,21 @@ void stack_print_all() {
     printf("-------------\n");
 }
 
+StackElement number_element(int number) {
+    return (StackElement) { ET_NUMBER, { .number = number } };
+}
+
+StackElement ename_element(char* name) {
+    return (StackElement) { ET_EXECUTABLE_NAME, { .name = name } };
+}
+
+StackElement lname_element(char* name) {
+    return (StackElement) { ET_LITERAL_NAME, { .name = name } };
+}
+
+StackElement earray_element(StackElementArray* byte_codes) {
+    return (StackElement) { ET_EXECUTABLE_ARRAY, { .byte_codes = byte_codes } };
+}
 void stack_element_debug_string(char* buf, StackElement* element) {
     switch (element->type) {
     case ET_NUMBER:

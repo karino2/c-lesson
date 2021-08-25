@@ -36,4 +36,9 @@ void stack_print_all();
 
 void stack_element_debug_string(char* buf, StackElement* element);
 
+StackElement number_element(int number);
+StackElement ename_element(char* name);
+StackElement lname_element(char* name);
+StackElement earray_element(StackElementArray* byte_codes);
+
 #endif
