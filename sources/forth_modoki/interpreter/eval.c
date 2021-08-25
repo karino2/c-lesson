@@ -307,13 +307,24 @@ static void eval_continuation(Continuation* cont) {
                     exit(1);
                 }
 
+                StackElement tmp[9] = {
+                    cond,
+                    { ET_NUMBER, {.number = 5} },
+                    { ET_EXECUTABLE_NAME, {.name = "jmp_not_if"} },
+                    exec_array_t,
+                    { ET_EXECUTABLE_NAME, {.name = "exec" } },
+                    { ET_NUMBER, {.number = 3} },
+                    { ET_EXECUTABLE_NAME, {.name = "jmp" } },
+                    exec_array_f,
+                    { ET_EXECUTABLE_NAME, {.name = "exec" } },
+                };
+
+                StackElementArray* elem_array = malloc(sizeof(StackElementArray) + sizeof(StackElement) * 9);
+                elem_array->len = 9;
+                memcpy(elem_array->elements, tmp, sizeof(StackElement) * 9);
+
                 co_stack_push(&(Continuation) { cont->exec_array, pc + 1 });
-                if (cond.u.number) {
-                    co_stack_push(&(Continuation) { exec_array_t.u.byte_codes, 0 });
-                }
-                else {
-                    co_stack_push(&(Continuation) { exec_array_f.u.byte_codes, 0 });
-                }
+                co_stack_push(&(Continuation) { elem_array, 0 });
                 return;
             }
             else if (streq(elem.u.name, "jmp")) {
