@@ -316,6 +316,17 @@ static void eval_continuation(Continuation* cont) {
                 }
                 return;
             }
+            else if (streq(elem.u.name, "jmp")) {
+                StackElement num;
+                stack_pop(&num);
+                if (num.type != ET_NUMBER) {
+                    printf("jmp expects number, but got %d\n", num.type);
+                    exit(1);
+                }
+
+                co_stack_push(&(Continuation) { cont->exec_array, pc + num.u.number });
+                return;
+            }
 
             StackElement exec_name;
             if (!dict_get(elem.u.name, &exec_name)) {
@@ -1083,6 +1094,30 @@ static void test_eval_nested_ifelse_false() {
     verify_stack_pop_number_eq(expects, 3);
 }
 
+static void test_eval_jmp_positive() {
+    char* input = "{ 1 2 jmp 3 4 5 } exec";
+
+    int expects[3] = { 5, 4, 1 };
+
+    cl_getc_set_src(input);
+
+    eval();
+
+    verify_stack_pop_number_eq(expects, 3);
+}
+
+static void test_eval_jmp_positive_over() {
+    char* input = "{ 1 4 jmp 3 4 5 } exec";
+
+    int expects[1] = { 1 };
+
+    cl_getc_set_src(input);
+
+    eval();
+
+    verify_stack_pop_number_eq(expects, 1);
+}
+
 static void verify_dict_put_and_get(
     int ninput, char* input_keys[], StackElement input_elements[],
     char* target_key, int expect_found, int expect_value
@@ -1262,6 +1297,9 @@ void exec_tests() {
     test_eval_nested_if_false();
     test_eval_nested_ifelse_true();
     test_eval_nested_ifelse_false();
+
+    test_eval_jmp_positive();
+    test_eval_jmp_positive_over();
 
     test_dict_no_element_name_not_found();
     test_dict_name_found();
