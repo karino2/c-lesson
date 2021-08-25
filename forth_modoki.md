@@ -3650,3 +3650,4 @@ Javaバイトコードはよく出来ているので本格的なVMを勉強し�
    - [Reading Java methods in bytecode](https://www.waitingforcode.com/java-bytecode/reading-java-methods-in-bytecode/read) 同サイトのもうちょっと長い関数の解説。これも結構コメントで解説が書かれている。
 - [Amazon: JAVAバーチャルマシン (THE JAVA SERIES)](https://www.amazon.co.jp/dp/490090063X) 自分は昔この本読みました。今ならもっと良い本があると思いますが、この本は割とself containedで全部分かった、とは思えた気がする。
 
+お疲れ様でした。次の[第二回 簡易アセンブラとディスアセンブラを作ろう](arm_asm.md)も良かったらどうぞ。
