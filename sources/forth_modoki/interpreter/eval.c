@@ -327,6 +327,23 @@ static void eval_continuation(Continuation* cont) {
                 co_stack_push(&(Continuation) { cont->exec_array, pc + num.u.number });
                 return;
             }
+            else if (streq(elem.u.name, "jmp_not_if")) {
+                StackElement num, cond;
+                stack_pop(&num);
+                stack_pop(&cond);
+                if (num.type != ET_NUMBER || cond.type != ET_NUMBER) {
+                    printf("jmp_not_if expects numbers, but got (%d, %d)\n", num.type, cond.type);
+                    exit(1);
+                }
+
+                if (!cond.u.number) {
+                    co_stack_push(&(Continuation) { cont->exec_array, pc + num.u.number });
+                }
+                else {
+                    co_stack_push(&(Continuation) { cont->exec_array, pc + 1 });
+                }
+                return;
+            }
 
             StackElement exec_name;
             if (!dict_get(elem.u.name, &exec_name)) {
@@ -1118,6 +1135,42 @@ static void test_eval_jmp_positive_over() {
     verify_stack_pop_number_eq(expects, 1);
 }
 
+static void test_eval_jmp_not_if_not_executed() {
+    char* input = "{ 1 1 2 jmp_not_if 3 4 5 } exec";
+
+    int expects[4] = { 5, 4, 3, 1 };
+
+    cl_getc_set_src(input);
+
+    eval();
+
+    verify_stack_pop_number_eq(expects, 4);
+}
+
+static void test_eval_jmp_not_if_positive() {
+    char* input = "{ 1 0 2 jmp_not_if 3 4 5 } exec";
+
+    int expects[3] = { 5, 4, 1 };
+
+    cl_getc_set_src(input);
+
+    eval();
+
+    verify_stack_pop_number_eq(expects, 3);
+}
+
+static void test_eval_jmp_not_if_positive_over() {
+    char* input = "{ 1 0 4 jmp_not_if 3 4 5 } exec";
+
+    int expects[1] = { 1 };
+
+    cl_getc_set_src(input);
+
+    eval();
+
+    verify_stack_pop_number_eq(expects, 1);
+}
+
 static void verify_dict_put_and_get(
     int ninput, char* input_keys[], StackElement input_elements[],
     char* target_key, int expect_found, int expect_value
@@ -1300,6 +1353,9 @@ void exec_tests() {
 
     test_eval_jmp_positive();
     test_eval_jmp_positive_over();
+    test_eval_jmp_not_if_positive();
+    test_eval_jmp_not_if_positive_over();
+    test_eval_jmp_not_if_not_executed();
 
     test_dict_no_element_name_not_found();
     test_dict_name_found();
