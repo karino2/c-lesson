@@ -234,7 +234,23 @@ static int compile_exec_array(int prev_ch, StackElement* out_element) {
                 tmp[i++] = (StackElement){ ET_NUMBER, {.number = token.u.number} };
                 break;
             case LT_EXECUTABLE_NAME:
-                tmp[i++] = (StackElement){ ET_EXECUTABLE_NAME, {.name = token.u.name} };
+                if (streq(token.u.name, "ifelse")) {
+                    tmp[i++] = (StackElement){ ET_NUMBER, {.number = 3} };
+                    tmp[i++] = (StackElement){ ET_NUMBER, {.number = 2} };
+                    tmp[i++] = (StackElement){ ET_EXECUTABLE_NAME, {.name = "roll"} };
+                    tmp[i++] = (StackElement){ ET_NUMBER, {.number = 5} };
+                    tmp[i++] = (StackElement){ ET_EXECUTABLE_NAME, {.name = "jmp_not_if"} };
+                    tmp[i++] = (StackElement){ ET_EXECUTABLE_NAME, {.name = "pop"} };
+                    tmp[i++] = (StackElement){ ET_EXECUTABLE_NAME, {.name = "exec"} };
+                    tmp[i++] = (StackElement){ ET_NUMBER, {.number = 4} };
+                    tmp[i++] = (StackElement){ ET_EXECUTABLE_NAME, {.name = "jmp"} };
+                    tmp[i++] = (StackElement){ ET_EXECUTABLE_NAME, {.name = "exch"} };
+                    tmp[i++] = (StackElement){ ET_EXECUTABLE_NAME, {.name = "pop"} };
+                    tmp[i++] = (StackElement){ ET_EXECUTABLE_NAME, {.name = "exec"} };
+                }
+                else {
+                    tmp[i++] = (StackElement){ ET_EXECUTABLE_NAME, {.name = token.u.name} };
+                }
                 break;
             case LT_LITERAL_NAME:
                 tmp[i++] = (StackElement){ ET_LITERAL_NAME, {.name = token.u.name} };
@@ -295,36 +311,6 @@ static void eval_continuation(Continuation* cont) {
                 if (cond.u.number) {
                     co_stack_push(&(Continuation) { exec_array.u.byte_codes, 0 });
                 }
-                return;
-            }
-            else if (streq(elem.u.name, "ifelse")) {
-                StackElement exec_array_f, exec_array_t, cond;
-                stack_pop(&exec_array_f);
-                stack_pop(&exec_array_t);
-                stack_pop(&cond);
-                if (exec_array_f.type != ET_EXECUTABLE_ARRAY || exec_array_t.type != ET_EXECUTABLE_ARRAY || cond.type != ET_NUMBER) {
-                    printf("ifelse expects two executable arrays and number, but got (%d, %d, %d)\n", exec_array_f.type, exec_array_t.type, cond.type);
-                    exit(1);
-                }
-
-                StackElement tmp[9] = {
-                    cond,
-                    { ET_NUMBER, {.number = 5} },
-                    { ET_EXECUTABLE_NAME, {.name = "jmp_not_if"} },
-                    exec_array_t,
-                    { ET_EXECUTABLE_NAME, {.name = "exec" } },
-                    { ET_NUMBER, {.number = 3} },
-                    { ET_EXECUTABLE_NAME, {.name = "jmp" } },
-                    exec_array_f,
-                    { ET_EXECUTABLE_NAME, {.name = "exec" } },
-                };
-
-                StackElementArray* elem_array = malloc(sizeof(StackElementArray) + sizeof(StackElement) * 9);
-                elem_array->len = 9;
-                memcpy(elem_array->elements, tmp, sizeof(StackElement) * 9);
-
-                co_stack_push(&(Continuation) { cont->exec_array, pc + 1 });
-                co_stack_push(&(Continuation) { elem_array, 0 });
                 return;
             }
             else if (streq(elem.u.name, "jmp")) {
