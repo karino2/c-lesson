@@ -3,11 +3,14 @@
 
 #define MAX_NAME_OP_NUMBERS 256
 
+typedef struct Emitter Emitter;
+
 typedef enum {
     ET_NUMBER,
     ET_EXECUTABLE_NAME,
     ET_LITERAL_NAME,
     ET_C_FUNC,
+    ET_COMPILE_FUNC,
     ET_EXECUTABLE_ARRAY,
 } StackElementType;
 
@@ -19,6 +22,7 @@ typedef struct {
         int number;
         char* name;
         void (*cfunc)();
+        void (*compfunc)(Emitter* em);
         StackElementArray* byte_codes;
     } u;
 } StackElement;
@@ -43,10 +47,12 @@ StackElement ename_element(char* name);
 StackElement lname_element(char* name);
 StackElement earray_element(StackElementArray* byte_codes);
 
-typedef struct {
+struct Emitter {
     StackElement elems[MAX_NAME_OP_NUMBERS];
     int pos;
-} Emitter;
+};
+
+void register_compile_funcs();
 
 int compile_exec_array(int prev_ch, StackElement* out_element);
 

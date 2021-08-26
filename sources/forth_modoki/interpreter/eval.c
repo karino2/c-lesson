@@ -302,6 +302,9 @@ static void eval_continuation(Continuation* cont) {
         case ET_C_FUNC:
             elem.u.cfunc();
             break;
+        case ET_COMPILE_FUNC:
+            printf("compile func should be converted in compile time, but exists in eval\n");
+            exit(1);
         case ET_EXECUTABLE_ARRAY:
             stack_push(&elem);
             break;
@@ -1214,6 +1217,7 @@ static void test_dict_overwritten_not_head_name_found() {
 }
 
 void exec_tests() {
+    register_compile_funcs();
     register_primitives();
 
     test_eval_num_one();

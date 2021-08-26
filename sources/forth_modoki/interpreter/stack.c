@@ -72,6 +72,9 @@ void stack_element_debug_string(char* buf, StackElement* element) {
     case ET_C_FUNC:
         sprintf(buf, "C_FUNC");
         break;
+    case ET_COMPILE_FUNC:
+        sprintf(buf, "COMPILE_FUNC");
+        break;
     case ET_EXECUTABLE_ARRAY:
         sprintf(buf, "ET_EXECUTABLE_ARRAY");
         break;
@@ -97,6 +100,10 @@ static void compile_ifelse(Emitter* em) {
     emit(em, ename_element("exec"));
 }
 
+void register_compile_funcs() {
+    compile_dict_put("ifelse", &(StackElement){ ET_COMPILE_FUNC, { .compfunc = compile_ifelse } });
+}
+
 int compile_exec_array(int prev_ch, StackElement* out_element) {
     int ch = prev_ch;
     Token token = {
@@ -116,14 +123,20 @@ int compile_exec_array(int prev_ch, StackElement* out_element) {
             case LT_NUMBER:
                 emit(&em, number_element(token.u.number));
                 break;
-            case LT_EXECUTABLE_NAME:
-                if (streq(token.u.name, "ifelse")) {
-                    compile_ifelse(&em);
+            case LT_EXECUTABLE_NAME: {
+                StackElement exec_name;
+                if (compile_dict_get(token.u.name, &exec_name)) {
+                    if (exec_name.type != ET_COMPILE_FUNC) {
+                        printf("expect resolved func %s to be compile func, but got %d\n", token.u.name, exec_name.type);
+                        exit(1);
+                    }
+                    exec_name.u.compfunc(&em);
                 }
                 else {
                     emit(&em, ename_element(token.u.name));
                 }
                 break;
+            }
             case LT_LITERAL_NAME:
                 emit(&em, lname_element(token.u.name));
                 break;
