@@ -233,21 +233,6 @@ static void eval_continuation(Continuation* cont) {
                 co_stack_push(&(Continuation) { exec_array.u.byte_codes, 0 });
                 return;
             }
-            else if (streq(elem.u.name, "if")) {
-                StackElement exec_array, cond;
-                stack_pop(&exec_array);
-                stack_pop(&cond);
-                if (exec_array.type != ET_EXECUTABLE_ARRAY || cond.type != ET_NUMBER) {
-                    printf("if expects executable array and number, but got (%d, %d)\n", exec_array.type, cond.type);
-                    exit(1);
-                }
-
-                co_stack_push(&(Continuation) { cont->exec_array, pc + 1 });
-                if (cond.u.number) {
-                    co_stack_push(&(Continuation) { exec_array.u.byte_codes, 0 });
-                }
-                return;
-            }
             else if (streq(elem.u.name, "jmp")) {
                 StackElement num;
                 stack_pop(&num);

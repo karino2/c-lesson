@@ -85,6 +85,16 @@ static void emit(Emitter* em, StackElement elem) {
     em->elems[em->pos++] = elem;
 }
 
+static void compile_if(Emitter* em) {
+    emit(em, ename_element("exch"));
+    emit(em, number_element(4));
+    emit(em, ename_element("jmp_not_if"));
+    emit(em, ename_element("exec"));
+    emit(em, number_element(1));
+    emit(em, ename_element("jmp"));
+    emit(em, ename_element("pop"));
+}
+
 static void compile_ifelse(Emitter* em) {
     emit(em, number_element(3));
     emit(em, number_element(2));
@@ -102,6 +112,7 @@ static void compile_ifelse(Emitter* em) {
 
 void register_compile_funcs() {
     compile_dict_put("ifelse", &(StackElement){ ET_COMPILE_FUNC, { .compfunc = compile_ifelse } });
+    compile_dict_put("if", &(StackElement){ ET_COMPILE_FUNC, { .compfunc = compile_if } });
 }
 
 int compile_exec_array(int prev_ch, StackElement* out_element) {
