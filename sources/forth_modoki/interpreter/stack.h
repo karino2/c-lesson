@@ -1,6 +1,8 @@
 #ifndef STACK_H
 #define STACK_H
 
+#define MAX_NAME_OP_NUMBERS 256
+
 typedef enum {
     ET_NUMBER,
     ET_EXECUTABLE_NAME,
@@ -40,5 +42,12 @@ StackElement number_element(int number);
 StackElement ename_element(char* name);
 StackElement lname_element(char* name);
 StackElement earray_element(StackElementArray* byte_codes);
+
+typedef struct {
+    StackElement elems[MAX_NAME_OP_NUMBERS];
+    int pos;
+} Emitter;
+
+int compile_exec_array(int prev_ch, StackElement* out_element);
 
 #endif

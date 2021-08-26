@@ -5,8 +5,6 @@
 #include "continuation.h"
 #include <assert.h>
 
-#define MAX_NAME_OP_NUMBERS 256
-
 static void eval_exec_array(StackElementArray* exec_array);
 
 static int c_add(int n, int m) { return n + m; }
@@ -213,83 +211,6 @@ void register_primitives() {
     register_primitive("while", while_op);
 
     register_primitive("def", def_op);
-}
-
-typedef struct {
-    StackElement elems[MAX_NAME_OP_NUMBERS];
-    int pos;
-} Emitter;
-
-static void emit(Emitter* em, StackElement elem) {
-    em->elems[em->pos++] = elem;
-}
-
-static void compile_ifelse(Emitter* em) {
-    emit(em, number_element(3));
-    emit(em, number_element(2));
-    emit(em, ename_element("roll"));
-    emit(em, number_element(5));
-    emit(em, ename_element("jmp_not_if"));
-    emit(em, ename_element("pop"));
-    emit(em, ename_element("exec"));
-    emit(em, number_element(4));
-    emit(em, ename_element("jmp"));
-    emit(em, ename_element("exch"));
-    emit(em, ename_element("pop"));
-    emit(em, ename_element("exec"));
-}
-
-static int compile_exec_array(int prev_ch, StackElement* out_element) {
-    int ch = prev_ch;
-    Token token = {
-        LT_UNKNOWN,
-        {0}
-    };
-
-    int i = 0;
-    Emitter em;
-    em.pos = 0;
-
-    do {
-        ch = parse_one(ch, &token);
-
-        if (token.ltype != LT_UNKNOWN) {
-            switch (token.ltype) {
-            case LT_NUMBER:
-                emit(&em, number_element(token.u.number));
-                break;
-            case LT_EXECUTABLE_NAME:
-                if (streq(token.u.name, "ifelse")) {
-                    compile_ifelse(&em);
-                }
-                else {
-                    emit(&em, ename_element(token.u.name));
-                }
-                break;
-            case LT_LITERAL_NAME:
-                emit(&em, lname_element(token.u.name));
-                break;
-            case LT_OPEN_CURLY: {
-                StackElement e;
-                ch = compile_exec_array(ch, &e);
-                emit(&em, e);
-                break;
-            }
-            case LT_CLOSE_CURLY:
-            case LT_SPACE:
-                break;
-            default:
-                break;
-            }
-        }
-    } while (token.ltype != LT_END_OF_FILE && token.ltype != LT_CLOSE_CURLY);
-
-    StackElementArray* array = malloc(sizeof(StackElementArray) + sizeof(StackElement) * em.pos);
-    array->len = em.pos;
-    memcpy(array->elements, em.elems, sizeof(StackElement) * em.pos);
-    *out_element = earray_element(array);
-
-    return ch;
 }
 
 static void eval_continuation(Continuation* cont) {
