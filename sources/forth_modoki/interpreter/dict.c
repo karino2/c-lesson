@@ -23,7 +23,8 @@ struct Node {
     Node* next;
 };
 
-static Node* dict_array[TABLE_SIZE];
+static Node* eval_dict_array[TABLE_SIZE];
+static Node* compile_dict_array[TABLE_SIZE];
 
 static Node* new_node(char* key, StackElement* element) {
     Node* node = malloc(sizeof(Node));
@@ -65,6 +66,9 @@ static void print_list(Node* head) {
         case ET_C_FUNC:
             // 事前に登録してある C_FUNC は表示をスキップする
             break;
+        case ET_COMPILE_FUNC:
+            // 事前に登録してある COMPILE_FUNC は表示をスキップする
+            break;
         case ET_EXECUTABLE_ARRAY:
             printf("%s: EXECUTABLE_ARRAY\n", node->key);
             break;
@@ -77,20 +81,28 @@ static void print_list(Node* head) {
     }
 }
 
-void dict_put(char* key, StackElement* element) {
+static void dict_put(Node* dict[], char* key, StackElement* element) {
     int idx = hash(key);
-    Node* head = dict_array[idx];
+    Node* head = dict[idx];
     if (head == NULL) {
-        dict_array[idx] = new_node(key, element);
+        dict[idx] = new_node(key, element);
     }
     else {
         update_or_insert_list(head, key, element);
     }
 }
 
-int dict_get(char* key, StackElement* out_element) {
+void eval_dict_put(char* key, StackElement* element) {
+    dict_put(eval_dict_array, key, element);
+}
+
+void compile_dict_put(char* key, StackElement* element) {
+    dict_put(compile_dict_array, key, element);
+}
+
+int dict_get(Node* dict[], char* key, StackElement* out_element) {
     int idx = hash(key);
-    Node* node = dict_array[idx];
+    Node* node = dict[idx];
     if (node == NULL) {
         return 0;
     }
@@ -106,16 +118,35 @@ int dict_get(char* key, StackElement* out_element) {
     }
 }
 
-void dict_clear() {
+int eval_dict_get(char* key, StackElement* out_element) {
+    return dict_get(eval_dict_array, key, out_element);
+}
+
+int compile_dict_get(char* key, StackElement* out_element) {
+    return dict_get(compile_dict_array, key, out_element);
+}
+
+void eval_dict_clear() {
     for (int i = 0; i < TABLE_SIZE; i++) {
-        dict_array[i] = NULL;
+        eval_dict_array[i] = NULL;
     }
 }
 
-void dict_print_all() {
+void eval_dict_print_all() {
     printf("--- dict ----\n");
     for (int i = 0; i < TABLE_SIZE; i++) {
-        Node* head = dict_array[i];
+        Node* head = eval_dict_array[i];
+        if (head != NULL) {
+            print_list(head);
+        }
+    }
+    printf("-------------\n");
+}
+
+void compile_dict_print_all() {
+    printf("--- dict ----\n");
+    for (int i = 0; i < TABLE_SIZE; i++) {
+        Node* head = compile_dict_array[i];
         if (head != NULL) {
             print_list(head);
         }

@@ -181,11 +181,11 @@ static void def_op() {
         exit(1);
     }
 
-    dict_put(key.u.name, &value);
+    eval_dict_put(key.u.name, &value);
 }
 
 static void register_primitive(char* key, void (*op)()) {
-    dict_put(key, &(StackElement){ ET_C_FUNC, { .cfunc = op } });
+    eval_dict_put(key, &(StackElement){ ET_C_FUNC, { .cfunc = op } });
 }
 
 void register_primitives() {
@@ -357,7 +357,7 @@ static void eval_continuation(Continuation* cont) {
             }
 
             StackElement exec_name;
-            if (!dict_get(elem.u.name, &exec_name)) {
+            if (!eval_dict_get(elem.u.name, &exec_name)) {
                 printf("fail to resolve name %s\n", elem.u.name);
                 exit(1);
             }
@@ -416,7 +416,7 @@ void eval() {
             }
             case LT_EXECUTABLE_NAME: {
                 StackElement e;
-                if (!dict_get(token.u.name, &e)) {
+                if (!eval_dict_get(token.u.name, &e)) {
                     printf("fail to resolve name %s\n", token.u.name);
                     exit(1);
                 }
@@ -1187,11 +1187,11 @@ static void verify_dict_put_and_get(
     char* target_key, int expect_found, int expect_value
 ) {
     for (int i = 0; i < ninput; i++) {
-        dict_put(input_keys[i], &input_elements[i]);
+        eval_dict_put(input_keys[i], &input_elements[i]);
     }
 
     StackElement actual_value;
-    int actual_found = dict_get(target_key, &actual_value);
+    int actual_found = eval_dict_get(target_key, &actual_value);
 
     assert(actual_found == expect_found);
     if (expect_found) {
@@ -1200,7 +1200,7 @@ static void verify_dict_put_and_get(
     }
 
     // ユーザが put した element を掃除するために、一度全ての element を削除してからプリミティブを登録し直す
-    dict_clear();
+    eval_dict_clear();
     register_primitives();
 }
 

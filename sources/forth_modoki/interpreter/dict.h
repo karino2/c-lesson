@@ -3,13 +3,14 @@
 
 #include "stack.h"
 
-void dict_put(char* key, StackElement* element);
+void eval_dict_put(char* key, StackElement* element);
+int eval_dict_get(char* key, StackElement* out_element);
+void eval_dict_clear();
+void eval_dict_print_all();
 
-int dict_get(char* key, StackElement* out_element);
-
-void dict_clear();
-
-void dict_print_all();
+void compile_dict_put(char* key, StackElement* element);
+int compile_dict_get(char* key, StackElement* out_element);
+void compile_dict_print_all();
 
 int streq(char* s1, char* s2);
 
