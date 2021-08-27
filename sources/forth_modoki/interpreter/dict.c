@@ -19,14 +19,14 @@ static int hash(char* s) {
 typedef struct Node Node;
 struct Node {
     char* key;
-    StackElement value;
+    Element value;
     Node* next;
 };
 
 static Node* eval_dict_array[TABLE_SIZE];
 static Node* compile_dict_array[TABLE_SIZE];
 
-static Node* new_node(char* key, StackElement* element) {
+static Node* new_node(char* key, Element* element) {
     Node* node = malloc(sizeof(Node));
 
     node->key = malloc(sizeof(*key) * (strlen(key) + 1));
@@ -37,7 +37,7 @@ static Node* new_node(char* key, StackElement* element) {
     return node;
 }
 
-static void update_or_insert_list(Node* head, char* key, StackElement* element) {
+static void update_or_insert_list(Node* head, char* key, Element* element) {
     Node* node = head;
     while (1) {
         if (streq(key, node->key)) {
@@ -58,7 +58,7 @@ static void update_or_insert_list(Node* head, char* key, StackElement* element) 
 static void print_list(Node* head) {
     Node* node = head;
     while (node != NULL) {
-        StackElement e = node->value;
+        Element e = node->value;
         switch (e.type) {
         case ET_NUMBER:
             printf("%s: %d\n", node->key, e.u.number);
@@ -81,7 +81,7 @@ static void print_list(Node* head) {
     }
 }
 
-static void dict_put(Node* dict[], char* key, StackElement* element) {
+static void dict_put(Node* dict[], char* key, Element* element) {
     int idx = hash(key);
     Node* head = dict[idx];
     if (head == NULL) {
@@ -92,15 +92,15 @@ static void dict_put(Node* dict[], char* key, StackElement* element) {
     }
 }
 
-void eval_dict_put(char* key, StackElement* element) {
+void eval_dict_put(char* key, Element* element) {
     dict_put(eval_dict_array, key, element);
 }
 
-void compile_dict_put(char* key, StackElement* element) {
+void compile_dict_put(char* key, Element* element) {
     dict_put(compile_dict_array, key, element);
 }
 
-int dict_get(Node* dict[], char* key, StackElement* out_element) {
+int dict_get(Node* dict[], char* key, Element* out_element) {
     int idx = hash(key);
     Node* node = dict[idx];
     if (node == NULL) {
@@ -118,11 +118,11 @@ int dict_get(Node* dict[], char* key, StackElement* out_element) {
     }
 }
 
-int eval_dict_get(char* key, StackElement* out_element) {
+int eval_dict_get(char* key, Element* out_element) {
     return dict_get(eval_dict_array, key, out_element);
 }
 
-int compile_dict_get(char* key, StackElement* out_element) {
+int compile_dict_get(char* key, Element* out_element) {
     return dict_get(compile_dict_array, key, out_element);
 }
 

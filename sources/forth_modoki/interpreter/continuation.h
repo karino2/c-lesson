@@ -1,7 +1,7 @@
 #include "stack.h"
 
 typedef struct {
-    StackElementArray* exec_array;
+    ElementArray* exec_array;
     int pc;
 } Continuation;
 
