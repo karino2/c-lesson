@@ -222,46 +222,6 @@ static void eval_continuation(Continuation* cont) {
             stack_push(&elem);
             break;
         case ET_EXECUTABLE_NAME: {
-            if (streq(elem.u.name, "exec")) {
-                StackElement exec_array;
-                stack_pop(&exec_array);
-                if (exec_array.type != ET_EXECUTABLE_ARRAY) {
-                    printf("exec expects executable array, but got: %d\n", exec_array.type);
-                    exit(1);
-                }
-                co_stack_push(&(Continuation) { cont->exec_array, pc + 1 });
-                co_stack_push(&(Continuation) { exec_array.u.byte_codes, 0 });
-                return;
-            }
-            else if (streq(elem.u.name, "jmp")) {
-                StackElement num;
-                stack_pop(&num);
-                if (num.type != ET_NUMBER) {
-                    printf("jmp expects number, but got %d\n", num.type);
-                    exit(1);
-                }
-
-                co_stack_push(&(Continuation) { cont->exec_array, pc + num.u.number });
-                return;
-            }
-            else if (streq(elem.u.name, "jmp_not_if")) {
-                StackElement num, cond;
-                stack_pop(&num);
-                stack_pop(&cond);
-                if (num.type != ET_NUMBER || cond.type != ET_NUMBER) {
-                    printf("jmp_not_if expects numbers, but got (%d, %d)\n", num.type, cond.type);
-                    exit(1);
-                }
-
-                if (!cond.u.number) {
-                    co_stack_push(&(Continuation) { cont->exec_array, pc + num.u.number });
-                }
-                else {
-                    co_stack_push(&(Continuation) { cont->exec_array, pc + 1 });
-                }
-                return;
-            }
-
             StackElement exec_name;
             if (!eval_dict_get(elem.u.name, &exec_name)) {
                 printf("fail to resolve name %s\n", elem.u.name);
@@ -290,6 +250,49 @@ static void eval_continuation(Continuation* cont) {
         case ET_COMPILE_FUNC:
             printf("compile func should be converted in compile time, but exists in eval\n");
             exit(1);
+        case ET_PRIMITIVE:
+            switch (elem.u.op) {
+            case OP_EXEC: {
+                StackElement exec_array;
+                stack_pop(&exec_array);
+                if (exec_array.type != ET_EXECUTABLE_ARRAY) {
+                    printf("exec expects executable array, but got: %d\n", exec_array.type);
+                    exit(1);
+                }
+                co_stack_push(&(Continuation) { cont->exec_array, pc + 1 });
+                co_stack_push(&(Continuation) { exec_array.u.byte_codes, 0 });
+                return;
+            }
+            case OP_JMP: {
+                StackElement num;
+                stack_pop(&num);
+                if (num.type != ET_NUMBER) {
+                    printf("jmp expects number, but got %d\n", num.type);
+                    exit(1);
+                }
+
+                co_stack_push(&(Continuation) { cont->exec_array, pc + num.u.number });
+                return;
+            }
+            case OP_JMP_NOT_IF: {
+                StackElement num, cond;
+                stack_pop(&num);
+                stack_pop(&cond);
+                if (num.type != ET_NUMBER || cond.type != ET_NUMBER) {
+                    printf("jmp_not_if expects numbers, but got (%d, %d)\n", num.type, cond.type);
+                    exit(1);
+                }
+
+                if (!cond.u.number) {
+                    co_stack_push(&(Continuation) { cont->exec_array, pc + num.u.number });
+                }
+                else {
+                    co_stack_push(&(Continuation) { cont->exec_array, pc + 1 });
+                }
+                return;
+            }
+            }
+            break;
         case ET_EXECUTABLE_ARRAY:
             stack_push(&elem);
             break;
@@ -1202,7 +1205,7 @@ static void test_dict_overwritten_not_head_name_found() {
 }
 
 void exec_tests() {
-    register_compile_funcs();
+    register_compile_primitives();
     register_primitives();
 
     test_eval_num_one();

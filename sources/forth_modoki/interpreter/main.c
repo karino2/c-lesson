@@ -16,7 +16,7 @@ int main(int argc, char* argv[]) {
 
         cl_getc_set_src_file(f);
 
-        register_compile_funcs();
+        register_compile_primitives();
         register_primitives();
         eval();
 

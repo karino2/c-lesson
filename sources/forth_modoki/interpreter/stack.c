@@ -58,6 +58,10 @@ StackElement earray_element(StackElementArray* byte_codes) {
     return (StackElement) { ET_EXECUTABLE_ARRAY, { .byte_codes = byte_codes } };
 }
 
+StackElement primitive_element(Operation op) {
+    return (StackElement) { ET_PRIMITIVE, { .op = op } };
+}
+
 void stack_element_debug_string(char* buf, StackElement* element) {
     switch (element->type) {
     case ET_NUMBER:
@@ -75,6 +79,8 @@ void stack_element_debug_string(char* buf, StackElement* element) {
     case ET_COMPILE_FUNC:
         sprintf(buf, "COMPILE_FUNC");
         break;
+    case ET_PRIMITIVE:
+        sprintf(buf, "PRIMITIVE");
     case ET_EXECUTABLE_ARRAY:
         sprintf(buf, "ET_EXECUTABLE_ARRAY");
         break;
@@ -88,10 +94,10 @@ static void emit(Emitter* em, StackElement elem) {
 static void compile_if(Emitter* em) {
     emit(em, ename_element("exch"));
     emit(em, number_element(4));
-    emit(em, ename_element("jmp_not_if"));
-    emit(em, ename_element("exec"));
+    emit(em, primitive_element(OP_JMP_NOT_IF));
+    emit(em, primitive_element(OP_EXEC));
     emit(em, number_element(1));
-    emit(em, ename_element("jmp"));
+    emit(em, primitive_element(OP_JMP));
     emit(em, ename_element("pop"));
 }
 
@@ -100,19 +106,22 @@ static void compile_ifelse(Emitter* em) {
     emit(em, number_element(2));
     emit(em, ename_element("roll"));
     emit(em, number_element(5));
-    emit(em, ename_element("jmp_not_if"));
+    emit(em, primitive_element(OP_JMP_NOT_IF));
     emit(em, ename_element("pop"));
-    emit(em, ename_element("exec"));
+    emit(em, primitive_element(OP_EXEC));
     emit(em, number_element(4));
-    emit(em, ename_element("jmp"));
+    emit(em, primitive_element(OP_JMP));
     emit(em, ename_element("exch"));
     emit(em, ename_element("pop"));
-    emit(em, ename_element("exec"));
+    emit(em, primitive_element(OP_EXEC));
 }
 
-void register_compile_funcs() {
+void register_compile_primitives() {
     compile_dict_put("ifelse", &(StackElement){ ET_COMPILE_FUNC, { .compfunc = compile_ifelse } });
     compile_dict_put("if", &(StackElement){ ET_COMPILE_FUNC, { .compfunc = compile_if } });
+    compile_dict_put("exec", &(StackElement){ ET_PRIMITIVE, { .op = OP_EXEC } });
+    compile_dict_put("jmp", &(StackElement){ ET_PRIMITIVE, { .op = OP_JMP } });
+    compile_dict_put("jmp_not_if", &(StackElement){ ET_PRIMITIVE, { .op = OP_JMP_NOT_IF } });
 }
 
 int compile_exec_array(int prev_ch, StackElement* out_element) {
@@ -137,11 +146,17 @@ int compile_exec_array(int prev_ch, StackElement* out_element) {
             case LT_EXECUTABLE_NAME: {
                 StackElement exec_name;
                 if (compile_dict_get(token.u.name, &exec_name)) {
-                    if (exec_name.type != ET_COMPILE_FUNC) {
-                        printf("expect resolved func %s to be compile func, but got %d\n", token.u.name, exec_name.type);
+                    switch (exec_name.type) {
+                    case ET_COMPILE_FUNC:
+                        exec_name.u.compfunc(&em);
+                        break;
+                    case ET_PRIMITIVE:
+                        emit(&em, exec_name);
+                        break;
+                    default:
+                        printf("expect resolved func %s to be compile func or primitive, but got %d\n", token.u.name, exec_name.type);
                         exit(1);
                     }
-                    exec_name.u.compfunc(&em);
                 }
                 else {
                     emit(&em, ename_element(token.u.name));

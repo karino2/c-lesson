@@ -12,6 +12,4 @@ void compile_dict_put(char* key, StackElement* element);
 int compile_dict_get(char* key, StackElement* out_element);
 void compile_dict_print_all();
 
-int streq(char* s1, char* s2);
-
 #endif

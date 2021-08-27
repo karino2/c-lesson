@@ -11,16 +11,24 @@ typedef enum {
     ET_LITERAL_NAME,
     ET_C_FUNC,
     ET_COMPILE_FUNC,
+    ET_PRIMITIVE,
     ET_EXECUTABLE_ARRAY,
 } StackElementType;
 
 typedef struct StackElementArray StackElementArray;
+
+typedef enum {
+    OP_EXEC,
+    OP_JMP,
+    OP_JMP_NOT_IF,
+} Operation;
 
 typedef struct {
     StackElementType type;
     union {
         int number;
         char* name;
+        Operation op;
         void (*cfunc)();
         void (*compfunc)(Emitter* em);
         StackElementArray* byte_codes;
@@ -52,7 +60,7 @@ struct Emitter {
     int pos;
 };
 
-void register_compile_funcs();
+void register_compile_primitives();
 
 int compile_exec_array(int prev_ch, StackElement* out_element);
 
