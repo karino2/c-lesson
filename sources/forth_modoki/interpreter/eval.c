@@ -247,8 +247,8 @@ static void eval_continuation(Continuation* cont) {
             break;
         }
         case ET_C_FUNC:
-            elem.u.cfunc();
-            break;
+            printf("c func should be converted in compile time, but exists in eval\n");
+            exit(1);
         case ET_COMPILE_FUNC:
             printf("compile func should be converted in compile time, but exists in eval\n");
             exit(1);
