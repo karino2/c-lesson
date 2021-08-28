@@ -619,6 +619,39 @@ static void test_eval_while_then_num() {
     verify_stack_pop_number_eq(expects, 5);
 }
 
+static void test_eval_repeat() {
+    char* input = "3 { 1 2 } repeat";
+    int expects[6] = { 2, 1, 2, 1, 2, 1 };
+
+    cl_getc_set_src(input);
+
+    eval();
+
+    verify_stack_pop_number_eq(expects, 6);
+}
+
+static void test_eval_repeat_in_executable_array() {
+    char* input = "{ 3 { 1 2 } repeat } exec";
+    int expects[6] = { 2, 1, 2, 1, 2, 1 };
+
+    cl_getc_set_src(input);
+
+    eval();
+
+    verify_stack_pop_number_eq(expects, 6);
+}
+
+static void test_eval_repeat_then_num() {
+    char* input = "{ 3 { 1 2 } repeat 7 } exec";
+    int expects[7] = { 7, 2, 1, 2, 1, 2, 1 };
+
+    cl_getc_set_src(input);
+
+    eval();
+
+    verify_stack_pop_number_eq(expects, 7);
+}
+
 static void test_eval_comments() {
     char* input = "1 \% hello this is comment\n2\n3 \% ignore me";
     int expects[3] = { 3, 2, 1 };
@@ -932,6 +965,9 @@ static void tests() {
     test_eval_while();
     test_eval_while_in_executable_array();
     test_eval_while_then_num();
+    test_eval_repeat();
+    test_eval_repeat_in_executable_array();
+    test_eval_repeat_then_num();
 
     test_eval_comments();
 

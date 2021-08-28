@@ -172,6 +172,20 @@ static void while_op() {
     }
 }
 
+static void repeat_op() {
+    Element p, n;
+    stack_pop(&p);
+    stack_pop(&n);
+    if (p.type != ET_EXECUTABLE_ARRAY || n.type != ET_NUMBER) {
+        printf("repeat expects executable array and number, but got (%d, %d)\n", p.type, n.type);
+        exit(1);
+    }
+
+    for (int i = 0; i < n.u.number; i++) {
+        eval_exec_array(p.u.byte_codes);
+    }
+}
+
 static void def_op() {
     Element value, key;
     stack_pop(&value);
@@ -211,6 +225,7 @@ void register_primitives() {
     register_primitive("if", if_op);
     register_primitive("ifelse", ifelse_op);
     register_primitive("while", while_op);
+    register_primitive("repeat", repeat_op);
 
     register_primitive("def", def_op);
 }
