@@ -345,6 +345,24 @@ static void eval_continuation(Continuation* cont) {
                 co_stack_push(&c);
                 return;
             }
+            case OP_LPOP: {
+                ContinuationElement var;
+                if (!co_stack_pop(&var)) {
+                    printf("failed to pop local var\n");
+                    exit(1);
+                }
+
+                if (var.type != CE_LOCAL_VAR) {
+                    printf("popped element is expected be local var, but got %d\n", var.type);
+                    exit(1);
+                }
+
+                stack_push(var.u.elem);
+
+                ContinuationElement c = continuation(cont->exec_array, pc + 1);
+                co_stack_push(&c);
+                return;
+            }
             }
             break;
         case ET_EXECUTABLE_ARRAY:

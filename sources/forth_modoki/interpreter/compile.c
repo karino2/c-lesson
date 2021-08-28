@@ -49,10 +49,31 @@ static void compile_while(Emitter* em) {
     emit(em, primitive_element(OP_JMP));
 }
 
+static void compile_repeat(Emitter* em) {
+    emit(em, primitive_element(OP_STORE));
+    emit(em, primitive_element(OP_STORE));
+    emit(em, number_element(0));
+    emit(em, primitive_element(OP_LOAD));
+    emit(em, number_element(0));
+    emit(em, ename_element("gt"));
+    emit(em, number_element(10));
+    emit(em, primitive_element(OP_JMP_NOT_IF));
+    emit(em, primitive_element(OP_LPOP));
+    emit(em, number_element(1));
+    emit(em, ename_element("sub"));
+    emit(em, primitive_element(OP_STORE));
+    emit(em, number_element(1));
+    emit(em, primitive_element(OP_LOAD));
+    emit(em, primitive_element(OP_EXEC));
+    emit(em, number_element(-14));
+    emit(em, primitive_element(OP_JMP));
+}
+
 void register_compile_primitives() {
     compile_dict_put("ifelse", &(Element){ ET_COMPILE_FUNC, { .compfunc = compile_ifelse } });
     compile_dict_put("if", &(Element){ ET_COMPILE_FUNC, { .compfunc = compile_if } });
     compile_dict_put("while", &(Element){ ET_COMPILE_FUNC, { .compfunc = compile_while } });
+    compile_dict_put("repeat", &(Element){ ET_COMPILE_FUNC, { .compfunc = compile_repeat } });
     compile_dict_put("exec", &(Element){ ET_PRIMITIVE, { .op = OP_EXEC } });
     compile_dict_put("jmp", &(Element){ ET_PRIMITIVE, { .op = OP_JMP } });
     compile_dict_put("jmp_not_if", &(Element){ ET_PRIMITIVE, { .op = OP_JMP_NOT_IF } });
