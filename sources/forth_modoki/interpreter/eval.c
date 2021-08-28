@@ -236,8 +236,10 @@ static void eval_continuation(Continuation* cont) {
             }
             else if (exec_name.type == ET_EXECUTABLE_ARRAY) {
                 // 実行可能配列。実行中の continuation と次に実行したい continuation を順番に co_stack に積む
-                co_stack_push(&(Continuation) { cont->exec_array, pc + 1 });
-                co_stack_push(&(Continuation) { exec_name.u.byte_codes, 0 });
+                ContinuationElement cur_cont = continuation(cont->exec_array, pc + 1);
+                ContinuationElement next_cont = continuation(exec_name.u.byte_codes, 0);
+                co_stack_push(&cur_cont);
+                co_stack_push(&next_cont);
                 return;
             }
             else {
@@ -261,8 +263,10 @@ static void eval_continuation(Continuation* cont) {
                     printf("exec expects executable array, but got: %d\n", exec_array.type);
                     exit(1);
                 }
-                co_stack_push(&(Continuation) { cont->exec_array, pc + 1 });
-                co_stack_push(&(Continuation) { exec_array.u.byte_codes, 0 });
+                ContinuationElement cur_cont = continuation(cont->exec_array, pc + 1);
+                ContinuationElement next_cont = continuation(exec_array.u.byte_codes, 0);
+                co_stack_push(&cur_cont);
+                co_stack_push(&next_cont);
                 return;
             }
             case OP_JMP: {
@@ -273,7 +277,8 @@ static void eval_continuation(Continuation* cont) {
                     exit(1);
                 }
 
-                co_stack_push(&(Continuation) { cont->exec_array, pc + num.u.number });
+                ContinuationElement c = continuation(cont->exec_array, pc + num.u.number);
+                co_stack_push(&c);
                 return;
             }
             case OP_JMP_NOT_IF: {
@@ -286,10 +291,12 @@ static void eval_continuation(Continuation* cont) {
                 }
 
                 if (!cond.u.number) {
-                    co_stack_push(&(Continuation) { cont->exec_array, pc + num.u.number });
+                    ContinuationElement c = continuation(cont->exec_array, pc + num.u.number);
+                    co_stack_push(&c);
                 }
                 else {
-                    co_stack_push(&(Continuation) { cont->exec_array, pc + 1 });
+                    ContinuationElement c = continuation(cont->exec_array, pc + 1);
+                    co_stack_push(&c);
                 }
                 return;
             }
@@ -303,11 +310,12 @@ static void eval_continuation(Continuation* cont) {
 }
 
 static void eval_exec_array(ElementArray* exec_array) {
-    co_stack_push(&(Continuation) { exec_array, 0 });
+    ContinuationElement c = continuation(exec_array, 0);
+    co_stack_push(&c);
 
-    Continuation cont;
-    while (co_stack_pop(&cont)) {
-        eval_continuation(&cont);
+    ContinuationElement elem;
+    while (co_stack_pop_current_continuation(&elem)) {
+        eval_continuation(elem.u.cont);
     }
 }
 

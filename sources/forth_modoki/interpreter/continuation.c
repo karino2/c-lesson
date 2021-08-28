@@ -1,33 +1,64 @@
 #include "continuation.h"
 #include <stdio.h>
+#include <stdlib.h>
 
 #define CO_STACK_SIZE 1024
 
-static Continuation co_stack[CO_STACK_SIZE];
+static ContinuationElement co_stack[CO_STACK_SIZE];
 
 static int top = -1;
 
-
-void co_stack_push(Continuation* continuation) {
-    co_stack[++top] = *continuation;
+ContinuationElement continuation(ElementArray* array, int pc) {
+    Continuation* cont = malloc(sizeof(Continuation));
+    cont->exec_array = array;
+    cont->pc = pc;
+    return (ContinuationElement) { CE_CONTINUATION, { .cont = cont } };
+}
+ContinuationElement local_var(Element* elem) {
+    Element* copied = malloc(sizeof(Element));
+    *copied = *elem;
+    return (ContinuationElement) { CE_LOCAL_VAR, { .elem = copied } };
 }
 
-int co_stack_pop(Continuation* out_continuation) {
+void co_stack_push(ContinuationElement* elem) {
+    co_stack[++top] = *elem;
+}
+
+int co_stack_pop(ContinuationElement* out_elem) {
     if (top < 0) { return 0; }
-    *out_continuation = co_stack[top--];
+    *out_elem = co_stack[top--];
     return 1;
+}
+
+int co_stack_pop_current_continuation(ContinuationElement* out_elem) {
+    do {
+        if (top < 0) { return 0; }
+        *out_elem = co_stack[top--];
+    } while (out_elem->type != CE_CONTINUATION);
+
+    return out_elem->type == CE_CONTINUATION ? 1 : 0;
 }
 
 void co_stack_print_all() {
     printf("-- costack --\n");
     for (int i = top; i >= 0; i--) {
-        Continuation c = co_stack[i];
-        char fbuf[1024], cbuf[1024];
+        ContinuationElement e = co_stack[i];
+        switch (e.type) {
+        case CE_LOCAL_VAR: {
+            char buf[1024];
+            stack_element_debug_string(buf, e.u.elem);
 
-        stack_element_debug_string(fbuf, &c.exec_array->elements[0]);
-        stack_element_debug_string(cbuf, &c.exec_array->elements[c.pc]);
+            printf("%d: %s\n", i, buf);
+        }
+        case CE_CONTINUATION: {
+            char fbuf[1024], cbuf[1024];
 
-        printf("%d: current(pc=%d/len=%d) [%s] first [%s] \n", i, c.pc, c.exec_array->len, cbuf, fbuf);
+            stack_element_debug_string(fbuf, &e.u.cont->exec_array->elements[0]);
+            stack_element_debug_string(cbuf, &e.u.cont->exec_array->elements[e.u.cont->pc]);
+
+            printf("%d: current(pc=%d/len=%d) [%s] first [%s] \n", i, e.u.cont->pc, e.u.cont->exec_array->len, cbuf, fbuf);
+        }
+        }
     }
     printf("-------------\n");
 }
