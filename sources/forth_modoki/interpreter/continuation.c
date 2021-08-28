@@ -55,6 +55,7 @@ void co_stack_print_all() {
             stack_element_debug_string(buf, e.u.elem);
 
             printf("%d: %s\n", i, buf);
+            break;
         }
         case CE_CONTINUATION: {
             char fbuf[1024], cbuf[1024];
@@ -63,6 +64,7 @@ void co_stack_print_all() {
             stack_element_debug_string(cbuf, &e.u.cont->exec_array->elements[e.u.cont->pc]);
 
             printf("%d: current(pc=%d/len=%d) [%s] first [%s] \n", i, e.u.cont->pc, e.u.cont->exec_array->len, cbuf, fbuf);
+            break;
         }
         }
     }
