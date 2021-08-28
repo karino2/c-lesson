@@ -28,4 +28,6 @@ int co_stack_pop(ContinuationElement* out_elem);
 
 int co_stack_pop_current_continuation(ContinuationElement* out_elem);
 
+int co_stack_peek(int depth, ContinuationElement* out_elem);
+
 void co_stack_print_all();

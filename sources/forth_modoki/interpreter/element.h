@@ -20,6 +20,8 @@ typedef enum {
     OP_EXEC,
     OP_JMP,
     OP_JMP_NOT_IF,
+    OP_STORE,
+    OP_LOAD,
 } Operation;
 
 typedef struct {

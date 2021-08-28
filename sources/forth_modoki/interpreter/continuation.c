@@ -30,6 +30,12 @@ int co_stack_pop(ContinuationElement* out_elem) {
     return 1;
 }
 
+int co_stack_peek(int depth, ContinuationElement* out_elem) {
+    if (depth > top) { return 0; }
+    *out_elem = co_stack[top - depth];
+    return 1;
+}
+
 int co_stack_pop_current_continuation(ContinuationElement* out_elem) {
     do {
         if (top < 0) { return 0; }

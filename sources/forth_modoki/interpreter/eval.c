@@ -300,6 +300,36 @@ static void eval_continuation(Continuation* cont) {
                 }
                 return;
             }
+            case OP_STORE: {
+                Element var;
+                stack_pop(&var);
+
+                ContinuationElement v = local_var(&var);
+                co_stack_push(&v);
+
+                ContinuationElement c = continuation(cont->exec_array, pc + 1);
+                co_stack_push(&c);
+                return;
+            }
+            case OP_LOAD: {
+                Element num;
+                stack_pop(&num);
+                if (num.type != ET_NUMBER) {
+                    printf("load expects number, but got %d\n", num.type);
+                    exit(1);
+                }
+
+                ContinuationElement var;
+                if (!co_stack_peek(num.u.number, &var)) {
+                    printf("failed to load local var\n");
+                    exit(1);
+                }
+                stack_push(var.u.elem);
+
+                ContinuationElement c = continuation(cont->exec_array, pc + 1);
+                co_stack_push(&c);
+                return;
+            }
             }
             break;
         case ET_EXECUTABLE_ARRAY:
