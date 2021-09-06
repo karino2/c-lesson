@@ -11,6 +11,9 @@ layout: page
         border-top: solid 5px #5d627b;
         box-shadow: 0 3px 5px rgba(0, 0, 0, 0.22);
     }
+    .post-content h1 {
+       font-size: 34px;
+    }
 </style>
 
 # 第一回 簡易PostScriptインタプリタを作ろう
