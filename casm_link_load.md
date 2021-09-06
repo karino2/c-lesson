@@ -12,6 +12,9 @@ layout: page
         border-top: solid 5px #5d627b;
         box-shadow: 0 3px 5px rgba(0, 0, 0, 0.22);
     }
+    .post-content h1 {
+       font-size: 34px;
+    }
 </style>
 
 第三回では、第二回で学んだバイナリやアセンブリの知識を元に、C言語の理解を深めていきます。

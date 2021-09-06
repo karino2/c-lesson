@@ -13,6 +13,9 @@ classes: wide
         border-top: solid 5px #5d627b;
         box-shadow: 0 3px 5px rgba(0, 0, 0, 0.22);
     }
+    .post-content h1 {
+       font-size: 34px;
+    }
 </style>
 
 [第一回](https://karino2.github.io/c-lesson/forth_modoki.html)でそれなりの規模のCプログラムを書いて標準的なデータ構造を学びました。
