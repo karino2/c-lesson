@@ -672,7 +672,7 @@ many_symbols.cには、シンボルにかかわる限り、以下の要素があ
 |---- | ---- |
 | 未初期化のグローバル変数定義| g_in_hello_uninit, g_text_uninit, g_large_buf |
 | 初期化のあるグローバル変数定義| g_in_hello, g_text, g_text_arr |
-| staticなグローバル変数 | g_static_in_hello, g_static_in_hello2 |
+| staticなグローバル変数 | g_static_in_hello |
 | staticな未初期化グローバル変数 | g_static_uninit |
 | グローバル変数の宣言 | g_in_main |
 | 関数の定義 | print_something | 
