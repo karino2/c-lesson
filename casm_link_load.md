@@ -1121,6 +1121,8 @@ clangの所でbits/libc-header-start.hが無いと言われたら、以下で32b
 sudo apt-get install gcc-multilib-arm-linux-gnueabi
 ```
 
+（追記： `sudo apt-get install gcc-multilib` だったかもしれない。ちょっとうろ覚えなので両方試してみてください）
+
 llcの所でllvmが無いぞ、とか言われたらこちらもapt-get installしてください。
 
 幾つかignoring processorというメッセージが出ますが、ちゃんとアセンブリは生成されると思います。
