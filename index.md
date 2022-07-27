@@ -127,3 +127,8 @@ C言語自体の説明は折に触れてやっていきたい。
 - [c-lesson 第一回「簡易PostScriptインタプリタを作ろう」を終えた](https://yoheikikuta.github.io/clesson_first_postscript/)
 - [c-lesson 第二回「簡易アセンブラとディスアセンブラを作ろう」を終えた](https://yoheikikuta.github.io/clesson_second_asm/)
 - [c-lesson 第三回「バイナリやアセンブリから見るC言語とリンカ」を終えて全内容を終了した](https://yoheikikuta.github.io/clesson_casm_link/)
+
+t-sinさん
+- [C言語の勉強: 簡易PostScriptインタプリタ編 - 技術の記録 - Ibotenic](https://t-sin.github.io/techblog/2021-07-21-c-lesson-01.html)
+- [C言語の勉強: 簡易逆アセンブラ・アセンブラ編 - 技術の記録 - Ibotenic](https://t-sin.github.io/techblog/2021-09-10-c-lesson-02.html)
+- [C言語の勉強: バイナリ・アセンブリを通してみるC言語編 (それとJITコンパイル) - 技術の記録 - Ibotenic](https://t-sin.github.io/techblog/2022-02-22_c-lesson-03.html)
