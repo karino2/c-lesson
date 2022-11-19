@@ -46,7 +46,7 @@ int is_end(struct Substr *in_str) {
 
 int begin_with_len(struct Substr *in_str, char *expect, int expect_len) {
     int pos = 0;
-    if(in_str->len > in_str->len)
+    if(in_str->len < expect_len)
         return 0;
     while(in_str->ptr[pos] == expect[pos] && pos < expect_len) {
         pos++;
