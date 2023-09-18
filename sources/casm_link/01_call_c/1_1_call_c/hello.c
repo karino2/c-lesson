@@ -1,5 +1,5 @@
 /*
- arm-none-eabi-gcc hello.c -nostdlib -o hello.o
+ arm-none-eabi-gcc -c hello.c -nostdlib -o hello.o
  arm-none-eabi-as hello_c.s -o hello_c.o
  arm-none-eabi-ld hello_c.o hello.o -N -Ttext 0x00010000 -o hello_c.elf
  arm-none-eabi-objcopy hello_c.elf -O binary hello_c.bin

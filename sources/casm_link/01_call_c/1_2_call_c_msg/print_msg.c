@@ -1,5 +1,5 @@
 /*
- arm-none-eabi-gcc print_msg.c -nostdlib -o print_msg.o
+ arm-none-eabi-gcc -c print_msg.c -nostdlib -o print_msg.o
  arm-none-eabi-as main.s -o main.o
  arm-none-eabi-ld main.o print_msg.o -N -Ttext 0x00010000 -o print_all.elf
  arm-none-eabi-objcopy print_all.elf -O binary print_all.bin
