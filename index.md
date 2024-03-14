@@ -77,7 +77,7 @@ C言語自体の説明は折に触れてやっていきたい。
 - なんかC言語の入門書くらい
   - [菊田さんのレポート](https://yoheikikuta.github.io/clesson_first_postscript/)によると、C言語の入門書に加えて「ふつうのLinuxプログラミング」の写経くらいやっておくと十分そう。
 
-<iframe style="width:120px;height:240px;" marginwidth="0" marginheight="0" scrolling="no" frameborder="0" src="https://rcm-fe.amazon-adsystem.com/e/cm?ref=qf_sp_asin_til&t=karino203-22&m=amazon&o=9&p=8&l=as1&IS1=1&detail=1&asins=4797386479&bc1=ffffff&lt1=_top&fc1=333333&lc1=0066c0&bg1=ffffff&f=ifr"> </iframe>
+[amazon: ふつうのLinuxプログラミング 第2版　Linuxの仕組みから学べるgccプログラミングの王道](https://amzn.to/43gOdCE)
 
 
 # 第一回 簡易PostScriptインタプリタを作ろう
